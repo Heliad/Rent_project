@@ -9,9 +9,9 @@ class UserForm(forms.ModelForm):
 
     license_field = forms.Textarea()
     ie.required = False
-    taxpayer_account_number = forms.IntegerField()
+    taxpayer_account_number = forms.IntegerField(label='УНН')
     taxpayer_account_number.required = False
-    license_field = forms.CharField()
+    license_field = forms.CharField(label='Лицензия')
     license_field.required = False
 
     class Meta:
