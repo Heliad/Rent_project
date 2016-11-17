@@ -89,10 +89,10 @@ class MyUser(AbstractBaseUser):
 
 class Rent(models.Model):
     name = models.CharField(verbose_name='Название', max_length=50)
-    address = models.CharField(verbose_name='', max_length=50)
-    min_rent_time = models.IntegerField(verbose_name='')
-    area = models.IntegerField(verbose_name='', )
-    date_of_construction = models.DateField(verbose_name='', default=None)
-    creation_date = models.DateField(verbose_name='', default=None)
-    other = models.CharField(verbose_name='', max_length=100)
-    cost = models.CharField(verbose_name='', max_length=50)
+    address = models.CharField(verbose_name='Адрес', max_length=50)
+    min_rent_time = models.IntegerField(verbose_name='Срок аренды')
+    area = models.IntegerField(verbose_name='Площадь', )
+    date_of_construction = models.IntegerField(verbose_name='Год строительства', default=None)
+    creation_date = models.DateField(default=None)
+    other = models.CharField(verbose_name='Другое', max_length=100)
+    cost = models.CharField(verbose_name='Цена аренды', max_length=50)

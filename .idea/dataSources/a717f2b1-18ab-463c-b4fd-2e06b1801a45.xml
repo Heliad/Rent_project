@@ -455,25 +455,25 @@ model</columns>
       <mandatory>1</mandatory>
       <data-type>INTEGER(0,-1)|4</data-type>
     </column>
-    <column id="111" parent="14" name="Other">
-      <mandatory>1</mandatory>
-      <data-type>VARCHAR(100)(0,-1)|12</data-type>
-    </column>
-    <column id="112" parent="14" name="Cost">
-      <mandatory>1</mandatory>
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
-    </column>
-    <column id="113" parent="14" name="min_rent_time">
+    <column id="111" parent="14" name="min_rent_time">
       <mandatory>1</mandatory>
       <data-type>INTEGER(0,-1)|4</data-type>
     </column>
-    <column id="114" parent="14" name="creation_date">
+    <column id="112" parent="14" name="creation_date">
+      <mandatory>1</mandatory>
+      <data-type>DATE(0,-1)|12</data-type>
+    </column>
+    <column id="113" parent="14" name="Cost">
       <mandatory>1</mandatory>
       <data-type>VARCHAR(50)(0,-1)|12</data-type>
     </column>
-    <column id="115" parent="14" name="date_of_construction">
+    <column id="114" parent="14" name="date_of_construction">
       <mandatory>1</mandatory>
-      <data-type>DATE(0,-1)|12</data-type>
+      <data-type>INTEGER(0,-1)|4</data-type>
+    </column>
+    <column id="115" parent="14" name="Other">
+      <mandatory>1</mandatory>
+      <data-type>VARCHAR(100)(0,-1)|12</data-type>
     </column>
     <key id="116" parent="14">
       <columns>id</columns>

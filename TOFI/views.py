@@ -7,6 +7,7 @@ from django.views.generic import View
 from django.contrib.auth import logout
 from .forms import UserForm, RentForm
 from django.http import HttpResponseRedirect
+import datetime
 
 
 def main_view(request):
@@ -30,7 +31,7 @@ class AddRent(View):
             min_rent_time = form.cleaned_data['min_rent_time']
             area = form.cleaned_data['area']
             date_of_construction = form.cleaned_data['date_of_construction']
-            creation_date = form.cleaned_data['creation_date']
+            creation_date = datetime.date.today()
             other = form.cleaned_data['other']
             cost = form.cleaned_data['cost']
             models.Rent.objects.create(name=name, address=address, min_rent_time=min_rent_time, area=area,
