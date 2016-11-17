@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Главная{% endblock %}
+{% block content %}
+        <table class="center">
+            {% for r in rent %}
+                <tr>
+                    <td class="padding">{{ r.name }}</td>
+                    <td>{{ r.cost }}</td>
+                </tr>
+            {% endfor %}x
+        </table>
+{% endblock %}

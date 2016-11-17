@@ -1,0 +1,30 @@
+.center{
+    width: 700px;
+    padding: 10px;
+    margin: 100px auto auto;
+    background: whitesmoke;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+}
+
+.padding{
+    padding: 10px;
+}
+.button7
+{
+    color: white;
+    padding: 7px;
+    background: rgb(64,199,129);
+    transition: 0.2s;
+    border-width: 0px;
+}
+
+.button7:hover
+{
+    background: rgb(53, 167, 110);
+}
+
+.button7:active
+{
+  background: rgb(33,147,90);
+  box-shadow: 0 3px rgb(33,147,90) inset;
+}
