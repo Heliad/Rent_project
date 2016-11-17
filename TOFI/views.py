@@ -83,3 +83,11 @@ def logout_view(request):
     logout(request)
     return HttpResponseRedirect("/")
 
+
+def profile(request):
+    return render(request, "Profile.html")
+
+
+def profileChangePassword(request):
+    return render(request, "ChangePassword.html")
+

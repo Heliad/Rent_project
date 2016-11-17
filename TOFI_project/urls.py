@@ -23,5 +23,7 @@ urlpatterns = [
     url(r'^logout/', views.logout_view, name='Logout'),
     url(r'^add_rent$', views.AddRent.as_view(), name='AddRent'),
     url(r'^register$', views.Registration.as_view(), name='Registration'),
+    url(r'^profile$', views.profile, name='Profile'),
+    url(r'changepassword', views.profileChangePassword, name='ChangePassword'),
     url(r'^admin/', admin.site.urls),
 ]
