@@ -7,7 +7,7 @@ class UserForm(forms.ModelForm):
     password1 = forms.CharField(label='Подтвержение пароля', widget=forms.PasswordInput)
     ie = forms.BooleanField(label='ИП', widget=forms.CheckboxInput)
 
-    license_field = forms.Textarea()
+    # license_field = forms.Textarea()
     ie.required = False
     taxpayer_account_number = forms.IntegerField(label='УНН')
     taxpayer_account_number.required = False
