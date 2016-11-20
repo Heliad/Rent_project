@@ -91,3 +91,11 @@ def profile(request):
 def profileChangePassword(request):
     return render(request, "ChangePassword.html")
 
+
+def aboutHouse(request, number):
+    d = list(models.Rent.objects.all())
+    for i in d:
+        if i.getId() == number:
+            context = {'rent': i}
+
+    return render(request, "AboutHouse.html", context)

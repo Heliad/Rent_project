@@ -96,3 +96,6 @@ class Rent(models.Model):
     creation_date = models.DateField(default=None)
     other = models.CharField(verbose_name='Другое', max_length=100)
     cost = models.CharField(verbose_name='Цена аренды', max_length=50)
+
+    def getId(self):
+        return str(self.id)

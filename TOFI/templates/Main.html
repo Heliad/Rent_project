@@ -2,10 +2,20 @@
 {% block title %}Главная{% endblock %}
 {% block content %}
         <table class="center">
+            <tr class="padding">
+                <td class="padding">Название</td>
+                <td>Адрес</td>
+                <td>Срок аренды</td>
+                <td>Цена</td>
+                <td>Площадь</td>
+            </tr>
             {% for r in rent %}
                 <tr>
-                    <td class="padding">{{ r.name }}</td>
+                    <td class="padding"><a href="aboutHouse/{{ r.id }}">{{ r.name }}</a></td>
+                    <td>{{ r.address }}</td>
+                    <td>{{ r.min_rent_time }}</td>
                     <td>{{ r.cost }}</td>
+                    <td>{{ r.area }}</td>
                 </tr>
             {% endfor %}x
         </table>

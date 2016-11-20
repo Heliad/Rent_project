@@ -25,5 +25,6 @@ urlpatterns = [
     url(r'^register$', views.Registration.as_view(), name='Registration'),
     url(r'^profile$', views.profile, name='Profile'),
     url(r'changepassword', views.profileChangePassword, name='ChangePassword'),
+    url(r'aboutHouse/(?P<number>\d*)', views.aboutHouse, name ='AboutHouse'),
     url(r'^admin/', admin.site.urls),
 ]
