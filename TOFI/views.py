@@ -34,9 +34,12 @@ class AddRent(View):
             creation_date = datetime.date.today()
             other = form.cleaned_data['other']
             cost = form.cleaned_data['cost']
+            cur_user = request.user
+
             models.Rent.objects.create(name=name, address=address, min_rent_time=min_rent_time, area=area,
                                        date_of_construction=date_of_construction, creation_date=creation_date,
-                                       other=other, cost=cost,)
+                                       other=other, cost=cost, user_login=cur_user.id)
+
             return HttpResponseRedirect('/')
         return render(request, self.template_name, {'form': form})
 
@@ -99,3 +102,11 @@ def aboutHouse(request, number):
             context = {'rent': i}
 
     return render(request, "AboutHouse.html", context)
+
+
+def aboutUser(request, login_id):
+    userList = list(models.MyUser.objects.all())
+    for user in userList:
+        if user.getId() == login_id:
+            context = {'user': user}
+    return render(request, "AboutUser.html", context)

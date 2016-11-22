@@ -86,6 +86,8 @@ class MyUser(AbstractBaseUser):
     def get_short_name(self):
         return self.Login
 
+    def getId(self):
+        return str(self.id)
 
 class Rent(models.Model):
     name = models.CharField(verbose_name='Название', max_length=50)
@@ -96,6 +98,10 @@ class Rent(models.Model):
     creation_date = models.DateField(default=None)
     other = models.CharField(verbose_name='Другое', max_length=100)
     cost = models.CharField(verbose_name='Цена аренды', max_length=50)
+    user_login = models.CharField(verbose_name="hide", max_length=50, null=True)
 
     def getId(self):
         return str(self.id)
+
+    def getUserLogin(self):
+        return str(self.user_login)

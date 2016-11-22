@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Главная{% endblock %}
+{% block content %}
+        <table class="center">
+            <tr class="padding">
+                <td class="padding">Логин:</td>
+                <td>{{ user.username }}</td>
+            </tr>
+            <tr class="padding">
+                <td class="padding">ФИО:</td>
+                <td>{{ user.surname }} {{ user.name }} {{ user.last_name }}</td>
+            </tr>
+            <tr class="padding">
+                <td class="padding">Возраст:</td>
+                <td>{{ user.age }}</td>
+            </tr>
+            <tr class="padding">
+                <td class="padding">Номер телефона:</td>
+                <td>{{ user.phone }}</td>
+            </tr>
+            <tr class="padding">
+                <td class="padding">Адрес:</td>
+                <td>{{ user.address }}</td>
+            </tr>
+            <tr class="padding">
+                <td class="padding">Электронная почта:</td>
+                <td>{{ user.email }}</td>
+            </tr>
+            <tr class="padding">
+                <td class="padding">Лицензия:</td>
+                <td>{{ user.license_field }}</td>
+            </tr>
+            <tr class="padding">
+                <td class="padding">УНН:</td>
+                <td>{{ user.taxpayer_account_number }}</td>
+            </tr>
+
+
+        </table>
+{% endblock %}

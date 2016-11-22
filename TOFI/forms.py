@@ -23,7 +23,6 @@ class UserForm(forms.ModelForm):
 
 class RentForm(forms.ModelForm):
 
-
     class Meta:
         model = Rent
         fields = ['name', 'address', 'min_rent_time', 'area', 'date_of_construction', 'other', 'cost']
