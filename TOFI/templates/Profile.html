@@ -10,14 +10,28 @@
                 Ваш баланс: {{ request.user.balance }} BYN
             </td>
         </tr>
+        {% if request.user.ie %}
+            <tr class="padding">
+                <td class="padding">
+                    <a href="{% url 'UnfillBalance' %}">Вывод средств</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr class="padding">
+                <td class="padding">
+                    <a href="{% url 'RefillBalance' %}">Пополнить счет</a>
+                </td>
+            </tr>
+        {% endif %}
+
         <tr class="padding">
             <td class="padding">
-                <a href="{% url 'RefillBalance' %}">Пополнить счет</a>
+                <a href="{% url 'ChangePassword' %}">Сменить пароль</a>
             </td>
         </tr>
         <tr class="padding">
             <td class="padding">
-                <a href="{% url 'ChangePassword' %}">Сменить пароль</a>
+                <a href="{% url 'DeleteMySelf' %}">Удалить аккаунт</a>
             </td>
         </tr>
         <tr class="padding">

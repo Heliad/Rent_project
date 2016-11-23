@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Пополнение баланса{% endblock %}
+{% block title %}Вывод средств{% endblock %}
 {% block content %}
     <form method="POST" class="center">
         {% csrf_token %}
@@ -12,7 +12,7 @@
             {% endfor %}
             <tr>
                 <td>
-                    <button type="submit" class="button7">Пополнить баланс</button>
+                    <button type="submit" class="button7">Вывести средства</button>
                 </td>
             </tr>
         </table>

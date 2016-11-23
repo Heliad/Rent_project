@@ -6,7 +6,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.hashers import check_password
 from django.views.generic import View
 from django.contrib.auth import logout
-from .forms import UserForm, RentForm, RefillBalance, ChangePassword
+from .forms import UserForm, RentForm, RefillBalance, ChangePassword, DeleteMySelf
 from django.http import HttpResponseRedirect
 import datetime
 
@@ -106,12 +106,39 @@ def refillBalance(request):
             balance = request.user.balance
             newBalance = balance + size
             models.MyUser.objects.all().filter(username=request.user).update(balance=newBalance)
-            context = {'size': size}
+            context = {'mes': request.user.name + ", баланс успешно пополнен на " + str(size) + " BYN"}
+
             return render(request, 'Thanks.html', context)
     else:
         form = RefillBalance()
 
     return render(request, 'RefillBalance.html', {'form': form})
+
+
+def unfillBalance(request):
+    if request.method == 'POST':
+        form = RefillBalance(request.POST)
+
+        if form.is_valid():
+            card_num = form.cleaned_data['card_num']
+            period_validity = form.cleaned_data['period_validity']
+            name_card_owner = form.cleaned_data['name_card_owner']
+            CVC2_CVV = form.cleaned_data['CVC2_CVV']
+            size = form.cleaned_data['size']
+
+            balance = request.user.balance
+            if balance >= size:
+                newBalance = balance - size
+                models.MyUser.objects.all().filter(username=request.user).update(balance=newBalance)
+                context = {'mes': request.user.name + ", Срдества в размере: " + str(size) + " BYN были успешно выведены"}
+            else:
+                context = {'mes': "На вашем счете не хватает средств"}
+
+            return render(request, 'Thanks.html', context)
+    else:
+        form = RefillBalance()
+
+    return render(request, 'UnfillBalance.html', {'form': form})
 
 
 def profileChangePassword(request):
@@ -141,6 +168,27 @@ def profileChangePassword(request):
 
     return render(request, "ChangePassword.html", {'form': form, 'error': error})
 
+
+def deleteMySelf(request):
+    error = ''
+    if request.method == 'POST':
+        form = DeleteMySelf(request.POST)
+
+        if form.is_valid():
+            password = form.cleaned_data['password']
+
+            currentPassword = request.user.password
+            if check_password(password, currentPassword):
+                curUser = request.user
+                logout(request)
+                curUser.delete()
+                return HttpResponseRedirect("/")
+            else:
+                error = 'Вы ввели неверный пароль'
+    else:
+        form = DeleteMySelf()
+
+    return render(request, "DeleteMySelf.html", {'form': form, 'error': error})
 
 def aboutHouse(request, number):
     d = list(models.Rent.objects.all())

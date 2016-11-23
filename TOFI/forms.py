@@ -40,3 +40,7 @@ class ChangePassword(forms.Form):
     old_password = forms.CharField(label="Старый пароль:", max_length=50, required=True)
     new_password = forms.CharField(label="Новый пароль:", max_length=50, required=True)
     new_password_repeat = forms.CharField(label="Повторите пароль:", max_length=50, required=True)
+
+
+class DeleteMySelf(forms.Form):
+    password = forms.CharField(label="Введите пароль:", max_length=50, required=True)

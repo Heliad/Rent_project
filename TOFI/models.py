@@ -71,7 +71,7 @@ class MyUser(AbstractBaseUser):
     taxpayer_account_number = models.IntegerField(verbose_name='УНН', null=True)
     license_field = models.CharField(verbose_name='Лицензия', max_length=50, null=True)
     ie = models.BooleanField(verbose_name='ИП', default=False)
-    balance = models.FloatField(null=True)
+    balance = models.FloatField(null=True, default=0)
 
     objects = MyUserManager()
 
@@ -89,6 +89,7 @@ class MyUser(AbstractBaseUser):
 
     def getId(self):
         return str(self.id)
+
 
 class Rent(models.Model):
     name = models.CharField(verbose_name='Название', max_length=50)
