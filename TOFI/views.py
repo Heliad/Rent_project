@@ -3,9 +3,10 @@ from TOFI import models
 from django.contrib.auth import authenticate, login
 from django.views.generic.edit import FormView
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.hashers import check_password
 from django.views.generic import View
 from django.contrib.auth import logout
-from .forms import UserForm, RentForm, RefillBalance
+from .forms import UserForm, RentForm, RefillBalance, ChangePassword
 from django.http import HttpResponseRedirect
 import datetime
 
@@ -112,8 +113,33 @@ def refillBalance(request):
 
     return render(request, 'RefillBalance.html', {'form': form})
 
+
 def profileChangePassword(request):
-    return render(request, "ChangePassword.html")
+    error = ''
+    if request.method == 'POST':
+        form = ChangePassword(request.POST)
+
+        if form.is_valid():
+            oldPassword = form.cleaned_data['old_password']
+            newPassword = form.cleaned_data['new_password']
+            newPasswordRepeat = form.cleaned_data['new_password_repeat']
+
+            currentPassword = request.user.password
+            if newPassword == newPasswordRepeat:
+                if check_password(oldPassword, currentPassword):
+
+                    user = request.user
+                    user.set_password(newPassword)
+                    user.save()
+                    return render(request, 'ChangePasswordDone.html')
+                else:
+                    error = 'Вы ввели неверный пароль'
+            else:
+                error = 'Пароли не совпадают'
+    else:
+        form = ChangePassword()
+
+    return render(request, "ChangePassword.html", {'form': form, 'error': error})
 
 
 def aboutHouse(request, number):

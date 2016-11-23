@@ -34,3 +34,9 @@ class RefillBalance(forms.Form):
     name_card_owner = forms.CharField(label="Имя держателя карты", max_length=50, required=True)
     CVC2_CVV = forms.CharField(label="CVC2/CVV", max_length=3, required=True)
     size = forms.IntegerField(label="Сумма", required=True)
+
+
+class ChangePassword(forms.Form):
+    old_password = forms.CharField(label="Старый пароль:", max_length=50, required=True)
+    new_password = forms.CharField(label="Новый пароль:", max_length=50, required=True)
+    new_password_repeat = forms.CharField(label="Повторите пароль:", max_length=50, required=True)
