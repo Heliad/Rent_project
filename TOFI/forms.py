@@ -26,3 +26,11 @@ class RentForm(forms.ModelForm):
     class Meta:
         model = Rent
         fields = ['name', 'address', 'min_rent_time', 'area', 'date_of_construction', 'other', 'cost']
+
+
+class RefillBalance(forms.Form):
+    card_num = forms.CharField(label="Номер карты/Card number", max_length=16, required=True)
+    period_validity = forms.CharField(label="Срок действия (ММГГ)", max_length=5, required=True)
+    name_card_owner = forms.CharField(label="Имя держателя карты", max_length=50, required=True)
+    CVC2_CVV = forms.CharField(label="CVC2/CVV", max_length=3, required=True)
+    size = forms.IntegerField(label="Сумма", required=True)

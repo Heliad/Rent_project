@@ -2,14 +2,35 @@
 {% block title %}Личный кабинет{% endblock %}
 {% block content %}
     <div class="center">
-        <p><b id="fon">Добро пожаловать, {{ request.user.username }} </b><br>
+        <p><b id="fon">Добро пожаловать, {{ request.user.name }} </b><br>
     </div>
-    <div class="center">
-        <a href="{% url 'ChangePassword' %}">Сменить пароль</a>
-        <p><input type="button" value="Пополнить счет" onclick=""></p>
-        <p><input type="button" value="Сменить почтовый ящик"></p>
-        <p><input type="button" value="Редактировать данные"></p>
-    </div>
+    <table class="center">
+        <tr class="padding">
+            <td class="padding">
+                Ваш баланс: {{ request.user.balance }} BYN
+            </td>
+        </tr>
+        <tr class="padding">
+            <td class="padding">
+                <a href="{% url 'RefillBalance' %}">Пополнить счет</a>
+            </td>
+        </tr>
+        <tr class="padding">
+            <td class="padding">
+                <a href="{% url 'ChangePassword' %}">Сменить пароль</a>
+            </td>
+        </tr>
+        <tr class="padding">
+            <td class="padding">
+                <a href="{% url 'ChangePassword' %}">Сменить почтовый ящик(Не сделано)</a>
+            </td>
+        </tr>
+        <tr class="padding">
+            <td class="padding">
+                <a href="{% url 'ChangePassword' %}">Редактировать данные(Не сделано)</a>
+            </td>
+        </tr>
+    </table>
 
 
 {% endblock %}

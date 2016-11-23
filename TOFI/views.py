@@ -5,7 +5,7 @@ from django.views.generic.edit import FormView
 from django.contrib.auth.forms import AuthenticationForm
 from django.views.generic import View
 from django.contrib.auth import logout
-from .forms import UserForm, RentForm
+from .forms import UserForm, RentForm, RefillBalance
 from django.http import HttpResponseRedirect
 import datetime
 
@@ -90,6 +90,27 @@ def logout_view(request):
 def profile(request):
     return render(request, "Profile.html")
 
+
+def refillBalance(request):
+    if request.method == 'POST':
+        form = RefillBalance(request.POST)
+
+        if form.is_valid():
+            card_num = form.cleaned_data['card_num']
+            period_validity = form.cleaned_data['period_validity']
+            name_card_owner = form.cleaned_data['name_card_owner']
+            CVC2_CVV = form.cleaned_data['CVC2_CVV']
+            size = form.cleaned_data['size']
+
+            balance = request.user.balance
+            newBalance = balance + size
+            models.MyUser.objects.all().filter(username=request.user).update(balance=newBalance)
+            context = {'size': size}
+            return render(request, 'Thanks.html', context)
+    else:
+        form = RefillBalance()
+
+    return render(request, 'RefillBalance.html', {'form': form})
 
 def profileChangePassword(request):
     return render(request, "ChangePassword.html")

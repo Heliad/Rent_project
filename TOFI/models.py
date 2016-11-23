@@ -71,6 +71,7 @@ class MyUser(AbstractBaseUser):
     taxpayer_account_number = models.IntegerField(verbose_name='УНН', null=True)
     license_field = models.CharField(verbose_name='Лицензия', max_length=50, null=True)
     ie = models.BooleanField(verbose_name='ИП', default=False)
+    balance = models.FloatField(null=True)
 
     objects = MyUserManager()
 

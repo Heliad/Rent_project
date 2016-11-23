@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Личный кабинет{% endblock %}
+{% block content %}
+    <table class="center">
+        <tr class="padding">
+            <td class="padding">
+                {{ request.user.name }}, баланс успешно пополнен на {{ size }} BYN
+            </td>
+        </tr>
+        <tr class="padding">
+            <td class="padding">
+                <a href="{% url 'Profile' %}">Личный кабинет</a>
+            </td>
+        </tr>
+    </table>
+{% endblock %}
