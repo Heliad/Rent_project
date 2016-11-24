@@ -6,7 +6,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.hashers import check_password
 from django.views.generic import View
 from django.contrib.auth import logout
-from .forms import UserForm, RentForm, RefillBalance, ChangePassword, DeleteMySelf
+from .forms import *
 from TOFI_project import transaction as t
 from django.http import HttpResponseRedirect
 import datetime
@@ -201,6 +201,7 @@ def deleteMySelf(request):
 
     return render(request, "DeleteMySelf.html", {'form': form, 'error': error})
 
+
 def aboutHouse(request, number):
     d = list(models.Rent.objects.all())
     for i in d:
@@ -216,3 +217,35 @@ def aboutUser(request, login_id):
         if user.getId() == login_id:
             context = {'user': user}
     return render(request, "AboutUser.html", context)
+
+
+def edit_profile(request):
+    class EditProfile(forms.Form):
+        email = forms.CharField(label="Почтовый адрес", max_length=50, required=True, initial=request.user.email)
+        name = forms.CharField(label="Ваше имя", max_length=50, required=True, initial=request.user.name)
+        surname = forms.CharField(label="Ваша фамилия", max_length=50, required=True, initial=request.user.surname)
+        last_name = forms.CharField(label="Ваше отчество", max_length=50, required=True, initial=request.user.last_name)
+        age = forms.IntegerField(label="Ваш возраст", required=True, initial=request.user.age)
+        passport_id = forms.CharField(label="Номер вашего паспорта", max_length=50, required=True, initial=request.user.passport_id)
+        phone = forms.CharField(label="Ваш номер телефона", max_length=50, required=True, initial=request.user.phone)
+        address = forms.CharField(label="Ваш адрес", max_length=50, required=True, initial=request.user.address)
+
+    if request.method == 'POST':
+        form = EditProfile(request.POST)
+
+        if form.is_valid():
+            user = request.user
+            user.email = form.cleaned_data['email']
+            user.name = form.cleaned_data['name']
+            user.surname = form.cleaned_data['surname']
+            user.last_name = form.cleaned_data['last_name']
+            user.age = form.cleaned_data['age']
+            user.passport_id = form.cleaned_data['passport_id']
+            user.phone = form.cleaned_data['phone']
+            user.address = form.cleaned_data['address']
+            user.save()
+            return render(request, 'EditProfileDone.html')
+
+    else:
+        form = EditProfile()
+    return render(request, "EditProfile.html", {'form': form})

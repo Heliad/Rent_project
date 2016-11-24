@@ -29,6 +29,7 @@ urlpatterns = [
     url(r'deletemyself', views.deleteMySelf, name='DeleteMySelf'),
     url(r'refillbalance', views.refillBalance, name='RefillBalance'),
     url(r'unfillbalance', views.unfillBalance, name='UnfillBalance'),
+    url(r'editprofile', views.edit_profile, name='EditProfile'),
     url(r'aboutUser/(?P<login_id>\d*)', views.aboutUser, name='AboutUser'),
     url(r'aboutHouse/(?P<number>\d*)', views.aboutHouse, name ='AboutHouse'),
     url(r'^admin/', admin.site.urls),

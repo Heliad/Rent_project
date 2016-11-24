@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Редактирование личных данных{% endblock %}
+{% block content %}
+    <table class="center">
+        <tr class="padding">
+            <td class="padding">
+                {{ request.user.name }}, ваши личные данные успешно изменены
+            </td>
+        </tr>
+        <tr class="padding">
+            <td class="padding">
+                <a href="{% url 'Profile' %}">Личный кабинет</a>
+            </td>
+        </tr>
+    </table>
+{% endblock %}

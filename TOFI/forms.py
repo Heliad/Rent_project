@@ -44,3 +44,4 @@ class ChangePassword(forms.Form):
 
 class DeleteMySelf(forms.Form):
     password = forms.CharField(label="Введите пароль:", max_length=50, required=True)
+
