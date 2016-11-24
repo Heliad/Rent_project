@@ -7,6 +7,7 @@ from django.contrib.auth.hashers import check_password
 from django.views.generic import View
 from django.contrib.auth import logout
 from .forms import UserForm, RentForm, RefillBalance, ChangePassword, DeleteMySelf
+from TOFI_project import transaction as t
 from django.http import HttpResponseRedirect
 import datetime
 
@@ -103,12 +104,16 @@ def refillBalance(request):
             CVC2_CVV = form.cleaned_data['CVC2_CVV']
             size = form.cleaned_data['size']
 
-            balance = request.user.balance
-            newBalance = balance + size
-            models.MyUser.objects.all().filter(username=request.user).update(balance=newBalance)
-            context = {'mes': request.user.name + ", баланс успешно пополнен на " + str(size) + " BYN"}
-
-            return render(request, 'Thanks.html', context)
+            tr = t.Transaction(card_num, period_validity, name_card_owner, CVC2_CVV, size)
+            c, m = tr.send('in')
+            if c:
+                balance = request.user.balance
+                newBalance = balance + size
+                models.MyUser.objects.all().filter(username=request.user).update(balance=newBalance)
+                context = {'mes': request.user.name + ", баланс успешно пополнен на " + str(size) + " BYN"}
+                return render(request, 'Thanks.html', context)
+            else:
+                return render(request, 'Thanks.html', {'mes': m})
     else:
         form = RefillBalance()
 
@@ -128,9 +133,15 @@ def unfillBalance(request):
 
             balance = request.user.balance
             if balance >= size:
-                newBalance = balance - size
-                models.MyUser.objects.all().filter(username=request.user).update(balance=newBalance)
-                context = {'mes': request.user.name + ", Срдества в размере: " + str(size) + " BYN были успешно выведены"}
+                tr = t.Transaction(card_num, period_validity, name_card_owner, CVC2_CVV, size)
+                c, m = tr.send('out')
+                if c:
+                    newBalance = balance - size
+                    models.MyUser.objects.all().filter(username=request.user).update(balance=newBalance)
+                    context = {'mes': request.user.name + ", Срдества в размере: " +
+                               str(size) + " BYN были успешно выведены"}
+                else:
+                    context = {'mes': m}
             else:
                 context = {'mes': "На вашем счете не хватает средств"}
 
