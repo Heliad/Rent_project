@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Мои оповещения{% endblock %}
+{% block content %}
+        {% if mails %}
+            {% for mail in mails %}
+                <table class="center">
+                    <tr class="padding">
+                        <td class="padding">
+                            Оповещение от: {{ mail.login_user_from }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="padding">
+                            {{ mail.text_message }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="padding">
+                            {{ mail.text_more }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="padding">
+                            {{ mail.creation_date }}
+                        </td>
+                    </tr>
+                </table>
+            
+            {% endfor %}
+            
+        {% else %}
+            <table class="center">
+                <tr class="padding">
+                    <td class="padding">
+                        Оповещений нет
+                    </td>
+                </tr>
+            </table>
+        {% endif %}
+{% endblock %}

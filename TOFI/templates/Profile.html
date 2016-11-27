@@ -41,7 +41,16 @@
                 </td>
             </tr>
         {% endif %}
-
+        <tr class="padding">
+            <td></td>
+            <td class="padding">
+                {% if new %}
+                    <a href="{% url 'Mails' %}">Оповещения <font color="red">(New +{{ number }})</font></a>
+                {% else %}
+                    <a href="{% url 'Mails' %}">Оповещения </a>
+                {% endif %}
+            </td>
+        </tr>
         <tr class="padding">
             <td></td>
             <td class="padding">
@@ -54,14 +63,13 @@
                 <a href="{% url 'EditProfile' %}">Редактированть личные данные</a>
             </td>
         </tr>
-
         <tr class="padding">
             <td></td>
             <td class="padding">
                 <a href="{% url 'DeleteMySelf' %}">Удалить аккаунт</a>
             </td>
-        </tr></td>
         </tr>
+
 
     </table>
     </div>

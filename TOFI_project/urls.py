@@ -30,7 +30,9 @@ urlpatterns = [
     url(r'unfillbalance', views.unfillBalance, name='UnfillBalance'),
     url(r'add_card', views.add_card, name='AddCard'),
     url(r'editprofile', views.edit_profile, name='EditProfile'),
+    url(r'mails', views.mails, name='Mails'),
     url(r'aboutUser/(?P<login_id>\d*)', views.aboutUser, name='AboutUser'),
+    url(r'makeRent/(?P<number>\d*)', views.make_rent, name ='MakeRent'),
     url(r'aboutHouse/(?P<number>\d*)', views.aboutHouse, name ='AboutHouse'),
     url(r'^admin/', admin.site.urls),
 ]

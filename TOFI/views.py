@@ -93,7 +93,15 @@ def profile(request):
     cards = list()
     for card in [str(i.card_num) for i in request.user.user_card_id.all()]:
         cards.append(card[:4] + ' XXXX XXXX ' + card[-4:])
-    return render(request, "Profile.html", {'cards':  cards})
+
+    mails = models.MessageStatusRent.objects.all().filter(id_user_to=request.user.id)
+    new, number = False, 0
+
+    for mail in mails:
+        if mail.is_new:
+            new = True
+            number += 1
+    return render(request, "Profile.html", {'cards':  cards, 'new': new, 'number': number})
 
 
 def add_card(request):
@@ -116,15 +124,15 @@ def add_card(request):
             if c:
                 for i in request.user.user_card_id.all():
                     if i.card_num == card_num:
-                        return render(request, 'Thanks.html', {'mes': 'карта уже добавлена'})
+                        return render(request, 'Profile/Thanks.html', {'mes': 'карта уже добавлена'})
                 request.user.user_card_id.add(models.UserCard.objects.get(card_num=card_num))
-                return render(request, 'Thanks.html', {'mes': 'карта успешно добавлена'})
+                return render(request, 'Profile/Thanks.html', {'mes': 'карта успешно добавлена'})
             else:
-                return render(request, 'Thanks.html', {'mes': m, 'redirect_address': 'profile'})
+                return render(request, 'Profile/Thanks.html', {'mes': m, 'redirect_address': 'profile'})
     else:
         form = AddCard()
 
-    return render(request, 'RefillBalance.html', {'form': form})
+    return render(request, 'Profile/RefillBalance.html', {'form': form})
 
 
 def refillBalance(request):
@@ -145,13 +153,13 @@ def refillBalance(request):
                 newBalance = balance + size
                 models.MyUser.objects.all().filter(username=request.user).update(balance=newBalance)
                 context = {'mes': request.user.name + ", баланс успешно пополнен на " + str(size) + " BYN"}
-                return render(request, 'Thanks.html', context)
+                return render(request, 'Profile/Thanks.html', context)
             else:
-                return render(request, 'Thanks.html', {'mes': m})
+                return render(request, 'Profile/Thanks.html', {'mes': m})
     else:
         form = RefillBalance()
 
-    return render(request, 'RefillBalance.html', {'form': form})
+    return render(request, 'Profile/RefillBalance.html', {'form': form})
 
 
 def unfillBalance(request):
@@ -179,11 +187,11 @@ def unfillBalance(request):
             else:
                 context = {'mes': "На вашем счете не хватает средств"}
 
-            return render(request, 'Thanks.html', context)
+            return render(request, 'Profile/Thanks.html', context)
     else:
         form = RefillBalance()
 
-    return render(request, 'UnfillBalance.html', {'form': form})
+    return render(request, 'Profile/UnfillBalance.html', {'form': form})
 
 
 def profileChangePassword(request):
@@ -203,7 +211,7 @@ def profileChangePassword(request):
                     user = request.user
                     user.set_password(newPassword)
                     user.save()
-                    return render(request, 'ChangePasswordDone.html')
+                    return render(request, 'Profile/ChangePasswordDone.html')
                 else:
                     error = 'Вы ввели неверный пароль'
             else:
@@ -211,7 +219,7 @@ def profileChangePassword(request):
     else:
         form = ChangePassword()
 
-    return render(request, "ChangePassword.html", {'form': form, 'error': error})
+    return render(request, "Profile/ChangePassword.html", {'form': form, 'error': error})
 
 
 def deleteMySelf(request):
@@ -233,7 +241,7 @@ def deleteMySelf(request):
     else:
         form = DeleteMySelf()
 
-    return render(request, "DeleteMySelf.html", {'form': form, 'error': error})
+    return render(request, "Profile/DeleteMySelf.html", {'form': form, 'error': error})
 
 
 def aboutHouse(request, number):
@@ -243,6 +251,40 @@ def aboutHouse(request, number):
             context = {'rent': i}
 
     return render(request, "AboutHouse.html", context)
+
+
+def make_rent(request, number):
+    rent = models.Rent.objects.all().get(id=number)
+    user = models.MyUser.objects.all().get(id=str(rent.user_login))
+
+    class MakeMessage(forms.Form):
+        text_message = 'Запрос на аренду вашего дома под номером ' + str(number) + " (" + str(
+            rent.name) + ") от " + str(request.user.name) + " " + str(request.user.surname) + " " + \
+                       str(request.user.last_name)
+
+        text_message = forms.CharField(label="Содержание:", initial=text_message)
+        text_more = forms.CharField(label="Дополнительно:", max_length=100)
+
+    if request.method == 'POST':
+        form = MakeMessage(request.POST)
+
+        if form.is_valid():
+            text_more = form.cleaned_data['text_more']
+
+            text_message = 'Запрос на аренду вашего дома под номером ' + str(number) + " (" + str(
+                rent.name) + ") от " + str(request.user.name) + " " + str(request.user.surname) + " " + \
+                           str(request.user.last_name)
+
+            models.MessageStatusRent.objects.create(id_user_from=request.user.id, id_user_to=user.id,
+                                                    creation_date=datetime.date.today(),
+                                                    text_message=text_message, text_more=text_more, login_user_from=request.user.username)
+            mes = "Сообщение отправлено пользователю " + user.username
+
+            return render(request, 'MessageDoned.html', {'mes': mes})
+
+    else:
+        form = MakeMessage()
+    return render(request, "MakeRent.html", {'form': form})
 
 
 def aboutUser(request, login_id):
@@ -278,8 +320,16 @@ def edit_profile(request):
             user.phone = form.cleaned_data['phone']
             user.address = form.cleaned_data['address']
             user.save()
-            return render(request, 'EditProfileDone.html')
+            return render(request, 'Profile/EditProfileDone.html')
 
     else:
         form = EditProfile()
-    return render(request, "EditProfile.html", {'form': form})
+    return render(request, "Profile/EditProfile.html", {'form': form})
+
+
+def mails(request):
+    mails = models.MessageStatusRent.objects.all().filter(id_user_to=request.user.id)
+    for mail in mails:
+        mail.is_new = False
+        mail.save()
+    return render(request, "Profile/Mails.html", {'mails': mails})

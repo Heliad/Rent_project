@@ -116,3 +116,13 @@ class Rent(models.Model):
 
     def getUserLogin(self):
         return str(self.user_login)
+
+
+class MessageStatusRent(models.Model):
+    id_user_from = models.IntegerField()
+    login_user_from = models.CharField(max_length=50, null=True)
+    id_user_to = models.IntegerField()
+    creation_date = models.DateField(default=None)
+    text_message = models.CharField(max_length=100)
+    text_more = models.CharField(max_length=100)
+    is_new = models.BooleanField(default=True)
