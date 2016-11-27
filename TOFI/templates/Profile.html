@@ -5,7 +5,7 @@
         <p><b id="fon">Добро пожаловать, {{ request.user.name }} </b><br>
     </div>
     <table class="center">
-        <tr class="padding">
+    <tr class="padding">
             <td class="padding">
                 Ваш баланс: {{ request.user.balance }} BYN
             </td>
@@ -38,7 +38,9 @@
             <td class="padding">
                 <a href="{% url 'DeleteMySelf' %}">Удалить аккаунт</a>
             </td>
+        </tr></td>
         </tr>
+
     </table>
 
 

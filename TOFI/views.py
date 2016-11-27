@@ -7,7 +7,7 @@ from django.contrib.auth.hashers import check_password
 from django.views.generic import View
 from django.contrib.auth import logout
 from .forms import *
-from TOFI_project import transaction as t
+from TOFI import transaction as t
 from django.http import HttpResponseRedirect
 import datetime
 
@@ -104,8 +104,8 @@ def refillBalance(request):
             CVC2_CVV = form.cleaned_data['CVC2_CVV']
             size = form.cleaned_data['size']
 
-            tr = t.Transaction(card_num, period_validity, name_card_owner, CVC2_CVV, size)
-            c, m = tr.send('in')
+            tr = t.BankModule(card_num, period_validity, name_card_owner, CVC2_CVV, size, 'in')
+            c, m = tr.check_card()
             if c:
                 balance = request.user.balance
                 newBalance = balance + size
@@ -133,8 +133,8 @@ def unfillBalance(request):
 
             balance = request.user.balance
             if balance >= size:
-                tr = t.Transaction(card_num, period_validity, name_card_owner, CVC2_CVV, size)
-                c, m = tr.send('out')
+                tr = t.BankModule(card_num, period_validity, name_card_owner, CVC2_CVV, size, 'out')
+                c, m = tr.check_card()
                 if c:
                     newBalance = balance - size
                     models.MyUser.objects.all().filter(username=request.user).update(balance=newBalance)

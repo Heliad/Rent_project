@@ -16,7 +16,6 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from TOFI import views
-from Bank_module import transaction
 
 urlpatterns = [
     url(r'^$', views.main_view, name='Main'),
