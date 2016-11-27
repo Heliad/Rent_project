@@ -90,7 +90,41 @@ def logout_view(request):
 
 
 def profile(request):
-    return render(request, "Profile.html")
+    cards = list()
+    for card in [str(i.card_num) for i in request.user.user_card_id.all()]:
+        cards.append(card[:4] + ' XXXX XXXX ' + card[-4:])
+    return render(request, "Profile.html", {'cards':  cards})
+
+
+def add_card(request):
+    class AddCard(forms.Form):
+        card_num = forms.CharField(label="Номер карты/Card number", max_length=16, required=True)
+        period_validity = forms.CharField(label="Срок действия (ММГГ)", max_length=5, required=True)
+        name_card_owner = forms.CharField(label="Имя держателя карты", max_length=50, required=True)
+        CVC2_CVV = forms.CharField(label="CVC2/CVV", max_length=3, required=True)
+    if request.method == 'POST':
+        form = AddCard(request.POST)
+
+        if form.is_valid():
+            card_num = form.cleaned_data['card_num']
+            period_validity = form.cleaned_data['period_validity']
+            name_card_owner = form.cleaned_data['name_card_owner']
+            CVC2_CVV = form.cleaned_data['CVC2_CVV']
+
+            tr = t.BankModule(card_num, period_validity, name_card_owner, CVC2_CVV, 'chsk')
+            c, m = tr.check_card()
+            if c:
+                for i in request.user.user_card_id.all():
+                    if i.card_num == card_num:
+                        return render(request, 'Thanks.html', {'mes': 'карта уже добавлена'})
+                request.user.user_card_id.add(models.UserCard.objects.get(card_num=card_num))
+                return render(request, 'Thanks.html', {'mes': 'карта успешно добавлена'})
+            else:
+                return render(request, 'Thanks.html', {'mes': m, 'redirect_address': 'profile'})
+    else:
+        form = AddCard()
+
+    return render(request, 'RefillBalance.html', {'form': form})
 
 
 def refillBalance(request):
@@ -104,7 +138,7 @@ def refillBalance(request):
             CVC2_CVV = form.cleaned_data['CVC2_CVV']
             size = form.cleaned_data['size']
 
-            tr = t.BankModule(card_num, period_validity, name_card_owner, CVC2_CVV, size, 'in')
+            tr = t.BankModule(card_num, period_validity, name_card_owner, CVC2_CVV, 'in', size)
             c, m = tr.check_card()
             if c:
                 balance = request.user.balance
@@ -133,7 +167,7 @@ def unfillBalance(request):
 
             balance = request.user.balance
             if balance >= size:
-                tr = t.BankModule(card_num, period_validity, name_card_owner, CVC2_CVV, size, 'out')
+                tr = t.BankModule(card_num, period_validity, name_card_owner, CVC2_CVV, 'out', size)
                 c, m = tr.check_card()
                 if c:
                     newBalance = balance - size

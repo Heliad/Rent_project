@@ -4,20 +4,38 @@
     <div class="center">
         <p><b id="fon">Добро пожаловать, {{ request.user.name }} </b><br>
     </div>
-    <table class="center">
+    <div class="left">
+    <table>
+        {% for card in cards %}
+            <tr>
+                <td>{{ card }}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td>
+                <a href="{% url 'AddCard' %}">Добавить карту</a>
+            </td>
+        </tr>
+    </table>
+    </div>
+    <div class="center">
+        <table>
     <tr class="padding">
+            <td></td>
             <td class="padding">
                 Ваш баланс: {{ request.user.balance }} BYN
             </td>
         </tr>
         {% if request.user.ie %}
             <tr class="padding">
+            <td></td>
                 <td class="padding">
                     <a href="{% url 'UnfillBalance' %}">Вывод средств</a>
                 </td>
             </tr>
         {% else %}
             <tr class="padding">
+            <td></td>
                 <td class="padding">
                     <a href="{% url 'RefillBalance' %}">Пополнить счет</a>
                 </td>
@@ -25,16 +43,20 @@
         {% endif %}
 
         <tr class="padding">
+            <td></td>
             <td class="padding">
                 <a href="{% url 'ChangePassword' %}">Сменить пароль</a>
             </td>
         </tr>
         <tr class="padding">
+            <td></td>
             <td class="padding">
                 <a href="{% url 'EditProfile' %}">Редактированть личные данные</a>
             </td>
         </tr>
+
         <tr class="padding">
+            <td></td>
             <td class="padding">
                 <a href="{% url 'DeleteMySelf' %}">Удалить аккаунт</a>
             </td>
@@ -42,6 +64,8 @@
         </tr>
 
     </table>
+    </div>
+
 
 
 {% endblock %}

@@ -13,4 +13,10 @@
             </td>
         </tr>
     </table>
+    <script type="text/javascript">
+        window.setTimeout(function() {
+            var new_url = "http://{{ redirect_address }}:8080/config";
+            window.location.replace(new_url)
+    }, 1000);
+    </script>
 {% endblock %}
