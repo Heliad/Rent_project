@@ -22,6 +22,8 @@ class AddRent(View):
     template_name = 'AddRent.html'
 
     def get(self, request):
+        if request.user.is_anonymous:
+            return HttpResponseRedirect("/login")
         form = self.form_class(None)
         return render(request, self.template_name, {'form': form})
 
@@ -51,6 +53,8 @@ class Registration(View):
     template_name = 'Registration.html'
 
     def get(self, request):
+        if not request.user.is_anonymous:
+            return HttpResponseRedirect("/")
         form = self.form_class(None)
         return render(request, self.template_name, {'form': form})
 
@@ -78,6 +82,11 @@ class Login(FormView):
     template_name = "login.html"
     success_url = "/"
 
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_anonymous:
+            return HttpResponseRedirect("/")
+        return render(request, self.template_name,  {'form': self.form_class})
+
     def form_valid(self, form):
         self.user = form.get_user()
         login(self.request, self.user)
@@ -85,11 +94,15 @@ class Login(FormView):
 
 
 def logout_view(request):
+    if request.user.is_anonymous:
+        return HttpResponseRedirect("/login")
     logout(request)
     return HttpResponseRedirect("/")
 
 
 def profile(request):
+    if request.user.is_anonymous:
+        return HttpResponseRedirect("/login")
     cards = list()
     for card in [str(i.card_num) for i in request.user.user_card_id.all()]:
         cards.append(card[:4] + ' XXXX XXXX ' + card[-4:])
@@ -105,6 +118,9 @@ def profile(request):
 
 
 def add_card(request):
+    if request.user.is_anonymous:
+        return HttpResponseRedirect("/login")
+
     class AddCard(forms.Form):
         card_num = forms.CharField(label="Номер карты/Card number", max_length=16, required=True)
         period_validity = forms.CharField(label="Срок действия (ММГГ)", max_length=5, required=True)
@@ -136,6 +152,8 @@ def add_card(request):
 
 
 def refillBalance(request):
+    if request.user.is_anonymous:
+        return HttpResponseRedirect("/login")
     if request.method == 'POST':
         form = RefillBalance(request.POST)
 
@@ -163,6 +181,8 @@ def refillBalance(request):
 
 
 def unfillBalance(request):
+    if request.user.is_anonymous:
+        return HttpResponseRedirect("/login")
     if request.method == 'POST':
         form = RefillBalance(request.POST)
 
@@ -195,6 +215,8 @@ def unfillBalance(request):
 
 
 def profileChangePassword(request):
+    if request.user.is_anonymous:
+        return HttpResponseRedirect("/login")
     error = ''
     if request.method == 'POST':
         form = ChangePassword(request.POST)
@@ -223,6 +245,8 @@ def profileChangePassword(request):
 
 
 def deleteMySelf(request):
+    if request.user.is_anonymous:
+        return HttpResponseRedirect("/login")
     error = ''
     if request.method == 'POST':
         form = DeleteMySelf(request.POST)
@@ -254,6 +278,8 @@ def aboutHouse(request, number):
 
 
 def make_rent(request, number):
+    if request.user.is_anonymous:
+        return HttpResponseRedirect("/login")
     rent = models.Rent.objects.all().get(id=number)
     user = models.MyUser.objects.all().get(id=str(rent.user_login))
 
@@ -288,6 +314,8 @@ def make_rent(request, number):
 
 
 def aboutUser(request, login_id):
+    if request.user.is_anonymous:
+        return HttpResponseRedirect("/login")
     userList = list(models.MyUser.objects.all())
     for user in userList:
         if user.getId() == login_id:
@@ -296,6 +324,9 @@ def aboutUser(request, login_id):
 
 
 def edit_profile(request):
+    if request.user.is_anonymous:
+        return HttpResponseRedirect("/login")
+
     class EditProfile(forms.Form):
         email = forms.CharField(label="Почтовый адрес", max_length=50, required=True, initial=request.user.email)
         name = forms.CharField(label="Ваше имя", max_length=50, required=True, initial=request.user.name)
@@ -328,6 +359,8 @@ def edit_profile(request):
 
 
 def mails(request):
+    if request.user.is_anonymous:
+        return HttpResponseRedirect("/")
     mails = models.MessageStatusRent.objects.all().filter(id_user_to=request.user.id)
     for mail in mails:
         mail.is_new = False
