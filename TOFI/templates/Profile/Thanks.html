@@ -7,16 +7,11 @@
                 {{ mes }}
             </td>
         </tr>
-        <tr class="padding">
-            <td class="padding">
-                <a href="{% url 'Profile' %}">Личный кабинет</a>
-            </td>
-        </tr>
     </table>
-    <script type="text/javascript">
+    <script>
         window.setTimeout(function() {
-            var new_url = "http://{{ redirect_address }}:8080/config";
+            var new_url = "profile";
             window.location.replace(new_url)
-    }, 1000);
+    }, 2000);
     </script>
 {% endblock %}
