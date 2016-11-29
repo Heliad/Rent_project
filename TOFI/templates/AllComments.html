@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Все отзывы о сайте{% endblock %}
+{% block content %}
+    <table class="center">
+        <tr class="padding">
+            <td class="padding">Пользователь</td>
+            <td>Дата</td>
+            <td>Текст</td>
+        </tr>
+        {% for c in com %}
+            <tr class="padding">
+                <td class="padding">{{ c.user_login}}</td>
+                <td>{{ c.date_comment }}</td>
+                <td>{{ c.text_comment }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

@@ -13,7 +13,7 @@ import datetime
 
 
 def main_view(request):
-    context = {'rent': [i for i in list(models.Rent.objects.all())]}
+    context = {'rent': [i for i in list(models.Rent.objects.all())], 'comments': [i for i in list(models.Comment.objects.all())]}
     return render(request, 'Main.html', context)
 
 
@@ -366,3 +366,57 @@ def mails(request):
         mail.is_new = False
         mail.save()
     return render(request, "Profile/Mails.html", {'mails': mails})
+
+
+def add_comment(request):
+    if request.method == 'POST':
+        form = AddComment(request.POST)
+
+        if form.is_valid():
+            com = form.cleaned_data['text_comment']
+            models.Comment.objects.create(text_comment=com, user_login=request.user.username, date_comment=datetime.date.today())
+
+            return render(request, 'CommentDoned.html')
+    else:
+        form = AddComment()
+        return render(request, "AddComment.html", {'form': form})
+
+
+def all_comments(request):
+    context = {'com': [i for i in list(models.Comment.objects.all())]}
+    return render(request, "AllComments.html", context)
+
+
+def search(request):
+    return render(request, "Search.html")
+
+
+def search_rent(request):
+    if request.method == 'POST':
+        form = SearchRent(request.POST)
+
+        if form.is_valid():
+            return render(request, 'SearchRent.html')
+    else:
+        form = SearchRent()
+        return render(request, "SearchRent.html", {'form': form})
+
+
+def search_user(request):
+    if request.method == 'POST':
+        form = SearchUser(request.POST)
+
+        if form.is_valid():
+            results = None
+            type_search = form.cleaned_data['type_search']
+            attr_search = form.cleaned_data['field_search']
+            if type_search == '1':
+                results = models.MyUser.objects.all().filter(username=attr_search)
+            if type_search == '2':
+                results = models.MyUser.objects.all().filter(surname=attr_search)
+            if type_search == '3':
+                results = models.MyUser.objects.all().filter(email=attr_search)
+            return render(request, 'SearchUser.html', {'form': form, 'results': results})
+    else:
+        form = SearchUser()
+        return render(request, "SearchUser.html", {'form': form})

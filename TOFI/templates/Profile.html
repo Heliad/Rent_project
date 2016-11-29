@@ -19,58 +19,56 @@
     </table>
     </div>
     <div class="center">
-        <table>
-    <tr class="padding">
-            <td></td>
-            <td class="padding">
-                Ваш баланс: {{ request.user.balance }} BYN
-            </td>
-        </tr>
-        {% if request.user.ie %}
-            <tr class="padding">
-            <td></td>
+    <table>
+        <tr class="padding">
+                <td></td>
                 <td class="padding">
-                    <a href="{% url 'UnfillBalance' %}">Вывод средств</a>
+                    Ваш баланс: {{ request.user.balance }} BYN
                 </td>
             </tr>
-        {% else %}
+            {% if request.user.ie %}
+                <tr class="padding">
+                <td></td>
+                    <td class="padding">
+                        <a href="{% url 'UnfillBalance' %}">Вывод средств</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr class="padding">
+                <td></td>
+                    <td class="padding">
+                        <a href="{% url 'RefillBalance' %}">Пополнить счет</a>
+                    </td>
+                </tr>
+            {% endif %}
             <tr class="padding">
-            <td></td>
+                <td></td>
                 <td class="padding">
-                    <a href="{% url 'RefillBalance' %}">Пополнить счет</a>
+                    {% if new %}
+                        <a href="{% url 'Mails' %}">Оповещения <font color="red">(New +{{ number }})</font></a>
+                    {% else %}
+                        <a href="{% url 'Mails' %}">Оповещения </a>
+                    {% endif %}
                 </td>
             </tr>
-        {% endif %}
-        <tr class="padding">
-            <td></td>
-            <td class="padding">
-                {% if new %}
-                    <a href="{% url 'Mails' %}">Оповещения <font color="red">(New +{{ number }})</font></a>
-                {% else %}
-                    <a href="{% url 'Mails' %}">Оповещения </a>
-                {% endif %}
-            </td>
-        </tr>
-        <tr class="padding">
-            <td></td>
-            <td class="padding">
-                <a href="{% url 'ChangePassword' %}">Сменить пароль</a>
-            </td>
-        </tr>
-        <tr class="padding">
-            <td></td>
-            <td class="padding">
-                <a href="{% url 'EditProfile' %}">Редактированть личные данные</a>
-            </td>
-        </tr>
-        <tr class="padding">
-            <td></td>
-            <td class="padding">
-                <a href="{% url 'DeleteMySelf' %}">Удалить аккаунт</a>
-            </td>
-        </tr>
-
-
+            <tr class="padding">
+                <td></td>
+                <td class="padding">
+                    <a href="{% url 'ChangePassword' %}">Сменить пароль</a>
+                </td>
+            </tr>
+            <tr class="padding">
+                <td></td>
+                <td class="padding">
+                    <a href="{% url 'EditProfile' %}">Редактированть личные данные</a>
+                </td>
+            </tr>
+            <tr class="padding">
+                <td></td>
+                <td class="padding">
+                    <a href="{% url 'DeleteMySelf' %}">Удалить аккаунт</a>
+                </td>
+            </tr>
     </table>
     </div>
 

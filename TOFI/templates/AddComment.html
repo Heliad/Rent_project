@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Главная{% endblock %}
+{% block title %}Сохранение отзыва{% endblock %}
 {% block content %}
     <form method="POST" class="center">
         {% csrf_token %}
@@ -10,7 +10,7 @@
                     <td>{{ field }}</td>
                 </tr>
             {% endfor %}
-            <tr><td><button type="submit" class="button7">Сохранить</button></td></tr>
+            <tr><td><button type="submit" class="button7">Сохранить отзыв</button></td></tr>
         </table>
     </form>
 {% endblock %}

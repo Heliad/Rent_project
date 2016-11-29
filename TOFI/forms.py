@@ -45,3 +45,25 @@ class ChangePassword(forms.Form):
 class DeleteMySelf(forms.Form):
     password = forms.CharField(label="Введите пароль:", max_length=50, required=True)
 
+
+class AddComment(forms.Form):
+    text_comment = forms.CharField(label="Введите отзыв", max_length=50, required=True)
+
+
+class SearchRent(forms.Form):
+    TYPE_SEARCH = (('1', 'Поиск по диапозону цен'), ('2', 'Поиск по max/min цене'),
+                   ('3', 'Поиск по названию'), ('4', 'Поиск по логину арендатора'),
+                   ('5', 'Поиск по размеру площади'))
+
+    type_search = forms.ChoiceField(widget=forms.RadioSelect, choices=TYPE_SEARCH, label="Критерий поиска:")
+    max_interval = forms.IntegerField(label="Максимальная цена:", required=False)
+    min_interval = forms.IntegerField(label="Минимальная цена:", required=False)
+    login_or_name_rent = forms.CharField(label="Название дома или логин арендатора:", required=False)
+    square = forms.IntegerField(label="Площадь:", required=False)
+
+
+class SearchUser(forms.Form):
+    TYPE_SEARCH = (('1', 'Поиск по логину'), ('2', 'Поиск по фамилии'), ('3', 'Поиск по Email'))
+
+    type_search = forms.ChoiceField(widget=forms.RadioSelect, choices=TYPE_SEARCH, label="Критерий поиска:")
+    field_search = forms.CharField(label="Введите информацию о пользователе:", max_length=50)

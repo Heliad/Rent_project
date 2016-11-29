@@ -7,7 +7,8 @@
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
 }
 
-.left{
+.left
+{
     background-color: whitesmoke; /* Цвет фона слоя */
     padding: 10px; /* Поля вокруг текста */
     float: left; /* Обтекание по правому краю */
@@ -16,7 +17,8 @@
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
 }
 
-.padding{
+.padding
+{
     padding: 10px;
 }
 .button7

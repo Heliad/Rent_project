@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Поиск{% endblock %}
+{% block content %}
+    <form method="POST" class="center">
+        {% csrf_token %}
+        <table class="center">
+            <tr class="padding">
+                <td class="padding">
+                    <a href="{% url 'SearchUser' %}">Поиск пользователей</a>
+                </td>
+            </tr>
+            <tr class="padding">
+                <td class="padding">
+                    <a href="{% url 'SearchRent' %}">Поиск жилья</a>
+                </td>
+            </tr>
+        </table>
+    </form>
+{% endblock %}

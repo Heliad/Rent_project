@@ -126,3 +126,9 @@ class MessageStatusRent(models.Model):
     text_message = models.CharField(max_length=100)
     text_more = models.CharField(max_length=100)
     is_new = models.BooleanField(default=True)
+
+
+class Comment(models.Model):
+    text_comment = models.CharField(max_length=100)
+    user_login = models.CharField(max_length=50)
+    date_comment = models.DateField(default=None)
