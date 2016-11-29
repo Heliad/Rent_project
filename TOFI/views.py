@@ -388,7 +388,7 @@ def all_comments(request):
 
 
 def search(request):
-    return render(request, "Search.html")
+    return render(request, "Search/Search.html")
 
 
 def search_rent(request):
@@ -396,10 +396,10 @@ def search_rent(request):
         form = SearchRent(request.POST)
 
         if form.is_valid():
-            return render(request, 'SearchRent.html')
+            return render(request, 'Search/SearchRent.html')
     else:
         form = SearchRent()
-        return render(request, "SearchRent.html", {'form': form})
+        return render(request, "Search/SearchRent.html", {'form': form})
 
 
 def search_user(request):
@@ -416,7 +416,7 @@ def search_user(request):
                 results = models.MyUser.objects.all().filter(surname=attr_search)
             if type_search == '3':
                 results = models.MyUser.objects.all().filter(email=attr_search)
-            return render(request, 'SearchUser.html', {'form': form, 'results': results})
+            return render(request, 'Search/SearchUser.html', {'form': form, 'results': results})
     else:
         form = SearchUser()
-        return render(request, "SearchUser.html", {'form': form})
+        return render(request, "Search/SearchUser.html", {'form': form})
