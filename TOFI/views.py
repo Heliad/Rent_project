@@ -408,7 +408,6 @@ def search_rent(request):
                     if int(rent.cost) <= max_interval:
                         if int(rent.cost) >= min_interval:
                             results.append(rent)
-
             if type_search == '2':
                 results = list(models.Rent.objects.all().filter(name=login_or_name_rent))
             if type_search == '3':
