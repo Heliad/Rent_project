@@ -10,7 +10,29 @@
                     <td>{{ field }}</td>
                 </tr>
             {% endfor %}
-            <tr><td><button type="submit" class="button7">Поиск(НЕ РАБОТАЕТ)</button></td></tr>
+            <tr><td><button type="submit" class="button7">Поиск</button></td></tr>
         </table>
     </form>
+
+    <table class="center">
+        <tr class="padding">
+            <td class="padding">
+                Исправить Exceptions!!!!
+            </td>
+        </tr>
+        {% if results %}
+            <tr>
+                <td class="padding">
+                    <b id="fon">Результаты поиска:</b>
+                </td>
+            </tr>
+            {% for res in results %}
+                <tr>
+                    <td class="padding">
+                        <a href="/aboutHouse/{{ res.id }}">{{ res.name }}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+    </table>
 {% endblock %}
