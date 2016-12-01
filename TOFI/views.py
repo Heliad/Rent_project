@@ -412,6 +412,16 @@ def reject_rent(request, id_mes):
         return render(request, "Profile/RejectRent.html", {'form': form})
 
 
+def all_rents_renter(request):
+    id_user = request.user.id
+    my_rents = models.DoneRent.objects.all().filter(id_user_renter=id_user)
+    return render(request, 'Profile/AllRentsRentor.html', {'my_rents': my_rents})
+
+
+def all_rents_owner(request):
+    pass
+
+
 def add_comment(request):
     if request.method == 'POST':
         form = AddComment(request.POST)

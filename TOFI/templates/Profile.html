@@ -51,6 +51,22 @@
                     {% endif %}
                 </td>
             </tr>
+
+            {% if requset.user.ie %}
+                <tr class="padding">
+                    <td></td>
+                    <td class="padding">
+                        <a href="{% url 'AllRentsOwner' %}">Мои арендуемые дома</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr class="padding">
+                    <td></td>
+                    <td class="padding">
+                        <a href="{% url 'AllRentsRenter' %}">Мои аренды</a>
+                    </td>
+                </tr>
+            {% endif %}
             <tr class="padding">
                 <td></td>
                 <td class="padding">
