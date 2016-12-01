@@ -110,6 +110,7 @@ class Rent(models.Model):
     other = models.CharField(verbose_name='Другое', max_length=100)
     cost = models.CharField(verbose_name='Цена аренды', max_length=50)
     user_login = models.CharField(verbose_name="hide", max_length=50, null=True)
+    status_rent = models.BooleanField(default=True)  # True - свободно, False - уже арендовано арендой
 
     def getId(self):
         return str(self.id)
@@ -125,10 +126,22 @@ class MessageStatusRent(models.Model):
     creation_date = models.DateField(default=None)
     text_message = models.CharField(max_length=100)
     text_more = models.CharField(max_length=100)
-    is_new = models.BooleanField(default=True)
+    id_rent = models.IntegerField(null=True)
+    is_new = models.BooleanField(default=True)  # прочитано ли сообщение
+    is_done = models.BooleanField(default=False)  # запрос на аренду True - подтвердил
 
 
 class Comment(models.Model):
     text_comment = models.CharField(max_length=100)
     user_login = models.CharField(max_length=50)
     date_comment = models.DateField(default=None)
+
+
+class DoneRent(models.Model):
+    id_house = models.IntegerField()
+    id_user_owner = models.IntegerField()
+    id_user_renter = models.IntegerField()
+    date_rent = models.DateField(default=None)
+    cost = models.CharField(max_length=50)  # Цена одной платы
+    pay_number = models.IntegerField()  # Сколько платежей должно быть
+    paid_user = models.IntegerField()  # Сколько раз арендатор заплатил

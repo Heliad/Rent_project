@@ -13,9 +13,9 @@
         <tr class="padding">
             <td class="padding">Название</td>
             <td>Адрес</td>
-            <td>Срок аренды</td>
-            <td>Цена</td>
-            <td>Площадь</td>
+            <td>Срок аренды(Мес.)</td>
+            <td>Цена(BYN)</td>
+            <td>Площадь(кв.м.)</td>
         </tr>
         {% for r in rent %}
             <tr>
@@ -25,7 +25,11 @@
                 <td>{{ r.cost }}</td>
                 <td>{{ r.area }}</td>
                 {% if not request.user.ie %}
-                    <td class="padding"><a href="makeRent/{{ r.id }}">Аренда</a></td>
+                    {% if r.status_rent %}
+                        <td class="padding"><a href="makeRent/{{ r.id }}">Аренда</a></td>
+                    {% else %}
+                        <td class="padding"><font color="#a9a9a9">Арендовано</font></td>
+                    {% endif %}
                 {% endif %}
             </tr>
         {% endfor %}

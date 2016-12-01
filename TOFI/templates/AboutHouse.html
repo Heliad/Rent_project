@@ -11,11 +11,11 @@
                 <td>{{ rent.address }}</td>
             </tr>
             <tr class="padding">
-                <td class="padding">Время аренды:</td>
+                <td class="padding">Время аренды(Мес.):</td>
                 <td>{{ rent.min_rent_time }}</td>
             </tr>
             <tr class="padding">
-                <td class="padding">Площадь:</td>
+                <td class="padding">Площадь(кв.м.):</td>
                 <td>{{ rent.area }}</td>
             </tr>
             <tr class="padding">
@@ -31,11 +31,13 @@
                 <td>{{ rent.other }}</td>
             </tr>
             <tr class="padding">
-                <td class="padding">Цена:</td>
+                <td class="padding">Цена(BYN):</td>
                 <td>{{ rent.cost }}</td>
             </tr>
             <tr class="padding">
-                <td class="padding"><a href="aboutUser/{{ rent.user_login }}">Отобразить информацию об арендаторе</a></td>
+                <td class="padding">
+                    <a href="aboutUser/{{ rent.user_login }}">Отобразить информацию об арендаторе</a>
+                </td>
             </tr>
         </table>
 {% endblock %}

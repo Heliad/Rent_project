@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Подтверждение запроса на аренду{% endblock %}
+{% block content %}
+    <table class="center">
+        <tr class="padding">
+            <td class="padding">
+                {{ mes }}
+            </td>
+        </tr>
+    </table>
+    <script>
+        window.setTimeout(function() {
+            var new_url = "/profile";
+            window.location.replace(new_url)
+    }, 5000);
+    </script>
+{% endblock %}

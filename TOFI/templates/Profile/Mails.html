@@ -24,6 +24,20 @@
                             {{ mail.creation_date }}
                         </td>
                     </tr>
+                    {% if not mail.is_done %}
+                        {% if request.user.ie %}
+                            <tr>
+                                <td class="padding">
+                                    <a href="acceptrent/{{ mail.id }}">Подтвердить заявку</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="padding">
+                                    <a href="rejectrent/{{ mail.id }}">Отклонить заявку</a>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endif %}
                 </table>
             
             {% endfor %}

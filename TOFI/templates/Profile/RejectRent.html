@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Отправка запроса на аренду{% endblock %}
+{% block title %}Отказ на заявку запроса об аренде{% endblock %}
 {% block content %}
     <form method="POST" class="center">
         {% csrf_token %}
@@ -10,7 +10,11 @@
                     <td>{{ field }}</td>
                 </tr>
             {% endfor %}
-            <tr><td><button type="submit" class="button7">Отправить</button></td></tr>
+            <tr>
+                <td>
+                    <button type="submit" class="button7">Отказ</button>
+                </td>
+            </tr>
         </table>
     </form>
 {% endblock %}

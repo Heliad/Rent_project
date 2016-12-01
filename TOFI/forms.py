@@ -66,3 +66,7 @@ class SearchUser(forms.Form):
 
     type_search = forms.ChoiceField(widget=forms.RadioSelect, choices=TYPE_SEARCH, label="Критерий поиска:")
     field_search = forms.CharField(label="Введите информацию о пользователе:", max_length=50)
+
+
+class RejectRent(forms.Form):
+    reject_reason = forms.CharField(label="Укажите причину отказа:", max_length=100)

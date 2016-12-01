@@ -303,7 +303,7 @@ def make_rent(request, number):
 
             models.MessageStatusRent.objects.create(id_user_from=request.user.id, id_user_to=user.id,
                                                     creation_date=datetime.date.today(),
-                                                    text_message=text_message, text_more=text_more, login_user_from=request.user.username)
+                                                    text_message=text_message, text_more=text_more, login_user_from=request.user.username, id_rent=number)
             mes = "Сообщение отправлено пользователю " + user.username
 
             return render(request, 'MessageDoned.html', {'mes': mes})
@@ -362,10 +362,54 @@ def mails(request):
     if request.user.is_anonymous:
         return HttpResponseRedirect("/")
     mails = models.MessageStatusRent.objects.all().filter(id_user_to=request.user.id)
+
     for mail in mails:
         mail.is_new = False
         mail.save()
     return render(request, "Profile/Mails.html", {'mails': mails})
+
+
+def accept_rent(request, id_mes):
+    message = models.MessageStatusRent.objects.get(id=id_mes)
+    house = models.Rent.objects.get(id=message.id_rent)
+
+    models.DoneRent.objects.create(id_house=message.id_rent, id_user_owner=message.id_user_to,
+                                   id_user_renter=message.id_user_from, date_rent=datetime.date.today(),
+                                   cost=house.cost, pay_number=0, paid_user=0)
+
+    message.is_done = True
+    house.status_rent = False
+    house.save()
+    message.save()
+
+    user = models.MyUser.objects.get(id=message.id_user_from)
+    accept = "Запрос номер " + str(message.id) + ", на аренду дома " + str(house.name)\
+             + "подтверждён. Запрос от" + str(user.username)
+    return render(request, "Profile/AcceptRent.html", {'mes': accept})
+
+
+def reject_rent(request, id_mes):
+    if request.method == 'POST':
+        form = RejectRent(request.POST)
+
+        if form.is_valid():
+            reason = form.cleaned_data['reject_reason']
+            message = models.MessageStatusRent.objects.get(id=id_mes)
+            house = models.Rent.objects.get(id=message.id_rent)
+            text_message = 'Отказ на запрос о аренде дома под номером: ' + str(house.id) + " (" + \
+                           str(house.name) + ")"
+
+            models.MessageStatusRent.objects.create(id_user_from=request.user.id, id_user_to=message.id_user_from,
+                                                    creation_date=datetime.date.today(),
+                                                    text_message=text_message, text_more=reason,
+                                                    login_user_from=request.user.username, id_rent=message.id_rent)
+
+            reject = "В запросе, номер " + str(message.id) + ", на аренду дома: " + str(house.name) \
+                     + " отказано"
+            return render(request, "Profile/AcceptRent.html", {'mes': reject})
+    else:
+        form = RejectRent()
+        return render(request, "Profile/RejectRent.html", {'form': form})
 
 
 def add_comment(request):
