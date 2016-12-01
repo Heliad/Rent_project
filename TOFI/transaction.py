@@ -18,25 +18,34 @@ class BankModule(object):
                                               name_card_owner=self.name_card_owner, CVC2_CVV=self.CVC2_CVV)
         if not card:
             return False, 'Введены неверные данные'
-        card = card[0]
+        self.card = card[0]
         if self.way == 'in':
             if card.size >= self.size:
                 complete = True
-                self.update_card(card, self.way)
+                self.update_card()
             else:
                 complete = False
                 msg = 'На карте не хватает средств'
         elif self.way == 'out':
             complete = True
-            self.update_card(card, self.way)
+            self.update_card()
         elif self.way == 'chsk':
             complete = True
+        elif self.way == 'pay':
+            return self.pay()
 
         return complete, msg
 
-    def update_card(self, card, way):
-        if way == 'in':
-            card.size -= self.size
-        elif way == 'out':
-            card.size += self.size
-        card.save()
+    def update_card(self):
+        if self.way == 'in':
+            self.card.size -= self.size
+        elif self.way == 'out':
+            self.card.size += self.size
+        self.card.save()
+
+    def pay(self, card_to):
+        self.way = 'in'
+        self.update_card()
+        self.way = 'out'
+        self.card = card_to
+        self.update_card()

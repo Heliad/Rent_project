@@ -25,6 +25,12 @@
                         <td class="padding">Выплат проведено:</td>
                         <td class="padding">{{ rent.paid_user }}</td>
                     </tr>
+
+                    <tr class="padding">
+                        <td class="padding">
+                            <a href="makepay/{{ rent.id }}">Оплатить</a>
+                        </td>
+                    </tr>
                 </table>
             {% endfor %}
         {% else %}

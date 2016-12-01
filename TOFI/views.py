@@ -419,7 +419,15 @@ def all_rents_renter(request):
 
 
 def all_rents_owner(request):
-    pass
+    id_user = request.user.id
+    my_rents = models.DoneRent.objects.all().filter(id_user_owner=id_user)
+    return render(request, 'Profile/AllRentsOwner.html', {'my_rents': my_rents})
+
+
+def make_pay(request, id_donerent):
+    if request.method == "GET":
+        user_cards = request.user.user_card_id.all()
+        return render(request, "Profile/MakePay.html", {'pay': id_donerent})
 
 
 def add_comment(request):

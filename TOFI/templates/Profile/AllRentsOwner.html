@@ -1,10 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Мои арендуемые дома{% endblock %}
+{% block content %}
+        {% if my_rents %}
+            {% for rent in my_rents %}
+                <table class="center">
+                    <tr class="padding">
+                        <td class="padding">
+                            <a href="aboutHouse/{{ rent.id_house}}">Информация о доме</a>
+                        </td>
+                        <td class="padding">
+                            <a href="aboutUser/{{ rent.id_user_owner}}">Информация о пользователе</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="padding">Дата начала аренды:</td>
+                        <td class="padding">{{ rent.date_rent }}</td>
+                    </tr>
+                    <tr>
+                        <td class="padding">Стоимость(BYN):</td>
+                        <td class="padding">{{ rent.cost }}</td>
+                    </tr>
+                    <tr>
+                        <td class="padding">Выплат должно быть(на текущий месяц):</td>
+                        <td class="padding">{{ rent.pay_number }}</td>
+                    </tr>
+                    <tr>
+                        <td class="padding">Выплат проведено:</td>
+                        <td class="padding">{{ rent.paid_user }}</td>
+                    </tr>
+                </table>
+            {% endfor %}
+        {% else %}
+            <table class="center">
+                <tr class="padding">
+                    <td class="padding">
+                        Арендуемых домов нет
+                    </td>
+                </tr>
+            </table>
+        {% endif %}
+{% endblock %}
