@@ -9,6 +9,7 @@ from django.contrib.auth import logout
 from .forms import *
 from TOFI import transaction as t
 from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 import datetime
 
 
@@ -29,6 +30,7 @@ class AddRent(View):
 
     def post(self, request):
         form = self.form_class(request.POST)
+        print(request.POST)
         if form.is_valid():
             name = form.cleaned_data['name']
             address = form.cleaned_data['address']
@@ -164,16 +166,13 @@ def refillBalance(request):
             CVC2_CVV = form.cleaned_data['CVC2_CVV']
             size = form.cleaned_data['size']
 
-            tr = t.BankModule(card_num, period_validity, name_card_owner, CVC2_CVV, 'in', size)
-            c, m = tr.check_card()
-            if c:
-                balance = request.user.balance
-                newBalance = balance + size
-                models.MyUser.objects.all().filter(username=request.user).update(balance=newBalance)
+            # tr = t.BankModule(card_num, period_validity, name_card_owner, CVC2_CVV, 'in', size)
+            if t.Check(card_num, period_validity, name_card_owner, CVC2_CVV).check_card():
+                t.Transaction(size, card_num, request.user).make_transaction()
                 context = {'mes': request.user.name + ", баланс успешно пополнен на " + str(size) + " BYN"}
                 return render(request, 'Profile/Thanks.html', context)
             else:
-                return render(request, 'Profile/Thanks.html', {'mes': m})
+                return render(request, 'Profile/Thanks.html', {'mes': 'message'})
     else:
         form = RefillBalance()
 
@@ -193,21 +192,9 @@ def unfillBalance(request):
             CVC2_CVV = form.cleaned_data['CVC2_CVV']
             size = form.cleaned_data['size']
 
-            balance = request.user.balance
-            if balance >= size:
-                tr = t.BankModule(card_num, period_validity, name_card_owner, CVC2_CVV, 'out', size)
-                c, m = tr.check_card()
-                if c:
-                    newBalance = balance - size
-                    models.MyUser.objects.all().filter(username=request.user).update(balance=newBalance)
-                    context = {'mes': request.user.name + ", Срдества в размере: " +
-                               str(size) + " BYN были успешно выведены"}
-                else:
-                    context = {'mes': m}
-            else:
-                context = {'mes': "На вашем счете не хватает средств"}
-
-            return render(request, 'Profile/Thanks.html', context)
+            if t.Check(card_num, period_validity, name_card_owner, CVC2_CVV).check_card():
+                t.Transaction(size, request.user, card_num).make_transaction()
+            return render(request, 'Profile/Thanks.html', {'mes': 'message'})
     else:
         form = RefillBalance()
 
@@ -424,10 +411,16 @@ def all_rents_owner(request):
     return render(request, 'Profile/AllRentsOwner.html', {'my_rents': my_rents})
 
 
-def make_pay(request, id_donerent):
+def choose_payment(request, id_donerent):
     if request.method == "GET":
         user_cards = request.user.user_card_id.all()
-        return render(request, "Profile/MakePay.html", {'pay': id_donerent})
+        cost = models.DoneRent.objects.get(id=id_donerent)
+        balance_to = models.MyUser.objects.get(id=cost.id_user_owner).username
+        return render(request, "Profile/ChoosePayment.html", {'amount': cost.cost, 'cards': user_cards,
+                                                              'id': id_donerent, 'balance_to': balance_to})
+    else:
+        c, m = t.Transaction(request.POST['size'], request.POST['card_from'], request.POST['balance_to']).make_transaction()
+        return HttpResponse(m)
 
 
 def add_comment(request):

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Оплата{% endblock %}
+{% block content %}
+    {% csrf_token %}
+    <script>
+    function func(card_id, balance_to, amount) {
+        var xmlhttp = getXmlHttp();
+        var params = 'card_from=' + encodeURIComponent(card_id) +
+                '&size=' + encodeURIComponent(amount) + '&balance_to=' + encodeURIComponent(balance_to) +
+                '&csrfmiddlewaretoken=' + document.getElementsByName('csrfmiddlewaretoken')[0].value;
+        xmlhttp.open("POST", {{ id }}, true);
+        xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xmlhttp.send(params);
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == 4){
+                div = document.getElementById('response');
+                div.innerHTML = div.innerHTML + xmlhttp.responseText;
+                window.setTimeout(function() {
+                    var new_url = "/profile";
+                    window.location.replace(new_url)
+                }, 2000);
+            }
+        }
+    }
+
+    function getXmlHttp(){
+        var xmlhttp;
+        try {
+            xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+            } catch (e) {
+        try {
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+            } catch (E) {
+        xmlhttp = false;
+        }
+    }
+    if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
+        xmlhttp = new XMLHttpRequest();
+    }
+    return xmlhttp;
+    }
+</script>
+{% for card in cards %}
+    <div class="center">
+    <input type="button" onclick="func({{ card.card_num }}, '{{ balance_to }}', {{ amount }})" value="{{ card.card_num }}">
+    </div>
+{% endfor %}
+    <div class="center">
+        <input type="button" onclick="func('{{ request.user }}', '{{ balance_to }}', {{ amount }})" value="Кошелек">
+    </div>
+    <div id="response" class="padding"></div>
+{% endblock %}
