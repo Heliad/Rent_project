@@ -140,17 +140,14 @@ def add_card(request):
             period_validity = form.cleaned_data['period_validity']
             name_card_owner = form.cleaned_data['name_card_owner']
             CVC2_CVV = form.cleaned_data['CVC2_CVV']
-
-            tr = t.BankModule(card_num, period_validity, name_card_owner, CVC2_CVV, 'chsk')
-            c, m = tr.check_card()
-            if c:
+            if t.Check(card_num, period_validity, name_card_owner, CVC2_CVV).check_card():
                 for i in request.user.user_card_id.all():
                     if i.card_num == card_num:
                         return render(request, 'Profile/Thanks.html', {'mes': 'карта уже добавлена'})
                 request.user.user_card_id.add(models.UserCard.objects.get(card_num=card_num))
                 return render(request, 'Profile/Thanks.html', {'mes': 'карта успешно добавлена'})
             else:
-                return render(request, 'Profile/Thanks.html', {'mes': m, 'redirect_address': 'profile'})
+                return render(request, 'Profile/Thanks.html', {'mes': 'Неверные данные', 'redirect_address': 'profile'})
     else:
         form = AddCard()
 
