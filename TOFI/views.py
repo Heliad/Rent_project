@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
+
 from django.shortcuts import render, redirect
 from TOFI import models
+import json
 from django.contrib.auth import authenticate, login
 from django.views.generic.edit import FormView
 from django.contrib.auth.forms import AuthenticationForm
@@ -10,6 +13,7 @@ from .forms import *
 from TOFI import transaction as t
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
+from django.http import JsonResponse
 import datetime
 
 
@@ -414,13 +418,17 @@ def all_rents_owner(request):
 def choose_payment(request, id_donerent):
     if request.method == "GET":
         user_cards = request.user.user_card_id.all()
+        cards_num = list(map(lambda x: x[:4] + ' XXXX XXXX ' + x[-4:],
+                             [str(i.card_num) for i in request.user.user_card_id.all()]))
         cost = models.DoneRent.objects.get(id=id_donerent)
         balance_to = models.MyUser.objects.get(id=cost.id_user_owner).username
-        return render(request, "Profile/ChoosePayment.html", {'amount': cost.cost, 'cards': user_cards,
+        return render(request, "Profile/ChoosePayment.html", {'amount': cost.cost, 'cards': zip(user_cards, cards_num),
                                                               'id': id_donerent, 'balance_to': balance_to})
     else:
         c, m = t.Transaction(request.POST['size'], request.POST['card_from'], request.POST['balance_to']).make_transaction()
-        return HttpResponse(m)
+        response = {"message": m, "status": c}
+        response = json.dumps(response, ensure_ascii=False)
+        return HttpResponse(response, content_type="text/html; charset=utf-8")
 
 
 def add_comment(request):

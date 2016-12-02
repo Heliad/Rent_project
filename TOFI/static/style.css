@@ -7,6 +7,13 @@
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
 }
 
+.narrow-center{
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto auto;
+    padding-top: 5px;
+}
+
 .left
 {
     background-color: whitesmoke; /* Цвет фона слоя */
@@ -17,10 +24,33 @@
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
 }
 
+.padding100{
+    padding: 100px;
+}
+
 .padding
 {
     padding: 10px;
 }
+
+.button8
+{
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+    color: black;
+    height: 40px;
+    width: 250px;
+    padding-top: 0;
+    padding-bottom: 0;
+    background: whitesmoke;
+    transition: 0.2s;
+    border-width: 0;
+}
+
+.button8:hover
+{
+    background: darkgray;
+}
+
 .button7
 {
     color: white;

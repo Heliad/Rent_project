@@ -2,7 +2,7 @@
 {% block title %}Оплата{% endblock %}
 {% block content %}
     {% csrf_token %}
-    <script>
+    <script charset="utf-8">
     function func(card_id, balance_to, amount) {
         var xmlhttp = getXmlHttp();
         var params = 'card_from=' + encodeURIComponent(card_id) +
@@ -14,11 +14,18 @@
         xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4){
                 div = document.getElementById('response');
-                div.innerHTML = div.innerHTML + xmlhttp.responseText;
-                window.setTimeout(function() {
-                    var new_url = "/profile";
-                    window.location.replace(new_url)
-                }, 2000);
+                if (JSON.parse(xmlhttp.responseText)["status"] == true){
+                    div.style.color = "green";
+                    div.innerHTML = JSON.parse(xmlhttp.responseText)["message"];
+                    window.setTimeout(function() {
+                        var new_url = "/profile";
+                        window.location.replace(new_url)
+                    }, 2000);
+                }
+                else {
+                    div.style.color = "red";
+                    div.innerHTML = JSON.parse(xmlhttp.responseText)["message"];
+                }
             }
         }
     }
@@ -40,13 +47,14 @@
     return xmlhttp;
     }
 </script>
-{% for card in cards %}
-    <div class="center">
-    <input type="button" onclick="func({{ card.card_num }}, '{{ balance_to }}', {{ amount }})" value="{{ card.card_num }}">
+    <div class="center">Выберите способ оплаты</div>
+{% for card, card_num in cards %}
+    <div class="narrow-center">
+    <input type="button" class="button8" onclick="func({{ card.card_num }}, '{{ balance_to }}', {{ amount }})" value="{{ card_num }}">
     </div>
 {% endfor %}
-    <div class="center">
-        <input type="button" onclick="func('{{ request.user }}', '{{ balance_to }}', {{ amount }})" value="Кошелек">
+    <div class="narrow-center">
+        <input type="button" class="button8" onclick="func('{{ request.user }}', '{{ balance_to }}', {{ amount }})" value="Кошелек">
     </div>
-    <div id="response" class="padding"></div>
+    <div id="response" class="narrow-center"></div>
 {% endblock %}

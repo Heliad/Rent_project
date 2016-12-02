@@ -8,6 +8,8 @@ class Transaction(object):
         self.amount = int(amount)
 
     def make_transaction(self):
+        return_massage = ''
+
         if type(self.tr_from) == str:
             try:
                 int(self.tr_from)
@@ -39,7 +41,7 @@ class Transaction(object):
 
         self.tr_from.save()
         self.tr_to.save()
-        return True, 'msg'
+        return True, 'Транзакция прошла успешно'
 
 
 class Check(object):
@@ -59,23 +61,17 @@ class Check(object):
         for i in [self.tr_from, self.tr_to]:
             try:
                 card = models.UserCard.objects.get(card_num=i.card_num)
-                self.num = card.card_num
-                self.validity = card.period_validity
-                self.card_owner = card.name_card_owner
-                self.cvc2_cvv = card.CVC2_CVV
-                if not self.check_card():
-                    return 'error'
                 if card.size < self.amount:
-                    return 'error'
+                    return 'Недостаточно средств на карте'
                 result.append(True)
             except:
                 try:
                     balance = models.MyUser.objects.get(username=i.username)
                     if balance.balance < self.amount:
-                        return 'error'
+                        return 'Недостаточно средств на счете'
                     result.append(False)
                 except:
-                    return 'error'
+                    return 'Введены неверные данные'
         return result
 
     def check_card(self):
