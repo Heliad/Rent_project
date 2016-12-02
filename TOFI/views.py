@@ -205,7 +205,7 @@ def unfillBalance(request):
                 # Логирование операции вывода средств
                 models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Вывод средств',
                                                            describe_operation="Вывод средств на сумму " + str(
-                                                               size) + " BYN",
+                                                               size) + " BYN, успешно проведён.",
                                                            date_operation=datetime.date.today())
 
                 context = {'mes': request.user.name + ", средства на сумму " + str(size) +
@@ -449,6 +449,25 @@ def choose_payment(request, id_donerent):
 
         response = json.dumps(response, ensure_ascii=False)
         return HttpResponse(response, content_type="text/html; charset=utf-8")
+
+
+def extract_balance(request):
+    if request.method == 'POST':
+        form = ExtractBalance(request.POST)
+
+        if form.is_valid():
+            period_start = form.cleaned_data['period_start']
+            period_end = form.cleaned_data['period_end']
+            extracts = models.LogOperationsBalance.objects.filter(id_user=request.user.id)
+            result = []
+            for ex in extracts:
+                if ex.date_operation <= period_end and ex.date_operation >= period_start:
+                    result.append(ex)
+
+            return render(request, 'Profile/ExtractBalance.html', {'form': form, 'result': result})
+    else:
+        form = ExtractBalance()
+        return render(request, "Profile/ExtractBalance.html", {'form': form})
 
 
 def add_comment(request):

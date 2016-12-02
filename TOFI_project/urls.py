@@ -36,6 +36,7 @@ urlpatterns = [
     url(r'allrentsrenter', views.all_rents_renter, name='AllRentsRenter'),
     url(r'allrentsowner', views.all_rents_owner, name='AllRentsOwner'),
     url(r'choose_payment/(?P<id_donerent>\d*)', views.choose_payment, name='ChoosePayment'),
+    url(r'extractbalance', views.extract_balance, name='ExtractBalance'),
     url(r'addcomment', views.add_comment, name='AddComment'),
     url(r'allcomments', views.all_comments, name='AllComments'),
     url(r'search/searchrent', views.search_rent, name='SearchRent'),

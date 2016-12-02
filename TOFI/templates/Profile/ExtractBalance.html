@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Получить выписку о балансе{% endblock %}
+{% block content %}
+        <form method="POST" class="center">
+        {% csrf_token %}
+        <table>
+            {% for field in form %}
+                <tr>
+                    <td class="padding">{{ field.label }}</td>
+                    <td>{{ field }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td><button type="submit" class="button7">Получить выписку</button></td>
+            </tr>
+        </table>
+
+        {% if  result %}
+            <table>
+                <tr class="padding">
+                    <td class="padding">Наименование операции</td>
+                    <td>Описание операции</td>
+                    <td>Дата проведения операции</td>
+                </tr>
+                {% for res in result %}
+                    <tr class="padding">
+                        <td class="padding">{{ res.type_operation }}</td>
+                        <td>{{ res.describe_operation }}</td>
+                        <td>{{ res.date_operation }}</td>
+                    </tr>
+
+                {% endfor %}
+                <tr>Сделать норм стиль и шапку таблицы!!!</tr>
+            </table>
+
+        {% endif %}
+    </form>
+{% endblock %}
