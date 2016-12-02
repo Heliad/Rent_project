@@ -34,7 +34,18 @@
                 <td class="padding">УНН:</td>
                 <td>{{ user.taxpayer_account_number }}</td>
             </tr>
+        </table>
 
-
+        <table class="center">
+            <tr class="padding">
+                <td>
+                    <a href="addcommentuser/{{ user.id }}">Оставить отзыв о пользователе</a>
+                </td>
+            </tr>
+            <tr class="padding">
+                <td>
+                    <a href="allcommentsuser/{{ user.id }}">Просмотреть все отзывы о пользователе</a>
+                </td>
+            </tr>
         </table>
 {% endblock %}

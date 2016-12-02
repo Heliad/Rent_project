@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Сохранение отзыва о пользователе{% endblock %}
+{% block content %}
+    <table class="center">
+        <tr class="padding">
+            <td class="padding">
+                {{ request.user.username }}, ваш отзыв о пользователе сохранён
+            </td>
+        </tr>
+        <tr class="padding">
+            <td class="padding">
+                <a href="{% url 'Profile' %}">Личный кабинет</a>
+            </td>
+        </tr>
+    </table>
+{% endblock %}

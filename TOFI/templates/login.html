@@ -12,6 +12,14 @@
                 </tr>
             {% endfor %}
             <tr><td><button type="submit" class="button7">Вход</button></td></tr>
+            {% if error %}
+                <tr class="padding">
+                    <td class="padding">
+                        {{ error }}
+                    </td>
+                </tr>
+
+            {% endif %}
         </table>
     </form>
 {% endblock %}

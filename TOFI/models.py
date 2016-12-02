@@ -137,6 +137,13 @@ class Comment(models.Model):
     date_comment = models.DateField(default=None)
 
 
+class CommentUser(models.Model):
+    id_user_about = models.IntegerField()
+    id_user_from = models.IntegerField()
+    text_comment = models.CharField(max_length=50)
+    date_comment = models.DateField(default=None)
+
+
 class DoneRent(models.Model):
     id_house = models.IntegerField()
     id_user_owner = models.IntegerField()

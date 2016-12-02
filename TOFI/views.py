@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from TOFI import models
 import json
 from django.contrib.auth import authenticate, login
@@ -13,7 +13,6 @@ from .forms import *
 from TOFI import transaction as t
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
-from django.http import JsonResponse
 import datetime
 
 
@@ -325,6 +324,44 @@ def aboutUser(request, login_id):
         if user.getId() == login_id:
             context = {'user': user}
     return render(request, "AboutUser.html", context)
+
+
+def add_comment_about_user(request, user_id):
+    if request.user.is_anonymous:
+        return HttpResponseRedirect("/login")
+
+    if request.method == 'POST':
+        form = AddComment(request.POST)
+
+        if form.is_valid():
+            comment = form.cleaned_data['text_comment']
+            models.CommentUser.objects.create(id_user_about=user_id, id_user_from=request.user.id,
+                                              text_comment=comment, date_comment=datetime.date.today())
+
+            return render(request, 'CommentUserDoned.html')
+
+    else:
+        form = AddComment()
+    return render(request, "AddCommentUser.html", {'form': form})
+
+
+def all_comments_about_user(request, user_id):
+    if request.user.is_anonymous:
+        return HttpResponseRedirect("/login")
+
+    comments = models.CommentUser.objects.all().filter(id_user_about=user_id)
+
+    class CommentUserTemp(object):
+        def __init__(self, login_user_from, text_com, date_com):
+            self.login_user_from = login_user_from
+            self.text_com = text_com
+            self.date = date_com
+
+    user_comments = []
+    for com in comments:
+        us = models.MyUser.objects.get(id=com.id_user_from)
+        user_comments.append(CommentUserTemp(us.username, com.text_comment, com.date_comment))
+    return render(request, "AllCommentsUser.html", {'user_comments': user_comments})
 
 
 def edit_profile(request):
