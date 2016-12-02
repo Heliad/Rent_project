@@ -167,9 +167,14 @@ def refillBalance(request):
             CVC2_CVV = form.cleaned_data['CVC2_CVV']
             size = form.cleaned_data['size']
 
-            # tr = t.BankModule(card_num, period_validity, name_card_owner, CVC2_CVV, 'in', size)
             if t.Check(card_num, period_validity, name_card_owner, CVC2_CVV).check_card():
                 t.Transaction(size, card_num, request.user).make_transaction()
+
+                # Логирование операции пополнения баланса
+                models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Пополнение баланса',
+                                                           describe_operation="Баланс успешно пополнен на " + str(size) + " BYN",
+                                                           date_operation=datetime.date.today())
+
                 context = {'mes': request.user.name + ", баланс успешно пополнен на " + str(size) + " BYN"}
                 return render(request, 'Profile/Thanks.html', context)
             else:
@@ -193,9 +198,20 @@ def unfillBalance(request):
             CVC2_CVV = form.cleaned_data['CVC2_CVV']
             size = form.cleaned_data['size']
 
+            context = {'mes': ''}
             if t.Check(card_num, period_validity, name_card_owner, CVC2_CVV).check_card():
                 t.Transaction(size, request.user, card_num).make_transaction()
-            return render(request, 'Profile/Thanks.html', {'mes': 'message'})
+
+                # Логирование операции вывода средств
+                models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Вывод средств',
+                                                           describe_operation="Вывод средств на сумму " + str(
+                                                               size) + " BYN",
+                                                           date_operation=datetime.date.today())
+
+                context = {'mes': request.user.name + ", средства на сумму " + str(size) +
+                                  " BYN, успешно выведены на карту"}
+
+            return render(request, 'Profile/Thanks.html', context)
     else:
         form = RefillBalance()
 
@@ -422,8 +438,15 @@ def choose_payment(request, id_donerent):
         return render(request, "Profile/ChoosePayment.html", {'amount': cost.cost, 'cards': zip(user_cards, cards_num),
                                                               'id': id_donerent, 'balance_to': balance_to})
     else:
+
         c, m = t.Transaction(request.POST['size'], request.POST['card_from'], request.POST['balance_to']).make_transaction()
         response = {"message": m, "status": c}
+        # Логирование операции оплаты аренды
+        models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Оплата аренды',
+                                                   describe_operation="Оплата на сумму " +
+                                                                      str(request.POST['size']) + " BYN. " +
+                                                   str(m), date_operation=datetime.date.today())
+
         response = json.dumps(response, ensure_ascii=False)
         return HttpResponse(response, content_type="text/html; charset=utf-8")
 

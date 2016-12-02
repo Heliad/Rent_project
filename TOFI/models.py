@@ -145,3 +145,10 @@ class DoneRent(models.Model):
     cost = models.CharField(max_length=50)  # Цена одной платы
     pay_number = models.IntegerField()  # Сколько платежей должно быть
     paid_user = models.IntegerField()  # Сколько раз арендатор заплатил
+
+
+class LogOperationsBalance(models.Model):  # Модель для логирования операций
+    id_user = models.IntegerField()
+    type_operation = models.CharField(max_length=50)  # Ввод/вывод/и т.д.
+    describe_operation = models.CharField(max_length=100)  # Описание
+    date_operation = models.DateField(default=None)
