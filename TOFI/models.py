@@ -82,6 +82,8 @@ class MyUser(AbstractBaseUser):
     balance = models.IntegerField(verbose_name='', default=0)
     user_card_id = models.ManyToManyField(UserCard, default=None)
 
+    is_staff = models.BooleanField()  # для админки
+
     objects = MyUserManager()
 
     USERNAME_FIELD = 'username'
