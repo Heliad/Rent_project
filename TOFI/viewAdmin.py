@@ -30,6 +30,14 @@ def create_block(request, id_user):
     return render(request, 'Admin/CreateBlock.html', {'form': form})
 
 
+def delete_block(request, id_user):
+    user = models.MyUser.objects.get(id=id_user)
+    user.reason_block = ''
+    user.is_active = 1
+    user.save()
+    mes = "Пользователь " + user.username + " разблокирован"
+    return render(request, 'Admin/Done.html', {'message': mes})
+
 def search_by_id(request):
     if request.method == 'POST':
         form = SearchId(request.POST)
