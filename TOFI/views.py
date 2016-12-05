@@ -17,6 +17,9 @@ import datetime
 
 
 def main_view(request):
+    if not request.user.is_anonymous:
+        if request.user.is_admin:
+            return HttpResponseRedirect("/mainadmin")
     context = {'rent': [i for i in list(models.Rent.objects.all())], 'comments': [i for i in list(models.Comment.objects.all())]}
     return render(request, 'Main.html', context)
 

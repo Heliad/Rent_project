@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Администраторский модуль{% endblock %}
+{% block content %}
+    <div class="left">
+        <table>
+            <tr>
+                <td>
+                    <a href="{% url 'AddCard' %}">Создать учетную запись(Не сделано)</a>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <a href="{% url 'AddCard' %}">Редактирование учетных записей(Не сделано)</a>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <a href="{% url 'AddCard' %}">Блокировка учетных записей(Не сделано)</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="center">
+        <table>
+            <tr class="padding">
+                <td></td>
+                <td class="padding">
+                    <a href="{% url 'AddCard' %}">Изменение курсов валют(Не сделано)</a>
+                </td>
+            </tr>
+            <tr class="padding">
+                <td></td>
+                <td class="padding">
+                    <a href="{% url 'AddCard' %}">Штрафы(Не сделано)</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+{% endblock %}

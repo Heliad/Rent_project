@@ -106,6 +106,8 @@ AUTH_USER_MODEL = 'TOFI.MyUser'
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
+SECURE_SSL_REDIRECT = False
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'

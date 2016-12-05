@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from TOFI import views
+from TOFI import views, viewAdmin
 
 urlpatterns = [
     url(r'^$', views.main_view, name='Main'),
@@ -47,5 +47,7 @@ urlpatterns = [
     url(r'aboutUser/(?P<login_id>\d*)', views.aboutUser, name='AboutUser'),
     url(r'makeRent/(?P<number>\d*)', views.make_rent, name ='MakeRent'),
     url(r'aboutHouse/(?P<number>\d*)', views.aboutHouse, name ='AboutHouse'),
+
     url(r'^admin/', admin.site.urls),
+    url(r'mainadmin', viewAdmin.main_admin, name='MainAdmin'),
 ]
