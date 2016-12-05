@@ -90,6 +90,7 @@ class MyUser(AbstractBaseUser):
     REQUIRED_FIELDS = ['name', 'surname', 'last_name', 'age', 'passport_id', 'phone', 'address', 'email', 'ie']
 
     is_active = models.BooleanField(default=True)
+    reason_block = models.CharField(max_length=100, null=True)
     is_admin = models.BooleanField(default=False)
 
     def get_full_name(self):

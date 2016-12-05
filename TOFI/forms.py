@@ -1,8 +1,6 @@
 from django import forms
 from django.forms import SelectDateWidget
-
 from .models import MyUser, Rent
-from django.contrib.admin.widgets import AdminDateWidget
 
 
 class UserForm(forms.ModelForm):
@@ -79,3 +77,11 @@ class ExtractBalance(forms.Form):
     YEARS_START = ('2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017')
     period_start = forms.DateField(label="Начало периода:", widget=SelectDateWidget(years=YEARS_START), required=True)
     period_end = forms.DateField(label="Конец периода:", widget=SelectDateWidget, required=True)
+
+
+class CreateBlock(forms.ModelForm):
+    reason_block = forms.CharField(label='Причина блокировки:', max_length=100)
+
+    class Meta:
+        model = MyUser
+        fields = ['reason_block']

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Блокировка пользователей{% endblock %}
+{% block content %}
+    <table class="center">
+        <tr class="padding">
+            <td class="padding">Логин:</td>
+            <td class="padding">ФИО:</td>
+            <td class="padding">Возраст:</td>
+            <td class="padding">Номер телефона:</td>
+            <td class="padding">Адрес:</td>
+            <td class="padding">Электронная почта:</td>
+            <td class="padding">Лицензия:</td>
+            <td class="padding">УНН:</td>
+        </tr>
+        {% for blc in blocked_accounts %}
+            <tr class="padding">
+                <td>{{ blc.username }}</td>
+                <td>{{ blc.surname }} {{ blc.name }} {{ blc.last_name }}</td>
+                <td>{{ blc.age }}</td>
+                <td>{{ blc.phone }}</td>
+                <td>{{ blc.address }}</td>
+                <td>{{ blc.email }}</td>
+                <td>{{ blc.license_field }}</td>
+                <td>{{ blc.taxpayer_account_number }}</td>
+                {% if blc.is_active %}
+                    <td>
+                        <a href="createblock/{{ blc.id }}"><font color="red">Заблокировать пользователя</font></a>
+                    </td>
+                {% else %}
+                    <td>
+                        <a href="un/{{ blc.id }}"><font color="#adff2f">Разблокировать пользователя(Не сделано)</font></a>
+                    </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
