@@ -14,6 +14,13 @@
                     <a href="{% url 'SearchRent' %}">Поиск жилья</a>
                 </td>
             </tr>
+            {% if request.user.is_admin %}
+                <tr class="padding">
+                    <td class="padding">
+                        <a href="{% url 'SearchId' %}">Поиск пользователей по id</a>
+                    </td>
+                </tr>
+            {% endif %}
         </table>
     </form>
 {% endblock %}

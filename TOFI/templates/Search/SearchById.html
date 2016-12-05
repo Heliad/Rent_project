@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Поиск пользователя по id{% endblock %}
+{% block content %}
+    <form method="POST" class="center">
+        {% csrf_token %}
+        <table>
+            {% for field in form %}
+                <tr>
+                    <td class="padding">{{ field.label }}</td>
+                    <td>{{ field }}</td>
+                </tr>
+            {% endfor %}
+            <tr><td><button type="submit" class="button7">Поиск</button></td></tr>
+        </table>
+    </form>
+
+    <table class="center">
+        {% if results %}
+            <tr>
+                <td class="padding">
+                    <b id="fon">Результаты поиска:</b>
+                </td>
+            </tr>
+            <tr>
+                <td class="padding">
+                    <a href="/aboutUser/{{ results.id }}">{{ results.username }}</a>
+                </td>
+            </tr>
+        {% endif %}
+    </table>
+{% endblock %}

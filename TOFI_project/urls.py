@@ -44,6 +44,7 @@ urlpatterns = [
     url(r'allcomments', views.all_comments, name='AllComments'),
     url(r'search/searchrent', views.search_rent, name='SearchRent'),
     url(r'search/searchuser', views.search_user, name='SearchUser'),
+    url(r'search/searchid', viewAdmin.search_by_id, name='SearchId'),
     url(r'search', views.search, name='Search'),
     url(r'payment_info/(?P<id>\d*)', views.quick_payment_info, name='Info'),
     url(r'aboutUser/(?P<login_id>\d*)', views.aboutUser, name='AboutUser'),
@@ -53,6 +54,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'mainadmin', viewAdmin.main_admin, name='MainAdmin'),
     url(r'blockadmin', viewAdmin.blocked_accounts, name='BlockAccounts'),
-    url(r'createblock/(?P<id_user>\d*)', viewAdmin.create_block, name='CreateBlock')
-
+    url(r'createblock/(?P<id_user>\d*)', viewAdmin.create_block, name='CreateBlock'),
+    url(r'edituseradmin/(?P<id_user>\d*)', viewAdmin.edit_user_admin, name='EditUser')
 ]

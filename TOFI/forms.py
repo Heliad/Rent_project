@@ -69,6 +69,10 @@ class SearchUser(forms.Form):
     field_search = forms.CharField(label="Введите информацию о пользователе:", max_length=50)
 
 
+class SearchId(forms.Form):
+    field_id = forms.IntegerField(label="Введите id пользователя:")
+
+
 class RejectRent(forms.Form):
     reject_reason = forms.CharField(label="Укажите причину отказа:", max_length=100)
 

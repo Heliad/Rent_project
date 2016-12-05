@@ -3,34 +3,27 @@
 {% block content %}
     <div class="left">
         <table>
-            <tr>
-                <td>
-                    <a href="{% url 'AddCard' %}">Создать учетную запись(Не сделано)</a>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a href="{% url 'AddCard' %}">Редактирование учетных записей(Не сделано)</a>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a href="{% url 'BlockAccounts' %}">Блокировка учетных записей</a>
-                </td>
-            </tr>
         </table>
     </div>
 
     <div class="center">
         <table>
             <tr class="padding">
-                <td></td>
+                <td class="padding">
+                    <a href="{% url 'AddCard' %}">Создать учетную запись(Не сделано)</a>
+                </td>
+            </tr>
+            <tr class="padding">
+                <td class="padding">
+                    <a href="{% url 'BlockAccounts' %}">Блокировка и редактирование учетных записей</a>
+                </td>
+            </tr>
+            <tr class="padding">
                 <td class="padding">
                     <a href="{% url 'AddCard' %}">Изменение курсов валют(Не сделано)</a>
                 </td>
             </tr>
             <tr class="padding">
-                <td></td>
                 <td class="padding">
                     <a href="{% url 'AddCard' %}">Штрафы(Не сделано)</a>
                 </td>
