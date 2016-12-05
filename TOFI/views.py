@@ -478,16 +478,31 @@ def choose_payment(request, id_donerent):
         return render(request, "Profile/ChoosePayment.html", {'amount': cost.cost, 'cards': zip(user_cards, cards_num),
                                                               'id': id_donerent, 'balance_to': balance_to})
     else:
-
         c, m = t.Transaction(request.POST['size'], request.POST['card_from'], request.POST['balance_to']).make_transaction()
         response = {"message": m, "status": c}
         # Логирование операции оплаты аренды
-        models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Оплата аренды',
-                                                   describe_operation="Оплата на сумму " +
-                                                                      str(request.POST['size']) + " BYN. " +
-                                                   str(m), date_operation=datetime.date.today())
+        if c:
+            models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Оплата аренды',
+                                                       describe_operation="Оплата на сумму " +
+                                                       str(request.POST['size']) + " BYN. " +
+                                                       str(m), date_operation=datetime.date.today())
 
         response = json.dumps(response, ensure_ascii=False)
+        print(request.POST)
+        print(request.POST['card_from'])
+        if request.POST['card_from'] == request.user.username:
+            card_from = 'Кошелек'
+        else:
+            card_from = request.POST['card_from']
+        print(request.POST)
+        if request.POST['is_save'] == 'true' and not models.QuickPayment.objects.filter(username=request.user,
+                                                                           rent=models.DoneRent.objects.get(id=id_donerent),
+                                                                           user_payment=card_from,
+                                                                           amount=request.POST['size']):
+            models.QuickPayment.objects.create(username=request.user,
+                                               rent=models.DoneRent.objects.get(id=id_donerent),
+                                               user_payment=card_from,
+                                               amount=request.POST['size'])
         return HttpResponse(response, content_type="text/html; charset=utf-8")
 
 
@@ -565,6 +580,33 @@ def search_rent(request):
     else:
         form = SearchRent()
         return render(request, "Search/SearchRent.html", {'form': form})
+
+
+def quick_payment(request):
+    if request.method == 'GET':
+        list_payments = list()
+        payments = models.QuickPayment.objects.filter(username=request.user)
+        for i in payments:
+            list_payments.append([i, i.user_payment, i.amount,
+                                models.Rent.objects.get(id=models.DoneRent.objects.get(id=i.rent_id).id_house).name])
+        return render(request, 'Profile/QuickPayment.html', {'payments': list_payments})
+
+
+def quick_payment_info(request, id):
+    if request.method == 'GET':
+        context = list()
+        payment = models.QuickPayment.objects.get(id=id)
+        return render(request, 'Profile/QuickPaymentInfo.html', {'payment': payment,
+                                                             'rent': models.Rent.objects.get(id=models.DoneRent.objects.get(id=payment.rent_id).id_house)})
+    else:
+        payment = models.QuickPayment.objects.get(id=id)
+        if payment.user_payment == 'Кошелек':
+            tr_from = request.user
+        else:
+            tr_from = models.UserCard.objects.get(card_num=payment.user_payment)
+        tr_to = models.MyUser.objects.get(id=models.Rent.objects.get(id=models.DoneRent.objects.get(id=payment.rent_id).id_house).user_login)
+        c, m = t.Transaction(payment.amount, tr_from, tr_to).make_transaction()
+        return render(request, 'Profile/Thanks.html', {'mes': m})
 
 
 def search_user(request):

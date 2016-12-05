@@ -2,59 +2,27 @@
 {% block title %}Оплата{% endblock %}
 {% block content %}
     {% csrf_token %}
-    <script charset="utf-8">
-    function func(card_id, balance_to, amount) {
-        var xmlhttp = getXmlHttp();
-        var params = 'card_from=' + encodeURIComponent(card_id) +
-                '&size=' + encodeURIComponent(amount) + '&balance_to=' + encodeURIComponent(balance_to) +
-                '&csrfmiddlewaretoken=' + document.getElementsByName('csrfmiddlewaretoken')[0].value;
-        xmlhttp.open("POST", {{ id }}, true);
-        xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xmlhttp.send(params);
-        xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState == 4){
-                div = document.getElementById('response');
-                if (JSON.parse(xmlhttp.responseText)["status"] == true){
-                    div.style.color = "green";
-                    div.innerHTML = JSON.parse(xmlhttp.responseText)["message"];
-                    window.setTimeout(function() {
-                        var new_url = "/profile";
-                        window.location.replace(new_url)
-                    }, 2000);
-                }
-                else {
-                    div.style.color = "red";
-                    div.innerHTML = JSON.parse(xmlhttp.responseText)["message"];
-                }
-            }
-        }
-    }
-
-    function getXmlHttp(){
-        var xmlhttp;
-        try {
-            xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
-            } catch (e) {
-        try {
-            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-            } catch (E) {
-        xmlhttp = false;
-        }
-    }
-    if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
-        xmlhttp = new XMLHttpRequest();
-    }
-    return xmlhttp;
-    }
-</script>
-    <div class="center">Выберите способ оплаты</div>
+    <script src="/static/javascript/post_choose_payment.js"></script>
+    <div class="center">
+            <table>
+                <tr>
+                    <td class="padding">Выберите способ оплаты</td>
+                </tr>
+        <tr>
+            <td class="padding">Сохранить текущий платеж</td>
+            <td>
+                <input type="checkbox" id="check_box" title="Сохранить текущий платеж">
+            </td>
+        </tr>
+    </table>
+    </div>
 {% for card, card_num in cards %}
     <div class="narrow-center">
-    <input type="button" class="button8" onclick="func({{ card.card_num }}, '{{ balance_to }}', {{ amount }})" value="{{ card_num }}">
+    <input type="button" class="button8" onclick="func({{ card.card_num }}, '{{ balance_to }}', {{ amount }}, {{ id }})" value="{{ card_num }}">
     </div>
 {% endfor %}
     <div class="narrow-center">
-        <input type="button" class="button8" onclick="func('{{ request.user }}', '{{ balance_to }}', {{ amount }})" value="Кошелек">
+        <input type="button" class="button8" onclick="func('{{ request.user.username }}', '{{ balance_to }}', {{ amount }}, {{ id }})" value="Кошелек">
     </div>
     <div id="response" class="narrow-center"></div>
 {% endblock %}

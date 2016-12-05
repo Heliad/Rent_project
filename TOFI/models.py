@@ -162,3 +162,10 @@ class LogOperationsBalance(models.Model):  # Модель для логиров�
     type_operation = models.CharField(max_length=50)  # Ввод/вывод/и т.д.
     describe_operation = models.CharField(max_length=100)  # Описание
     date_operation = models.DateField(default=None)
+
+
+class QuickPayment(models.Model):
+    username = models.ForeignKey(MyUser)
+    rent = models.ForeignKey(DoneRent)
+    user_payment = models.CharField(max_length=50, default=None)
+    amount = models.IntegerField(default=None)

@@ -51,6 +51,25 @@
     background: darkgray;
 }
 
+.button9
+{
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+    color: black;
+    height: 40px;
+    width: 100%;
+    max-width: 700px;
+    padding-top: 0;
+    padding-bottom: 0;
+    background: whitesmoke;
+    transition: 0.2s;
+    border-width: 0;
+}
+
+.button9:hover
+{
+    background: darkgray;
+}
+
 .button7
 {
     color: white;

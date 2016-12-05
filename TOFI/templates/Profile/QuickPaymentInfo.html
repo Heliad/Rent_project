@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Оплата{% endblock %}
+{% block content %}
+<div>
+    <table class="center">
+            <tr class="padding">
+                <td class="padding">Название:</td>
+                <td>{{ rent.name }}</td>
+            </tr>
+            <tr class="padding">
+                <td class="padding">Адрес:</td>
+                <td>{{ rent.address }}</td>
+            </tr>
+            <tr class="padding">
+                <td class="padding">Время аренды(Мес.):</td>
+                <td>{{ rent.min_rent_time }}</td>
+            </tr>
+            <tr class="padding">
+                <td class="padding">Площадь(кв.м.):</td>
+                <td>{{ rent.area }}</td>
+            </tr>
+            <tr class="padding">
+                <td class="padding">Дата постройки:</td>
+                <td>{{ rent.date_of_construction }}</td>
+            </tr>
+            <tr class="padding">
+                <td class="padding">Дата создания обьявления:</td>
+                <td>{{ rent.creation_date }}</td>
+            </tr>
+            <tr class="padding">
+                <td class="padding">Описание:</td>
+                <td>{{ rent.other }}</td>
+            </tr>
+            <tr class="padding">
+                <td class="padding">Цена(BYN):</td>
+                <td>{{ rent.cost }}</td>
+            </tr>
+            <tr class="padding">
+                <td class="padding">
+                    <a href="/aboutUser/{{ rent.user_login }}">Отобразить информацию об арендаторе</a>
+                </td>
+            </tr>
+        </table>
+</div>
+    <div class="center">
+        <p>Оплата через: {{ payment.user_payment }}</p>
+        <p>Сумма: {{ payment.amount }} BYN</p>
+        <form method="POST">
+                {% csrf_token %}
+        <input class="button7" type="submit" value="Оплатить">
+    </form>
+    </div>
+{% endblock %}

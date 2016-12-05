@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Оплата{% endblock %}
+{% block content %}
+    {% if payments %}
+        <div id="response">
+            <div class="center">
+                {% for i, payment, amount, to in payments %}
+                    <div>
+                    <form action="payment_info/{{ i.id }}">
+                        <input type="submit" class="button9" value="Тип оплаты: {{ payment }}, цена: {{ amount }} BYN, Аренда: {{ to }}">
+                    </form>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="center">Быстрых платежей нет</div>
+    {% endif %}
+    {% csrf_token %}
+{% endblock %}
