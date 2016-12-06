@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Валюта{% endblock %}
+{% block content %}
+    <table class="center">
+        {% for c in cur %}
+            <tr class="padding">
+                <td class="padding">{{ c.id }}</td>
+                <td class="padding">{{ c.currency_name }}</td>
+                <td class="padding">{{ c.currency_value }} BYN</td>
+                <td class="padding">
+                    <a href="editCurrency/{{ c.id }}">Изменить</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

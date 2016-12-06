@@ -19,6 +19,12 @@
       <column name="date_comment" sqlType="DATE" precision="0" scale="-1" nullable="false" jdbcType="12"/>
       <primary-key columns="id"/>
     </table>
+    <table name="TOFI_currency" schema="" catalog="" type="TABLE">
+      <column name="id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
+      <column name="currency_name" sqlType="VARCHAR(10)" precision="0" scale="-1" nullable="false" jdbcType="12"/>
+      <column name="currency_value" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
+      <primary-key columns="id"/>
+    </table>
     <table name="TOFI_donerent" schema="" catalog="" type="TABLE">
       <column name="id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
       <column name="id_house" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
@@ -84,6 +90,18 @@
       <index name="TOFI_myuser_user_card_id_26b8363f" unique="true" columns="usercard_id"/>
       <index name="TOFI_myuser_user_card_id_8b14fb18" unique="true" columns="myuser_id"/>
       <index name="TOFI_myuser_user_card_id_myuser_id_5231a0f8_uniq" unique="true" columns="myuser_id,usercard_id"/>
+    </table>
+    <table name="TOFI_quickpayment" schema="" catalog="" type="TABLE">
+      <column name="id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
+      <column name="rent_id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
+      <column name="username_id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
+      <column name="user_payment" sqlType="VARCHAR(50)" precision="0" scale="-1" nullable="false" jdbcType="12"/>
+      <column name="amount" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
+      <primary-key columns="id"/>
+      <foreign-key name="#FAKE_TOFI_quickpayment_1" columns="username_id" ref-table="TOFI_myuser" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
+      <foreign-key name="#FAKE_TOFI_quickpayment_2" columns="rent_id" ref-table="TOFI_donerent" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
+      <index name="TOFI_quickpayment_bbe0c9aa" unique="true" columns="username_id"/>
+      <index name="TOFI_quickpayment_2d9987c0" unique="true" columns="rent_id"/>
     </table>
     <table name="TOFI_rent" schema="" catalog="" type="TABLE">
       <column name="id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>

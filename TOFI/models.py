@@ -169,3 +169,8 @@ class QuickPayment(models.Model):
     rent = models.ForeignKey(DoneRent)
     user_payment = models.CharField(max_length=50, default=None)
     amount = models.IntegerField(default=None)
+
+
+class Currency(models.Model):
+    currency_name = models.CharField(max_length=10)
+    currency_value = models.FloatField()

@@ -3,6 +3,7 @@ from django.shortcuts import render
 from TOFI import models
 from .forms import *
 
+
 def main_admin(request):
     return render(request, 'Admin/MainAdmin.html')
 
@@ -37,6 +38,7 @@ def delete_block(request, id_user):
     user.save()
     mes = "Пользователь " + user.username + " разблокирован"
     return render(request, 'Admin/Done.html', {'message': mes})
+
 
 def search_by_id(request):
     if request.method == 'POST':
@@ -85,3 +87,31 @@ def edit_user_admin(request, id_user):
     else:
         form = EditUserAdmin()
     return render(request, "Admin/EditUser.html", {'form': form})
+
+
+def all_currency(request):
+    cur = models.Currency.objects.all()
+    return render(request, "Admin/AllCurrency.html", {'cur': cur})
+
+
+def edit_currency(request, id_cur):
+    cur = models.Currency.objects.get(id=id_cur)
+
+    class EditCurrency(forms.Form):
+        cur_name = forms.CharField(label="Наименование валюты:", max_length=10, required=True, initial=cur.currency_name)
+        cur_value = forms.FloatField(label="Курс:", required=True, initial=cur.currency_value)
+
+    if request.method == 'POST':
+        form = EditCurrency(request.POST)
+
+        if form.is_valid():
+            cur.currency_name = form.cleaned_data['cur_name']
+            cur.currency_value = form.cleaned_data['cur_value']
+            cur.save()
+
+            mes = "Информация о валюте с номером: " + str(cur.id) + " успешно изменена и сохранена"
+            return render(request, 'Admin/Done.html', {'message': mes})
+
+    else:
+        form = EditCurrency()
+    return render(request, "Admin/EditCurrency.html", {'form': form})

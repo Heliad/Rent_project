@@ -53,6 +53,8 @@ urlpatterns = [
 
     url(r'^admin/', admin.site.urls),
     url(r'mainadmin', viewAdmin.main_admin, name='MainAdmin'),
+    url(r'currency', viewAdmin.all_currency, name='AllCurrency'),
+    url(r'editCurrency/(?P<id_cur>\d*)', viewAdmin.edit_currency, name='EditCurrency'),
     url(r'blockadmin', viewAdmin.blocked_accounts, name='BlockAccounts'),
     url(r'createblock/(?P<id_user>\d*)', viewAdmin.create_block, name='CreateBlock'),
     url(r'deleteblock/(?P<id_user>\d*)', viewAdmin.delete_block, name='DeleteBlock'),
