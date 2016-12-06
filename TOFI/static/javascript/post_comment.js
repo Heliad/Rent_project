@@ -1,14 +1,20 @@
-    function func(id) {
+function func() {
         var xmlhttp = getXmlHttp();
-        var params = 'id=' + encodeURIComponent(id);
+    var comment = document.getElementById('comment');
+    if (comment.value) {
+        var params = 'comment=' + encodeURIComponent(comment.value);
         params += '&csrfmiddlewaretoken=' + document.getElementsByName('csrfmiddlewaretoken')[0].value;
-        xmlhttp.open("POST", true);
+        xmlhttp.open("POST", '', true);
         xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         xmlhttp.send(params);
         xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4) {
-                div = document.getElementById('response');
-                div.innerHTML = xmlhttp.response
+                var response = document.getElementById('response');
+                response.innerHTML = '<tr class="padding">' +
+                    '<td class="padding">' + JSON.parse(xmlhttp.responseText)["user"] + '</td>' +
+                    '<td>' + JSON.parse(xmlhttp.responseText)["date"] + '</td>' +
+                    '<td>' + JSON.parse(xmlhttp.responseText)["com"] + '</td>' + '</tr>' + response.innerHTML;
+            }
             }
         }
     }

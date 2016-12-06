@@ -31,7 +31,7 @@
     </column>
     <column id="24" parent="2" name="name">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(80)(0,-1)|12</data-type>
+      <data-type>VARCHAR(80) (0,-1)|12</data-type>
     </column>
     <index id="25" parent="2" name="sqlite_autoindex_auth_group_1">
       <name-surrogate>1</name-surrogate>
@@ -93,11 +93,11 @@ permission_id</columns>
     </column>
     <column id="36" parent="4" name="codename">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(100)(0,-1)|12</data-type>
+      <data-type>VARCHAR(100) (0,-1)|12</data-type>
     </column>
     <column id="37" parent="4" name="name">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(255)(0,-1)|12</data-type>
+      <data-type>VARCHAR(255) (0,-1)|12</data-type>
     </column>
     <index id="38" parent="4" name="auth_permission_content_type_id_01ab375a_uniq">
       <columns>content_type_id
@@ -124,7 +124,7 @@ codename</columns>
     </column>
     <column id="42" parent="5" name="password">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(128)(0,-1)|12</data-type>
+      <data-type>VARCHAR(128) (0,-1)|12</data-type>
     </column>
     <column id="43" parent="5" name="last_login">
       <data-type>DATETIME(0,-1)|12</data-type>
@@ -135,15 +135,15 @@ codename</columns>
     </column>
     <column id="45" parent="5" name="first_name">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(30)(0,-1)|12</data-type>
+      <data-type>VARCHAR(30) (0,-1)|12</data-type>
     </column>
     <column id="46" parent="5" name="last_name">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(30)(0,-1)|12</data-type>
+      <data-type>VARCHAR(30) (0,-1)|12</data-type>
     </column>
     <column id="47" parent="5" name="email">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(254)(0,-1)|12</data-type>
+      <data-type>VARCHAR(254) (0,-1)|12</data-type>
     </column>
     <column id="48" parent="5" name="is_staff">
       <mandatory>1</mandatory>
@@ -159,7 +159,7 @@ codename</columns>
     </column>
     <column id="51" parent="5" name="username">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(150)(0,-1)|12</data-type>
+      <data-type>VARCHAR(150) (0,-1)|12</data-type>
     </column>
     <index id="52" parent="5" name="sqlite_autoindex_auth_user_1">
       <name-surrogate>1</name-surrogate>
@@ -260,7 +260,7 @@ permission_id</columns>
     </column>
     <column id="70" parent="8" name="object_repr">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(200)(0,-1)|12</data-type>
+      <data-type>VARCHAR(200) (0,-1)|12</data-type>
     </column>
     <column id="71" parent="8" name="action_flag">
       <mandatory>1</mandatory>
@@ -309,11 +309,11 @@ permission_id</columns>
     </column>
     <column id="80" parent="9" name="app_label">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(100)(0,-1)|12</data-type>
+      <data-type>VARCHAR(100) (0,-1)|12</data-type>
     </column>
     <column id="81" parent="9" name="model">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(100)(0,-1)|12</data-type>
+      <data-type>VARCHAR(100) (0,-1)|12</data-type>
     </column>
     <index id="82" parent="9" name="django_content_type_app_label_76bd3d3b_uniq">
       <columns>app_label
@@ -331,11 +331,11 @@ model</columns>
     </column>
     <column id="85" parent="10" name="app">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(255)(0,-1)|12</data-type>
+      <data-type>VARCHAR(255) (0,-1)|12</data-type>
     </column>
     <column id="86" parent="10" name="name">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(255)(0,-1)|12</data-type>
+      <data-type>VARCHAR(255) (0,-1)|12</data-type>
     </column>
     <column id="87" parent="10" name="applied">
       <mandatory>1</mandatory>
@@ -347,7 +347,7 @@ model</columns>
     </key>
     <column id="89" parent="11" name="session_key">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(40)(0,-1)|12</data-type>
+      <data-type>VARCHAR(40) (0,-1)|12</data-type>
     </column>
     <column id="90" parent="11" name="session_data">
       <mandatory>1</mandatory>
@@ -378,11 +378,11 @@ model</columns>
     </column>
     <column id="97" parent="13" name="text_comment">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(100)(0,-1)|12</data-type>
+      <data-type>VARCHAR(100) (0,-1)|12</data-type>
     </column>
     <column id="98" parent="13" name="user_login">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <column id="99" parent="13" name="date_comment">
       <mandatory>1</mandatory>
@@ -406,7 +406,7 @@ model</columns>
     </column>
     <column id="104" parent="14" name="text_comment">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <column id="105" parent="14" name="date_comment">
       <mandatory>1</mandatory>
@@ -438,7 +438,7 @@ model</columns>
     </column>
     <column id="112" parent="15" name="cost">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <column id="113" parent="15" name="pay_number">
       <mandatory>1</mandatory>
@@ -462,11 +462,11 @@ model</columns>
     </column>
     <column id="118" parent="16" name="type_operation">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <column id="119" parent="16" name="describe_operation">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(100)(0,-1)|12</data-type>
+      <data-type>VARCHAR(100) (0,-1)|12</data-type>
     </column>
     <column id="120" parent="16" name="date_operation">
       <mandatory>1</mandatory>
@@ -494,14 +494,14 @@ model</columns>
     </column>
     <column id="126" parent="17" name="text_message">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(100)(0,-1)|12</data-type>
+      <data-type>VARCHAR(100) (0,-1)|12</data-type>
     </column>
     <column id="127" parent="17" name="text_more">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(100)(0,-1)|12</data-type>
+      <data-type>VARCHAR(100) (0,-1)|12</data-type>
     </column>
     <column id="128" parent="17" name="login_user_from">
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <column id="129" parent="17" name="is_new">
       <mandatory>1</mandatory>
@@ -527,23 +527,23 @@ model</columns>
     </column>
     <column id="135" parent="18" name="username">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <column id="136" parent="18" name="password">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <column id="137" parent="18" name="name">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <column id="138" parent="18" name="surname">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <column id="139" parent="18" name="last_name">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <column id="140" parent="18" name="age">
       <mandatory>1</mandatory>
@@ -551,19 +551,19 @@ model</columns>
     </column>
     <column id="141" parent="18" name="passport_id">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <column id="142" parent="18" name="phone">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <column id="143" parent="18" name="address">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <column id="144" parent="18" name="email">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <column id="145" parent="18" name="is_active">
       <mandatory>1</mandatory>
@@ -578,7 +578,7 @@ model</columns>
       <data-type>BOOL(0,-1)|4</data-type>
     </column>
     <column id="148" parent="18" name="license_field">
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <column id="149" parent="18" name="taxpayer_account_number">
       <data-type>INTEGER(0,-1)|4</data-type>
@@ -592,7 +592,7 @@ model</columns>
       <data-type>BOOL(0,-1)|4</data-type>
     </column>
     <column id="152" parent="18" name="reason_block">
-      <data-type>VARCHAR(100)(0,-1)|12</data-type>
+      <data-type>VARCHAR(100) (0,-1)|12</data-type>
     </column>
     <index id="153" parent="18" name="sqlite_autoindex_TOFI_myuser_1">
       <name-surrogate>1</name-surrogate>
@@ -658,7 +658,7 @@ usercard_id</columns>
     </column>
     <column id="165" parent="20" name="user_payment">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <key id="166" parent="20">
       <columns>id</columns>
@@ -688,11 +688,11 @@ usercard_id</columns>
     </column>
     <column id="170" parent="21" name="name">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <column id="171" parent="21" name="address">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <column id="172" parent="21" name="area">
       <mandatory>1</mandatory>
@@ -708,18 +708,18 @@ usercard_id</columns>
     </column>
     <column id="175" parent="21" name="other">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(100)(0,-1)|12</data-type>
+      <data-type>VARCHAR(100) (0,-1)|12</data-type>
     </column>
     <column id="176" parent="21" name="cost">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <column id="177" parent="21" name="date_of_construction">
       <mandatory>1</mandatory>
       <data-type>INTEGER(0,-1)|4</data-type>
     </column>
     <column id="178" parent="21" name="user_login">
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <column id="179" parent="21" name="status_rent">
       <mandatory>1</mandatory>
@@ -735,19 +735,19 @@ usercard_id</columns>
     </column>
     <column id="182" parent="22" name="card_num">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(16)(0,-1)|12</data-type>
+      <data-type>VARCHAR(16) (0,-1)|12</data-type>
     </column>
     <column id="183" parent="22" name="period_validity">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(5)(0,-1)|12</data-type>
+      <data-type>VARCHAR(5) (0,-1)|12</data-type>
     </column>
     <column id="184" parent="22" name="name_card_owner">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(50)(0,-1)|12</data-type>
+      <data-type>VARCHAR(50) (0,-1)|12</data-type>
     </column>
     <column id="185" parent="22" name="CVC2_CVV">
       <mandatory>1</mandatory>
-      <data-type>VARCHAR(3)(0,-1)|12</data-type>
+      <data-type>VARCHAR(3) (0,-1)|12</data-type>
     </column>
     <column id="186" parent="22" name="size">
       <mandatory>1</mandatory>

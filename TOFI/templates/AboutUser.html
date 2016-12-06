@@ -35,17 +35,28 @@
                 <td>{{ user.taxpayer_account_number }}</td>
             </tr>
         </table>
-
-        <table class="center">
-            <tr class="padding">
-                <td>
-                    <a href="addcommentuser/{{ user.id }}">Оставить отзыв о пользователе</a>
-                </td>
+    {% csrf_token %}
+    <script src="/static/javascript/post_comment.js"></script>
+    <table class="center">
+        {% if request.user.is_anonymous %}
+            <tr>
+                <td>Чтобы написать комментарий <a href="/login">войдите</a> или <a
+                        href="/register">зарегистрируйтесь.</a></td>
             </tr>
-            <tr class="padding">
-                <td>
-                    <a href="allcommentsuser/{{ user.id }}">Просмотреть все отзывы о пользователе</a>
-                </td>
+        {% else %}
+            <tr>
+                <td><input id="comment" type="text" maxlength="150"></td>
+                <td><input type="button" class="button7" value="Отправить" onclick="func()"></td>
             </tr>
-        </table>
+        {% endif %}
+    </table>
+    <table class="center" id="response">
+        {% for c in com %}
+            <tr class="padding">
+                <td class="padding">{{ c.login_user_from }}</td>
+                <td>{{ c.date }}</td>
+                <td>{{ c.text_com }}</td>
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}

@@ -40,7 +40,6 @@
             {% else %}
                 <li><a href="{% url 'Search' %}">Поиск</a></li>
                 <li><a href="{% url 'Logout' %}">Выход</a></li>
-                <li><a href="{% url 'AddComment' %}">Оставить отзыв о нашем сайте</a></li>
                 <li><a href="{% url 'Profile' %}">Личный кабинет</a></li>
                 {% if request.user.ie %}
                     <li><a href="{% url 'AddRent' %}">Создать объявление</a></li>
