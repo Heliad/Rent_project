@@ -13,10 +13,7 @@ urlpatterns = [
 
     url(r'^add_rent$', views.AddRent.as_view(), name='AddRent'),
 
-    # url(r'addcommentuser/(?P<user_id>\d*)', views.add_comment_about_user, name='AddCommentAboutUser'),
-    # url(r'allcomments/(?P<user_id>\d*)', views.all_comments_about_user, name='AllComments'),
     url(r'comment', views.comment, name='Comment'),
-    # url(r'allcomments', views.all_comments, name='AllComments'),
 
     url(r'search', include('search.urls')),
 

@@ -329,7 +329,7 @@ def extract_balance(request):
             extracts = models.LogOperationsBalance.objects.filter(id_user=request.user.id)
             result = []
             for ex in extracts:
-                if ex.date_operation <= period_end and ex.date_operation >= period_start:
+                if period_end >= ex.date_operation >= period_start:
                     result.append(ex)
 
             return render(request, 'Profile/ExtractBalance.html', {'form': form, 'result': result})
@@ -350,7 +350,6 @@ def quick_payment(request):
 
 def quick_payment_info(request, id):
     if request.method == 'GET':
-        context = list()
         payment = models.QuickPayment.objects.get(id=id)
         return render(request, 'Profile/QuickPaymentInfo.html', {'payment': payment,
                                                                  'rent': models.Rent.objects.get(
