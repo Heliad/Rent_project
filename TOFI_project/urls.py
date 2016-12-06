@@ -58,5 +58,5 @@ urlpatterns = [
     url(r'blockadmin', viewAdmin.blocked_accounts, name='BlockAccounts'),
     url(r'createblock/(?P<id_user>\d*)', viewAdmin.create_block, name='CreateBlock'),
     url(r'deleteblock/(?P<id_user>\d*)', viewAdmin.delete_block, name='DeleteBlock'),
-    url(r'edituseradmin/(?P<id_user>\d*)', viewAdmin.edit_user_admin, name='EditUser')
+    url(r'edituseradmin/(?P<id_user>\d*)', viewAdmin.edit_user_admin, name='EditUser'),
 ]

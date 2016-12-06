@@ -66,6 +66,7 @@ def edit_user_admin(request, id_user):
                                       initial=user_for_edit.passport_id)
         phone = forms.CharField(label="Ваш номер телефона", max_length=50, required=True, initial=user_for_edit.phone)
         address = forms.CharField(label="Ваш адрес", max_length=50, required=True, initial=user_for_edit.address)
+        balance = forms.FloatField(label="Баланс", required=True, initial=user_for_edit.balance)
 
     if request.method == 'POST':
         form = EditUserAdmin(request.POST)
@@ -80,6 +81,7 @@ def edit_user_admin(request, id_user):
             user.passport_id = form.cleaned_data['passport_id']
             user.phone = form.cleaned_data['phone']
             user.address = form.cleaned_data['address']
+            user.balance = form.cleaned_data['balance']
             user.save()
             mes = "Личные данные пользователя " + user.username + " успешно изменены и сохранены"
             return render(request, 'Admin/Done.html', {'message': mes})
