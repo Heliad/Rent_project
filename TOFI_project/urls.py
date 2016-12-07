@@ -9,7 +9,7 @@ urlpatterns = [
     url(r'^login/', views.Login.as_view(), name='Login'),
     url(r'^logout/', views.logout_view, name='Logout'),
 
-    url(r'^profile/', include('profile.urls')),
+    url(r'^profile/', include('user_profile.urls')),
 
     url(r'^add_rent$', views.AddRent.as_view(), name='AddRent'),
 
