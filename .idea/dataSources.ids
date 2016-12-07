@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="dataSourceStorage">
-  <data-source name="Sqlite (Xerial) - db.sqlite3" uuid="3a48d547-c3a7-48b0-acae-5c9a7f2ff44c">
+  <data-source name="Sqlite (Xerial) - db.sqlite3" uuid="774686c6-a7dd-47f9-8ecb-2a357dc4e185">
     <database-info product="SQLite" version="3.8.11" jdbc-version="2.1" driver-name="SQLiteJDBC" driver-version="native"/>
     <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed"/>
     <schema name="" catalog=""/>
@@ -22,7 +22,7 @@
     <table name="TOFI_currency" schema="" catalog="" type="TABLE">
       <column name="id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
       <column name="currency_name" sqlType="VARCHAR(10)" precision="0" scale="-1" nullable="false" jdbcType="12"/>
-      <column name="currency_value" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
+      <column name="currency_value" sqlType="REAL" precision="0" scale="-1" nullable="false" jdbcType="6"/>
       <primary-key columns="id"/>
     </table>
     <table name="TOFI_donerent" schema="" catalog="" type="TABLE">
@@ -76,8 +76,8 @@
       <column name="license_field" sqlType="VARCHAR(50)" precision="0" scale="-1" nullable="true" jdbcType="12"/>
       <column name="taxpayer_account_number" sqlType="INTEGER" precision="0" scale="-1" nullable="true" jdbcType="4"/>
       <column name="balance" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
-      <column name="is_staff" sqlType="BOOL" precision="0" scale="-1" nullable="false" jdbcType="4"/>
       <column name="reason_block" sqlType="VARCHAR(100)" precision="0" scale="-1" nullable="true" jdbcType="12"/>
+      <column name="is_moder" sqlType="BOOL" precision="0" scale="-1" nullable="false" jdbcType="4"/>
       <primary-key columns="id"/>
     </table>
     <table name="TOFI_myuser_user_card_id" schema="" catalog="" type="TABLE">
@@ -90,6 +90,13 @@
       <index name="TOFI_myuser_user_card_id_26b8363f" unique="true" columns="usercard_id"/>
       <index name="TOFI_myuser_user_card_id_8b14fb18" unique="true" columns="myuser_id"/>
       <index name="TOFI_myuser_user_card_id_myuser_id_5231a0f8_uniq" unique="true" columns="myuser_id,usercard_id"/>
+    </table>
+    <table name="TOFI_penalties" schema="" catalog="" type="TABLE">
+      <column name="id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
+      <column name="kind_penalty" sqlType="VARCHAR(50)" precision="0" scale="-1" nullable="false" jdbcType="12"/>
+      <column name="describe_penalty" sqlType="VARCHAR(100)" precision="0" scale="-1" nullable="false" jdbcType="12"/>
+      <column name="cost_penalty" sqlType="REAL" precision="0" scale="-1" nullable="false" jdbcType="6"/>
+      <primary-key columns="id"/>
     </table>
     <table name="TOFI_quickpayment" schema="" catalog="" type="TABLE">
       <column name="id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>

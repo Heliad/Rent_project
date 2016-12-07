@@ -26,14 +26,16 @@
                 <td class="padding">Электронная почта:</td>
                 <td>{{ user.email }}</td>
             </tr>
-            <tr class="padding">
-                <td class="padding">Лицензия:</td>
-                <td>{{ user.license_field }}</td>
+            {% if request.user.ie %}
+                <tr class="padding">
+                    <td class="padding">Лицензия:</td>
+                    <td>{{ user.license_field }}</td>
+                </tr>
+                <tr class="padding">
+                    <td class="padding">УНН:</td>
+                    <td>{{ user.taxpayer_account_number }}</td>
             </tr>
-            <tr class="padding">
-                <td class="padding">УНН:</td>
-                <td>{{ user.taxpayer_account_number }}</td>
-            </tr>
+            {% endif %}
         </table>
     {% csrf_token %}
     <script src="/static/javascript/post_comment.js"></script>
@@ -45,8 +47,12 @@
             </tr>
         {% else %}
             <tr>
-                <td><input id="comment" type="text" maxlength="150"></td>
-                <td><input type="button" class="button7" value="Отправить" onclick="func()"></td>
+                <td>
+                    <textarea placeholder="Введите отзыв о пользователе..." cols="70" rows="3px" id="comment" type="text" maxlength="100"></textarea>
+                </td>
+                <td>
+                    <input type="button" class="button7" value="Отправить" onclick="func()">
+                </td>
             </tr>
         {% endif %}
     </table>

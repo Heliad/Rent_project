@@ -81,7 +81,8 @@ class Registration(View):
                 if user and not request.user.is_admin:
                     login(request, user)
                     return HttpResponseRedirect('/')
-
+                if request.user.is_admin:
+                    return render(request, 'Admin/Done.html', {'message': 'Новая учетная запись успешно создана'})
         return render(request, self.template_name, {'form': form})
 
 

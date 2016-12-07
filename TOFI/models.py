@@ -82,8 +82,6 @@ class MyUser(AbstractBaseUser):
     balance = models.IntegerField(verbose_name='', default=0)
     user_card_id = models.ManyToManyField(UserCard, default=None)
 
-    is_staff = models.BooleanField()  # для админки
-
     objects = MyUserManager()
 
     USERNAME_FIELD = 'username'
@@ -92,6 +90,7 @@ class MyUser(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     reason_block = models.CharField(max_length=100, null=True)
     is_admin = models.BooleanField(default=False)
+    is_moder = models.BooleanField(default=False)
 
     def get_full_name(self):
         return self.Login
@@ -174,3 +173,9 @@ class QuickPayment(models.Model):
 class Currency(models.Model):
     currency_name = models.CharField(max_length=10)
     currency_value = models.FloatField()
+
+
+class Penalties(models.Model):  # Штрафы
+    kind_penalty = models.CharField(max_length=50)
+    describe_penalty = models.CharField(max_length=100)
+    cost_penalty = models.FloatField()
