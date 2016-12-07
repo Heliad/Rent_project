@@ -61,7 +61,7 @@ class Registration(View):
     template_name = 'Registration.html'
 
     def get(self, request):
-        if not request.user.is_anonymous:
+        if not request.user.is_anonymous and not request.user.is_admin:
             return HttpResponseRedirect("/")
         form = self.form_class(None)
         return render(request, self.template_name, {'form': form})
@@ -78,7 +78,7 @@ class Registration(View):
 
                 user = authenticate(username=username, password=password)
 
-                if user:
+                if user and not request.user.is_admin:
                     login(request, user)
                     return HttpResponseRedirect('/')
 
