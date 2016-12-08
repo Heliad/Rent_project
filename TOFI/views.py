@@ -20,6 +20,8 @@ def main_view(request):
     if not request.user.is_anonymous:
         if request.user.is_admin:
             return HttpResponseRedirect("/mainadmin")
+        if request.user.is_moder:
+            return HttpResponseRedirect("/main_moder")
     context = {'rent': [i for i in list(models.Rent.objects.all())], 'comments': [i for i in list(models.Comment.objects.all())]}
     return render(request, 'Main.html', context)
 
@@ -127,10 +129,12 @@ def make_rent(request, number):
     class MakeMessage(forms.Form):
         text_message = 'Запрос на аренду вашего дома под номером ' + str(number) + " (" + str(
             rent.name) + ") от " + str(request.user.name) + " " + str(request.user.surname) + " " + \
-                       str(request.user.last_name)
+                       str(request.user.last_name) + "."
 
-        text_message = forms.CharField(label="Содержание:", initial=text_message)
-        text_more = forms.CharField(label="Дополнительно:", max_length=100)
+        text_message = forms.CharField(widget=forms.Textarea(attrs={'readonly':'readonly', 'rows': '2'}),
+                                       label="Содержание:",max_length=100, required=True, initial=text_message)
+        text_more = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Введите сопроводительное письмо...', 'rows': '4'}),
+                                    label="Дополнительно:", max_length=100, required=True)
 
     if request.method == 'POST':
         form = MakeMessage(request.POST)

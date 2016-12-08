@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Система штрафов{% endblock %}
+{% block content %}
+    <table class="center">
+        {% for p in pen %}
+            <tr class="padding">
+                <td class="padding">{{ p.kind_penalty }}</td>
+                <td class="padding">{{ p.describe_penalty }}</td>
+                <td class="padding">{{ p.cost_penalty }} BYN</td>
+                <td class="padding">
+                    <a href="edit_penalty/{{ p.id }}">Изменить</a>
+                </td>
+                <td class="padding">
+                    <a href="delete_penalty/{{ p.id }}">Удалить</a>
+                </td>
+            </tr>
+        {% endfor %}
+            <tr class="padding">
+                <td class="padding">
+                    <a href="{% url 'AddPenalty' %}">Добавить</a>
+                </td>
+            </tr>
+    </table>
+{% endblock %}

@@ -24,9 +24,12 @@ class UserForm(forms.ModelForm):
 
 class RentForm(forms.ModelForm):
 
+    other = forms.CharField(label="Другое:", max_length=100, required=True,
+                            widget=forms.Textarea(attrs={'placeholder': 'Введите описание дома...', 'rows': '4'}))
+
     class Meta:
         model = Rent
-        fields = ['name', 'address', 'min_rent_time', 'area', 'date_of_construction', 'other', 'cost']
+        fields = ['name', 'address', 'min_rent_time', 'area', 'date_of_construction', 'cost']
 
 
 class RefillBalance(forms.Form):
@@ -89,3 +92,9 @@ class CreateBlock(forms.ModelForm):
     class Meta:
         model = MyUser
         fields = ['reason_block']
+
+
+class EditPenalty(forms.Form):
+    kind_penalty = forms.CharField(label="Название:", required=True, max_length=50)
+    describe_penalty = forms.CharField(label="Описание:", required=True, max_length=150, widget=forms.Textarea)
+    cost_penalty = forms.FloatField(label="Размер штрафа:", required=True)

@@ -11,8 +11,12 @@
         </tr>
         {% else %}
             <tr>
-                <td><input id="comment" type="text" maxlength="150"></td>
-                <td><input type="button" class="button7" value="Отправить" onclick="func()"></td>
+                <td>
+                    <textarea placeholder="Введите отзыв о сервисе..." cols="70" rows="3px" id="comment" maxlength="150"></textarea>
+                </td>
+                <td>
+                    <input type="button" class="button7" value="Отправить" onclick="func()">
+                </td>
             </tr>
         {% endif %}
     </table>

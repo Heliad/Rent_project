@@ -103,15 +103,15 @@ class MyUser(AbstractBaseUser):
 
 
 class Rent(models.Model):
-    name = models.CharField(verbose_name='Название', max_length=50)
-    address = models.CharField(verbose_name='Адрес', max_length=50)
-    min_rent_time = models.IntegerField(verbose_name='Срок аренды')
-    area = models.IntegerField(verbose_name='Площадь', )
-    date_of_construction = models.IntegerField(verbose_name='Год строительства', default=None)
+    name = models.CharField(verbose_name='Название:', max_length=50)
+    address = models.CharField(verbose_name='Адрес:', max_length=50)
+    min_rent_time = models.IntegerField(verbose_name='Срок аренды:')
+    area = models.IntegerField(verbose_name='Площадь:', )
+    date_of_construction = models.IntegerField(verbose_name='Год строительства:', default=None)
     creation_date = models.DateField(default=None)
-    other = models.CharField(verbose_name='Другое', max_length=100)
-    cost = models.CharField(verbose_name='Цена аренды', max_length=50)
-    user_login = models.CharField(verbose_name="hide", max_length=50, null=True)
+    other = models.CharField(verbose_name='Другое:', max_length=100)
+    cost = models.CharField(verbose_name='Цена аренды:', max_length=50)
+    user_login = models.CharField(max_length=50, null=True)
     status_rent = models.BooleanField(default=True)  # True - свободно, False - уже арендовано арендой
 
     def getId(self):
@@ -179,3 +179,4 @@ class Penalties(models.Model):  # Штрафы
     kind_penalty = models.CharField(max_length=50)
     describe_penalty = models.CharField(max_length=100)
     cost_penalty = models.FloatField()
+
