@@ -116,3 +116,27 @@ def edit_currency(request, id_cur):
     else:
         form = EditCurrency()
     return render(request, "Admin/EditCurrency.html", {'form': form})
+
+
+def monetization(request):
+    mon = models.Monetization.objects.get(id=1)
+
+    class Monet(forms.Form):
+        describe_mon = forms.CharField(label="Описание:", required=True, max_length=150,
+                                           initial=mon.describe_mon, widget=forms.Textarea(attrs={'rows': '3'}))
+        value_mon = forms.FloatField(label="Размер:", required=True, initial=mon.value_mon)
+
+    if request.method == 'POST':
+        form = Monet(request.POST)
+
+        if form.is_valid():
+            mon.describe_mon = form.cleaned_data['describe_mon']
+            mon.value_mon = form.cleaned_data['value_mon']
+            mon.save()
+
+            mes = 'Изменения приняты и сохранены'
+            return render(request, 'Admin/Done.html', {'message': mes})
+    else:
+        form = Monet()
+
+    return render(request, 'Admin/Monetization.html', {'form': form})

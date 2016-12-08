@@ -292,9 +292,14 @@ def choose_payment(request, id_donerent):
         return render(request, "Profile/ChoosePayment.html", {'amount': cost.cost, 'cards': zip(user_cards, cards_num),
                                                               'id': id_donerent, 'balance_to': balance_to})
     else:
+        mon = models.Monetization.objects.get(id=1)
+        card_admin = models.UserCard.objects.get(name_card_owner='Admin')
+
         c, m = t.Transaction(request.POST['size'], request.POST['card_from'],
-                             request.POST['balance_to']).make_transaction()
+                             request.POST['balance_to'], True).make_transaction()
+
         response = {"message": m, "status": c}
+
         # Логирование операции оплаты аренды
         if c:
             models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Оплата аренды',

@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'createblock/(?P<id_user>\d*)', viewAdmin.create_block, name='CreateBlock'),
     url(r'deleteblock/(?P<id_user>\d*)', viewAdmin.delete_block, name='DeleteBlock'),
     url(r'edituseradmin/(?P<id_user>\d*)', viewAdmin.edit_user_admin, name='EditUser'),
+    url(r'monetization', viewAdmin.monetization, name='Monetization'),
 
     url(r'main_moder', viewModer.main_moder, name='MainModer'),
     url(r'all_penalties', viewModer.all_penalties, name='AllPenalties'),

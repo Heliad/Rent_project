@@ -62,7 +62,7 @@ class UserCard(models.Model):
     period_validity = models.CharField(verbose_name="Срок действия (ММГГ)", max_length=5)
     name_card_owner = models.CharField(verbose_name="Имя держателя карты", max_length=50)
     CVC2_CVV = models.CharField(verbose_name="CVC2/CVV", max_length=3)
-    size = models.IntegerField(verbose_name='Баланс')
+    size = models.FloatField(verbose_name='Баланс')
 
 
 class MyUser(AbstractBaseUser):
@@ -79,7 +79,7 @@ class MyUser(AbstractBaseUser):
     taxpayer_account_number = models.IntegerField(verbose_name='УНН', null=True)
     license_field = models.CharField(verbose_name='Лицензия', max_length=50, null=True)
     ie = models.BooleanField(verbose_name='ИП', default=False)
-    balance = models.IntegerField(verbose_name='', default=0)
+    balance = models.FloatField(verbose_name='', default=0)
     user_card_id = models.ManyToManyField(UserCard, default=None)
 
     objects = MyUserManager()
@@ -180,3 +180,7 @@ class Penalties(models.Model):  # Штрафы
     describe_penalty = models.CharField(max_length=100)
     cost_penalty = models.FloatField()
 
+
+class Monetization(models.Model):
+    describe_mon = models.CharField(max_length=100)
+    value_mon = models.FloatField()

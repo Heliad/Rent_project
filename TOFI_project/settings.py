@@ -107,9 +107,9 @@ AUTH_USER_MODEL = 'TOFI.MyUser'
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = False
 
-SESSION_COOKIE_SECURE = True
+#SESSION_COOKIE_SECURE = True
 
 LANGUAGE_CODE = 'en-us'
 
