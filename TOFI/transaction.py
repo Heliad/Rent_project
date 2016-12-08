@@ -10,7 +10,6 @@ class Transaction(object):
         self.mon_value = models.Monetization.objects.get(id=1).value_mon
 
     def make_transaction(self):
-        return_massage = ''
 
         if type(self.tr_from) == str:
             try:
@@ -49,7 +48,6 @@ class Transaction(object):
             a_card = models.UserCard.objects.get(name_card_owner='Admin')
             a_card.size += self.amount * self.mon_value
             a_card.save()
-
 
         self.tr_from.save()
         self.tr_to.save()

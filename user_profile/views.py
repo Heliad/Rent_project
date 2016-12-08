@@ -9,10 +9,13 @@ from django.shortcuts import render
 
 from TOFI import models
 from TOFI import transaction as t
+from TOFI import check as ch
 from TOFI.forms import *
 
 
 def profile(request):
+    ch.check_rent_number_pay()
+
     if request.user.is_anonymous:
         return HttpResponseRedirect("/login")
     cards = list()
@@ -26,7 +29,9 @@ def profile(request):
         if mail.is_new:
             new = True
             number += 1
-    return render(request, "Profile.html", {'cards': cards, 'new': new, 'number': number})
+
+    penalties = models.DonePenalty.objects.filter(id_user_for=request.user.id)
+    return render(request, "Profile.html", {'cards': cards, 'new': new, 'number': number, 'penalties': penalties})
 
 
 def add_card(request):
@@ -292,11 +297,14 @@ def choose_payment(request, id_donerent):
         return render(request, "Profile/ChoosePayment.html", {'amount': cost.cost, 'cards': zip(user_cards, cards_num),
                                                               'id': id_donerent, 'balance_to': balance_to})
     else:
-        mon = models.Monetization.objects.get(id=1)
-        card_admin = models.UserCard.objects.get(name_card_owner='Admin')
 
         c, m = t.Transaction(request.POST['size'], request.POST['card_from'],
                              request.POST['balance_to'], True).make_transaction()
+
+        if c:
+            drent = models.DoneRent.objects.get(id=id_donerent)
+            drent.paid_user += 1
+            drent.save()
 
         response = {"message": m, "status": c}
 
@@ -308,6 +316,7 @@ def choose_payment(request, id_donerent):
                                                                           str(m), date_operation=datetime.date.today())
 
         response = json.dumps(response, ensure_ascii=False)
+
         if request.POST['card_from'] == request.user.username:
             card_from = 'Кошелек'
         else:

@@ -184,3 +184,11 @@ class Penalties(models.Model):  # Штрафы
 class Monetization(models.Model):
     describe_mon = models.CharField(max_length=100)
     value_mon = models.FloatField()
+
+
+class DonePenalty(models.Model):  # Назначенные штрафы
+    describe_penalty = models.CharField(max_length=150)
+    id_user_for = models.IntegerField()
+    size_penalty = models.FloatField()
+    id_done_rent = models.IntegerField()
+    is_payd = models.BooleanField(default=False)

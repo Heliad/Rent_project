@@ -25,6 +25,15 @@
       <column name="currency_value" sqlType="REAL" precision="0" scale="-1" nullable="false" jdbcType="6"/>
       <primary-key columns="id"/>
     </table>
+    <table name="TOFI_donepenalty" schema="" catalog="" type="TABLE">
+      <column name="id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
+      <column name="describe_penalty" sqlType="VARCHAR(150)" precision="0" scale="-1" nullable="false" jdbcType="12"/>
+      <column name="id_user_for" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
+      <column name="size_penalty" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
+      <column name="id_done_rent" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
+      <column name="is_payd" sqlType="BOOL" precision="0" scale="-1" nullable="false" jdbcType="4"/>
+      <primary-key columns="id"/>
+    </table>
     <table name="TOFI_donerent" schema="" catalog="" type="TABLE">
       <column name="id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
       <column name="id_house" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
@@ -81,9 +90,9 @@
       <column name="ie" sqlType="BOOL" precision="0" scale="-1" nullable="false" jdbcType="4"/>
       <column name="license_field" sqlType="VARCHAR(50)" precision="0" scale="-1" nullable="true" jdbcType="12"/>
       <column name="taxpayer_account_number" sqlType="INTEGER" precision="0" scale="-1" nullable="true" jdbcType="4"/>
-      <column name="balance" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
       <column name="reason_block" sqlType="VARCHAR(100)" precision="0" scale="-1" nullable="true" jdbcType="12"/>
       <column name="is_moder" sqlType="BOOL" precision="0" scale="-1" nullable="false" jdbcType="4"/>
+      <column name="balance" sqlType="REAL" precision="0" scale="-1" nullable="false" jdbcType="6"/>
       <primary-key columns="id"/>
     </table>
     <table name="TOFI_myuser_user_card_id" schema="" catalog="" type="TABLE">
