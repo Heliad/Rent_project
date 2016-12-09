@@ -1,23 +1,29 @@
 from django import forms
 from django.forms import SelectDateWidget
 from .models import MyUser, Rent
+from .validators import *
+from django.core.validators import *
+from django.core.validators import ValidationError
 
 
 class UserForm(forms.ModelForm):
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput)
     password1 = forms.CharField(label='Подтвержение пароля', widget=forms.PasswordInput)
-    ie = forms.BooleanField(label='ИП', widget=forms.CheckboxInput)
+    name = forms.CharField(label='Имя:', required=True)
+    surname = forms.CharField(label='Фамилия:', required=True)
+    lastname = forms.CharField(label='Отчество:', required=True)
+
+    age = forms.IntegerField(label='Возраст:', validators=[MaxValueValidator(100), MinValueValidator(18)])
+    email = forms.CharField(label='Email:', validators=[EmailValidator()])
+    ie = forms.BooleanField(label='ИП', widget=forms.CheckboxInput, required=False)
 
     # license_field = forms.Textarea()
-    ie.required = False
-    taxpayer_account_number = forms.IntegerField(label='УНН')
-    taxpayer_account_number.required = False
-    license_field = forms.CharField(label='Лицензия')
-    license_field.required = False
+    taxpayer_account_number = forms.IntegerField(label='УНН', required=False)
+    license_field = forms.CharField(label='Лицензия', required=False)
 
     class Meta:
         model = MyUser
-        fields = ['username', 'password', 'password1', 'email', 'name',
+        fields = ['username', 'password', 'password1', 'name',
                   'surname', 'last_name', 'age', 'passport_id', 'phone', 'address', 'ie', 'taxpayer_account_number',
                   'license_field']
 

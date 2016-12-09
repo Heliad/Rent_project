@@ -15,7 +15,6 @@ from django.views.generic.edit import FormView
 from TOFI import models
 from .forms import *
 
-
 def main_view(request):
     if not request.user.is_anonymous:
         if request.user.is_admin:
@@ -70,6 +69,7 @@ class Registration(View):
 
     def post(self, request):
         form = self.form_class(request.POST)
+
         if form.is_valid():
             user = form.save(commit=False)
             username = form.cleaned_data['username']
@@ -80,12 +80,22 @@ class Registration(View):
 
                 user = authenticate(username=username, password=password)
 
-                if user and not request.user.is_admin:
+                if user:
+                    login(request, user)
+                    return HttpResponseRedirect('/')
+                elif user and not request.user.is_admin:
                     login(request, user)
                     return HttpResponseRedirect('/')
                 if request.user.is_admin:
                     return render(request, 'Admin/Done.html', {'message': 'Новая учетная запись успешно создана'})
-        return render(request, self.template_name, {'form': form})
+        else:
+            err = form.errors.as_data()
+            if 'age' in err:
+                error = 'Invalid age!'
+            if 'email' in err:
+                error = 'Invalid email!'
+
+        return render(request, self.template_name, {'form': form, 'error': error})
 
 
 class Login(FormView):

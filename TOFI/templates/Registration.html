@@ -3,6 +3,18 @@
 {% block content %}
         <form method="POST" class="center">
             {% csrf_token %}
+        {% if error %}
+            <div class="left">
+                <table>
+                    <tr>
+                        <td>
+                            <font color="red">{{ error }}</font>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        {% endif %}
+
         <table>
             {% for field in form %}
                 {% if field.label == ie %}
