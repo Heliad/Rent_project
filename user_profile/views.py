@@ -379,3 +379,26 @@ def quick_payment_info(request, id):
             id=models.Rent.objects.get(id=models.DoneRent.objects.get(id=payment.rent_id).id_house).user_login)
         c, m = t.Transaction(payment.amount, tr_from, tr_to).make_transaction()
         return render(request, 'Profile/Thanks.html', {'mes': m})
+
+
+def my_penalties(request):
+    my_pen = models.DonePenalty.objects.filter(id_user_for=request.user.id)
+    return render(request, 'Profile/MyPenalties.html', {'pen': my_pen})
+
+
+def make_pay_penalty(request, id_penalty):
+    my_pens = models.DonePenalty.objects.filter(id=id_penalty)
+
+    pen = my_pens.get(id=id_penalty)
+    id_done_rent = pen.id_done_rent
+
+    done_rent = models.DoneRent.objects.get(id=id_done_rent)
+
+    if done_rent.paid_user < done_rent.pay_number:
+            return render(request, 'Profile/MyPenalties.html',
+                  {'pen': my_pens, 'message': "Сначала оплатите задолженность за аренду."})
+
+    else:
+        return render(request, 'Profile/MyPenalties.html',
+                      {'pen': my_pens, 'message': "Можно оплатить штраф."})
+    

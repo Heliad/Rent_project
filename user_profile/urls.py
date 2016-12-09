@@ -19,4 +19,6 @@ urlpatterns = [
     url(r'extractbalance', views.extract_balance, name='ExtractBalance'),
     url(r'quickpayment', views.quick_payment, name='QuickPayment'),
     url(r'payment_info/(?P<id>\d*)', views.quick_payment_info, name='Info'),
+    url(r'my_penalties', views.my_penalties, name='MyPenalties'),
+    url(r'make_pay_penalties/(?P<id_penalty>\d*)', views.make_pay_penalty, name='MakePayPenalty'),
 ]

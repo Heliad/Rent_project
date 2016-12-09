@@ -5,7 +5,7 @@ class Transaction(object):
     def __init__(self, amount, tr_from, tr_to, is_monetize=False):
         self.tr_from = tr_from
         self.tr_to = tr_to
-        self.amount = int(amount)
+        self.amount = float(amount)
         self.is_monetize = is_monetize
         self.mon_value = models.Monetization.objects.get(id=1).value_mon
 

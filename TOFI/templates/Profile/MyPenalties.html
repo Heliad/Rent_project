@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Мои штрафы{% endblock %}
+{% block content %}
+        {% for p in pen%}
+            <table class="center">
+                <tr class="padding">
+                    <td class="padding">
+                        {{ p.describe_penalty }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="padding">
+                        {{ p.size_penalty }} BYN
+                    </td>
+                </tr>
+                <tr>
+                    <td class="padding">
+                        <a href="make_pay_penalties/{{ p.id }}">Оплатить штраф</a>
+                    </td>
+                </tr>
+            </table>
+            {% if message %}
+                <table class="center">
+                    <tr class="padding">
+                        <td class="padding">
+                            {{ message }}
+                        </td>
+                    </tr>
+                </table>
+            {% endif %}
+        {% endfor %}
+{% endblock %}
