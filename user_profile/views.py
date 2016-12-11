@@ -399,6 +399,19 @@ def make_pay_penalty(request, id_penalty):
                   {'pen': my_pens, 'message': "Сначала оплатите задолженность за аренду."})
 
     else:
+        user_from = models.MyUser.objects.get(id=done_rent.id_user_renter)
+        user_to = models.MyUser.objects.get(id=done_rent.id_user_owner)
+        c, m = t.Transaction(pen.size_penalty, user_from,
+                             user_to, True).make_transaction()
+
+        if c:
+            models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Оплата штрафа за просрочку аренды',
+                                                       describe_operation="Оплата на сумму " +
+                                                                          str(pen.size_penalty) + " BYN. " +
+                                                                          str(m), date_operation=datetime.date.today())
+            pen.is_payd = True
+            pen.save()
+
         return render(request, 'Profile/MyPenalties.html',
-                      {'pen': my_pens, 'message': "Можно оплатить штраф."})
-    
+                    {'pen': my_pens, 'message': "Штраф оплачен.", 'stat': m})
+

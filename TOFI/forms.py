@@ -25,7 +25,7 @@ class UserForm(forms.ModelForm):
 
     class Meta:
         model = MyUser
-        fields = ['username', 'password', 'password1',
+        fields = ['username', 'password', 'password1', 'passport_id', 'email',
                   'name', 'surname', 'last_name', 'age', 'phone', 'address',
                   'ie', 'taxpayer_account_number', 'license_field']
 

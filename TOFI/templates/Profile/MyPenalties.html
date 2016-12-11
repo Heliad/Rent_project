@@ -10,7 +10,7 @@
                 </tr>
                 <tr>
                     <td class="padding">
-                        {{ p.size_penalty }} BYN
+                        {{ p.size_penalty }} BYN + Комиссия
                     </td>
                 </tr>
                 <tr>
@@ -24,6 +24,9 @@
                     <tr class="padding">
                         <td class="padding">
                             {{ message }}
+                            {% if stat %}
+                                {{ stat }}
+                            {% endif %}
                         </td>
                     </tr>
                 </table>

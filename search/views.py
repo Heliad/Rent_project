@@ -13,7 +13,7 @@ def search_rent(request):
         form = SearchRent(request.POST)
 
         if form.is_valid():
-            results = []
+            results, errors = [], ''
             type_search = form.cleaned_data['type_search']
             max_interval = form.cleaned_data['max_interval']
             min_interval = form.cleaned_data['min_interval']
@@ -22,21 +22,39 @@ def search_rent(request):
             if type_search == '1':
                 temp = list(models.Rent.objects.all())
                 for rent in temp:
-                    if int(rent.cost) <= max_interval:
-                        if int(rent.cost) >= min_interval:
-                            results.append(rent)
+                    if max_interval and min_interval or min_interval == 0:
+                        if int(rent.cost) <= max_interval:
+                            if int(rent.cost) >= min_interval:
+                                results.append(rent)
+                    else:
+                        errors = 'Укажите диапазон цен!'
             if type_search == '2':
-                results = list(models.Rent.objects.all().filter(name=login_or_name_rent))
+                if login_or_name_rent:
+                    try:
+                        results = list(models.Rent.objects.all().filter(name=login_or_name_rent))
+                    except:
+                        pass
+                else:
+                    errors = 'Укажите название дома!'
             if type_search == '3':
-                user_id_login = models.MyUser.objects.get(username=login_or_name_rent)
-                results = list(models.Rent.objects.all().filter(user_login=user_id_login.id))
+                if login_or_name_rent:
+                    try:
+                        user_id_login = models.MyUser.objects.get(username=login_or_name_rent)
+                        results = list(models.Rent.objects.all().filter(user_login=user_id_login.id))
+                    except:
+                        pass
+                else:
+                    errors = 'Укажите логин владельца!'
             if type_search == '4':
-                temp = list(models.Rent.objects.all())
-                for rent in temp:
-                    if int(rent.area) <= square:
-                        results.append(rent)
+                if square:
+                    temp = list(models.Rent.objects.all())
+                    for rent in temp:
+                        if int(rent.area) <= square:
+                            results.append(rent)
+                else:
+                    errors = 'Укажите размер площади!'
 
-            return render(request, 'Search/SearchRent.html', {'form': form, 'results': results})
+            return render(request, 'Search/SearchRent.html', {'form': form, 'results': results, 'error': errors})
     else:
         form = SearchRent()
         return render(request, "Search/SearchRent.html", {'form': form})

@@ -97,7 +97,7 @@ class Registration(View):
 
         else:
             err = form.errors.as_data()
-            print(err)
+            #print(err)
             if 'phone' in err:
                 error = 'Недопустимый номер телефона!'
             if 'username' in err:
