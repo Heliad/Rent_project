@@ -15,6 +15,7 @@ from django.views.generic.edit import FormView
 from TOFI import models
 from .forms import *
 
+
 def main_view(request):
     if not request.user.is_anonymous:
         if request.user.is_admin:
@@ -69,10 +70,12 @@ class Registration(View):
 
     def post(self, request):
         form = self.form_class(request.POST)
+        error = ''
 
         if form.is_valid():
             user = form.save(commit=False)
             username = form.cleaned_data['username']
+
             if form.cleaned_data['password'] == form.cleaned_data['password1']:
                 password = form.cleaned_data['password']
                 user.set_password(password)
@@ -86,15 +89,31 @@ class Registration(View):
                 elif user and not request.user.is_admin:
                     login(request, user)
                     return HttpResponseRedirect('/')
-                if request.user.is_admin:
-                    return render(request, 'Admin/Done.html', {'message': 'Новая учетная запись успешно создана'})
+                if hasattr(request.user, 'is_admin'):
+                    if request.user.is_admin:
+                        return render(request, 'Admin/Done.html', {'message': 'Новая учетная запись успешно создана'})
+            else:
+                error = 'Пароли не совпадают!'
+
         else:
             err = form.errors.as_data()
+            print(err)
+            if 'phone' in err:
+                error = 'Недопустимый номер телефона!'
+            if 'username' in err:
+                error = 'Пользователь с таким логином уже существует!'
+            if 'name' in err:
+                error = 'Недопустимые символы в поле Имя!'
+            if 'surname' in err:
+                error = 'Недопустимые символы в поле Фамилия!'
+            if 'last_name' in err:
+                error = 'Недопустимые символы в поле Отчество!'
             if 'age' in err:
-                error = 'Invalid age!'
+                error = 'Недопустимые значение в поле Возраст!'
             if 'email' in err:
-                error = 'Invalid email!'
-
+                error = 'Недопустимые значение в поле Email!'
+            if 'address' in err:
+                error = 'Недопустимые значение в поле Адрес!'
         return render(request, self.template_name, {'form': form, 'error': error})
 
 

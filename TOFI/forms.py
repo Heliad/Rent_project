@@ -1,31 +1,33 @@
 from django import forms
 from django.forms import SelectDateWidget
 from .models import MyUser, Rent
-from .validators import *
 from django.core.validators import *
-from django.core.validators import ValidationError
 
 
 class UserForm(forms.ModelForm):
-    password = forms.CharField(label='Пароль', widget=forms.PasswordInput)
-    password1 = forms.CharField(label='Подтвержение пароля', widget=forms.PasswordInput)
-    name = forms.CharField(label='Имя:', required=True)
-    surname = forms.CharField(label='Фамилия:', required=True)
-    lastname = forms.CharField(label='Отчество:', required=True)
+    password = forms.CharField(label='Пароль', max_length=50, min_length=10, widget=forms.PasswordInput)
+    password1 = forms.CharField(label='Подтвержение пароля', max_length=50, min_length=10, widget=forms.PasswordInput)
 
-    age = forms.IntegerField(label='Возраст:', validators=[MaxValueValidator(100), MinValueValidator(18)])
+    name = forms.CharField(label='Имя:', required=True, validators=[RegexValidator('^[а-яА-Я]*$')], initial='тест')
+    surname = forms.CharField(label='Фамилия:', required=True, validators=[RegexValidator('^[а-яА-Я]*$')], initial='тест')
+    last_name = forms.CharField(label='Отчество:', required=True, validators=[RegexValidator('^[а-яА-Я]*$')], initial='тест')
+    age = forms.IntegerField(label='Возраст:', validators=[MaxValueValidator(100), MinValueValidator(18)], initial=20)
+
     email = forms.CharField(label='Email:', validators=[EmailValidator()])
-    ie = forms.BooleanField(label='ИП', widget=forms.CheckboxInput, required=False)
+    phone = forms.CharField(label='Телефон:', help_text='Необходимо ввести номер с кодом страны и оператора', initial='+375 45 4 3',
+                            validators=[RegexValidator('^\+[0-9\-\ ]*$')])
+    address = forms.CharField(label='Адрес:', max_length=50, validators=[RegexValidator('^[0-9а-яА-Я/./,/;/ /-]*$')], initial='Minsk')
+    passport_id = forms.CharField(label='Номер пасспорта:', max_length='50', initial='test')
 
-    # license_field = forms.Textarea()
+    ie = forms.BooleanField(label='ИП', widget=forms.CheckboxInput, required=False)
     taxpayer_account_number = forms.IntegerField(label='УНН', required=False)
     license_field = forms.CharField(label='Лицензия', required=False)
 
     class Meta:
         model = MyUser
-        fields = ['username', 'password', 'password1', 'name',
-                  'surname', 'last_name', 'age', 'passport_id', 'phone', 'address', 'ie', 'taxpayer_account_number',
-                  'license_field']
+        fields = ['username', 'password', 'password1',
+                  'name', 'surname', 'last_name', 'age', 'phone', 'address',
+                  'ie', 'taxpayer_account_number', 'license_field']
 
 
 class RentForm(forms.ModelForm):
