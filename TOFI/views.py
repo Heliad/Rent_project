@@ -97,7 +97,9 @@ class Registration(View):
 
         else:
             err = form.errors.as_data()
-            #print(err)
+            print(err)
+            if 'password' in err:
+                error = 'Пароль должен содержать в себе арабские цифры и латинские буквы!'
             if 'phone' in err:
                 error = 'Недопустимый номер телефона!'
             if 'username' in err:

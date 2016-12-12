@@ -5,7 +5,8 @@ from django.core.validators import *
 
 
 class UserForm(forms.ModelForm):
-    password = forms.CharField(label='Пароль', max_length=50, min_length=10, widget=forms.PasswordInput)
+    password = forms.CharField(label='Пароль', max_length=50, min_length=10, widget=forms.PasswordInput,
+                               validators=[RegexValidator('^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$')])
     password1 = forms.CharField(label='Подтвержение пароля', max_length=50, min_length=10, widget=forms.PasswordInput)
 
     name = forms.CharField(label='Имя:', required=True, validators=[RegexValidator('^[а-яА-Я]*$')], initial='тест')
@@ -20,8 +21,8 @@ class UserForm(forms.ModelForm):
     passport_id = forms.CharField(label='Номер пасспорта:', max_length='50', initial='test')
 
     ie = forms.BooleanField(label='ИП', widget=forms.CheckboxInput(attrs={'onchange': "onChange()"}), required=False, initial=True)
-    taxpayer_account_number = forms.IntegerField(label='УНН', required=True)
-    license_field = forms.CharField(label='Лицензия', required=True)
+    taxpayer_account_number = forms.IntegerField(label='УНН', required=False)
+    license_field = forms.CharField(label='Лицензия', required=False)
 
     class Meta:
         model = MyUser
