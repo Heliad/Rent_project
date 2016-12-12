@@ -3,6 +3,7 @@ import json
 
 from django.contrib.auth import logout
 from django.contrib.auth.hashers import check_password
+from django.core.files.base import ContentFile
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -415,3 +416,35 @@ def make_pay_penalty(request, id_penalty):
         return render(request, 'Profile/MyPenalties.html',
                     {'pen': my_pens, 'message': "Штраф оплачен.", 'stat': m})
 
+
+def my_all_houses_owner(request):
+    id_user = request.user.id
+    houses = models.Rent.objects.filter(user_login=id_user)
+    return render(request, 'Profile/MyAllHousesOwner.html', {'houses': houses})
+
+
+def add_image(request, id_rent):
+    if request.method == 'POST':
+        form = AddImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            print("GOOOOOOOOD")
+            image = form.cleaned_data['image']
+            name = form.cleaned_data['name']
+            describe = form.cleaned_data['describe']
+            models.AddImage.objects.create(id_rent=id_rent, image=image, name=name, describe=describe)
+            print("gone")
+    else:
+        form = AddImageForm()
+    return render(request, 'Profile/AddPhoto.html', {'form': form})
+
+
+def handler_view(request):
+    form = AddImageForm(request.POST, request.FILES)
+    if form.is_valid():
+        form.save()
+
+
+def save_file(request):
+    mymodel = models.AddImage2.objects.get(id=1)
+    file_content = ContentFile(request.FILES['image'].read())
+    mymodel.image.save(request.FILES['image'].name, file_content)

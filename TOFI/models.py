@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User, AbstractBaseUser, BaseUserManager
+from django.forms import ImageField, FileField
 
 
 class MyUserManager(BaseUserManager):
@@ -192,3 +193,14 @@ class DonePenalty(models.Model):  # Назначенные штрафы
     size_penalty = models.FloatField()
     id_done_rent = models.IntegerField()
     is_payd = models.BooleanField(default=False)
+
+
+class AddImage(models.Model):
+    id_rent = models.IntegerField()
+    image = models.ImageField(upload_to='imagesHouses/', height_field=None, width_field=None)
+    name = models.CharField(verbose_name="Название:", max_length=100)
+    describe = models.CharField(verbose_name="Описание:", max_length=150)
+
+
+class AddImage2(models.Model):
+    image = models.FileField(upload_to='imagesHouses/')

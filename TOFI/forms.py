@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import SelectDateWidget
-from .models import MyUser, Rent
+from .models import MyUser, Rent, AddImage
 from django.core.validators import *
 
 
@@ -107,3 +107,10 @@ class EditPenalty(forms.Form):
     kind_penalty = forms.CharField(label="Название:", required=True, max_length=50)
     describe_penalty = forms.CharField(label="Описание:", required=True, max_length=150, widget=forms.Textarea)
     cost_penalty = forms.FloatField(label="Размер штрафа:", required=True)
+
+
+class AddImageForm(forms.ModelForm):
+
+    class Meta:
+        model = AddImage
+        fields = ['image', 'name', 'describe']
