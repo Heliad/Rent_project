@@ -3,39 +3,41 @@
 {% block content %}
         <form method="POST" class="center">
             {% csrf_token %}
-        {% if error %}
-            <div class="left">
-                <table>
-                    <tr>
-                        <td>
-                            <font color="red">{{ error }}</font>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        {% endif %}
+            <script src="/static/javascript/change_value_on_change_ie.js"></script>
+            {% if error %}
+                <div class="left">
+                    <table>
+                        <tr>
+                            <td>
+                                <font color="red">{{ error }}</font>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            {% endif %}
 
-        <table>
-            {% for field in form %}
-                {% if field.label == ie %}
-                    <tr>
-                        <td class="padding">{{ field.label }}</td>
-                        <td><input type="checkbox" id="ie"></td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td class="padding">{{ field.label }}</td>
-                        <td>{{ field }}</td>
-                    </tr>
-                {% endif %}
-            {% endfor %}
-            <tr><td><button type="submit" class="button7">Регистрация</button></td></tr>
-        </table>
+            <table>
+                {% for field in form %}
+                    {% if field.label == 'УНН' %}
+                        <tr>
+                            <td class="padding" id="hid1">{{ field.label }}</td>
+                            <td>{{ field }}</td>
+                        </tr>
+
+                    {% elif field.label == 'Лицензия' %}
+                        <tr>
+                            <td class="padding" id="hid2">{{ field.label }}</td>
+                            <td>{{ field }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td class="padding">{{ field.label }}</td>
+                            <td>{{ field }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                <tr><td><button type="submit" class="button7">Регистрация</button></td></tr>
+            </table>
         </form>
+
 {% endblock %}
-<script>
-    id_ie.onclick = function () {
-        id_taxpayer_account_number.hide()
-        id_license_field.hide()
-    }
-</script>

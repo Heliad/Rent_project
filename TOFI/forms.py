@@ -16,12 +16,12 @@ class UserForm(forms.ModelForm):
     email = forms.CharField(label='Email:', validators=[EmailValidator()])
     phone = forms.CharField(label='Телефон:', help_text='Необходимо ввести номер с кодом страны и оператора', initial='+375 45 4 3',
                             validators=[RegexValidator('^\+[0-9\-\ ]*$')])
-    address = forms.CharField(label='Адрес:', max_length=50, validators=[RegexValidator('^[0-9а-яА-Я/./,/;/ /-]*$')], initial='Minsk')
+    address = forms.CharField(label='Адрес:', max_length=50, validators=[RegexValidator('^[0-9а-яА-Я/./,/;/ /-]*$')], initial='Минск')
     passport_id = forms.CharField(label='Номер пасспорта:', max_length='50', initial='test')
 
-    ie = forms.BooleanField(label='ИП', widget=forms.CheckboxInput, required=False)
-    taxpayer_account_number = forms.IntegerField(label='УНН', required=False)
-    license_field = forms.CharField(label='Лицензия', required=False)
+    ie = forms.BooleanField(label='ИП', widget=forms.CheckboxInput(attrs={'onchange': "onChange()"}), required=False, initial=True)
+    taxpayer_account_number = forms.IntegerField(label='УНН', required=True)
+    license_field = forms.CharField(label='Лицензия', required=True)
 
     class Meta:
         model = MyUser
