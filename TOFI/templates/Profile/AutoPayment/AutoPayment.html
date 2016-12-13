@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Автоматический платёж{% endblock %}
+{% block content %}
+    {% csrf_token %}
+    <table>
+        {% for ap in auto_payment %}
+            <tr>
+                <td class="padding">
+
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

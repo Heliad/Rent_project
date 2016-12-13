@@ -457,10 +457,15 @@ def edit_my_house(request, id_rent):
 
 def delete_my_house(request, id_rent):
     rent = models.Rent.objects.get(id=id_rent)
-    message = ''
     if rent.status_rent:
         message = 'Дом под названием ' + rent.name + ' успешно удален!'
         rent.delete()
     else:
         message = 'Дом под названием ' + rent.name + ' не может быть удален! Он арендован.'
     return render(request, 'Profile/Thanks.html', {'mes': message})
+
+
+def auto_payment(request):
+    auto_payments = models.AutoPayment.objects.filter(user_id=request.user)
+
+    return render(request, 'Profile/AutoPayment/AutoPayment.html', {'auto_payment': auto_payment})

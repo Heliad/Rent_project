@@ -195,6 +195,12 @@ class DonePenalty(models.Model):  # Назначенные штрафы
     is_payd = models.BooleanField(default=False)
 
 
+class AutoPayment(models.Model):
+    id_quick_payment = models.IntegerField()
+    user_id = models.IntegerField()
+    id_rent = models.IntegerField()
+
+
 class AddImage(models.Model):
     id_rent = models.IntegerField()
     image = models.ImageField(upload_to='imagesHouses/', height_field=None, width_field=None)

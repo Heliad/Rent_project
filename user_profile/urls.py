@@ -26,4 +26,6 @@ urlpatterns = [
     url(r'my_houses_owner', views.my_all_houses_owner, name='MyAllHousesOwner'),
     url(r'edit_my_rent/(?P<id_rent>\d*)', views.edit_my_house, name='EditMyRent'),
     url(r'delete_my_rent/(?P<id_rent>\d*)', views.delete_my_house, name='DeleteMyRent'),
+
+    url(r'auto_payment', views.auto_payment, name='AutoPayment'),
 ]
