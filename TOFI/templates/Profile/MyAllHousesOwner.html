@@ -6,9 +6,7 @@
             <tr class="padding">
                 <td class="padding">Название</td>
                 <td>Адрес</td>
-                <td>Срок аренды(Дней)</td>
                 <td>Цена(BYN)</td>
-                <td>Площадь(кв.м.)</td>
             </tr>
             {% for h in houses %}
                 <tr>
@@ -16,12 +14,22 @@
                         <a href="aboutHouse/{{ h.id }}">{{ h.name }}</a>
                     </td>
                     <td>{{ h.address }}</td>
-                    <td>{{ h.min_rent_time }}</td>
                     <td>{{ h.cost }}</td>
-                    <td>{{ h.area }}</td>
-                    <td class="padding">
-                        <a href="add_image/{{ h.id }}">Добавить фото</a>
-                    </td>
+                    {% if h.status_rent %}
+                        <td class="padding">
+                            <a href="edit_my_rent/{{ h.id }}">Редактировать</a>
+                        </td>
+                        <td class="padding">
+                            <a href="delete_my_rent/{{ h.id }}">Удалить</a>
+                        </td>
+                    {% else %}
+                        <td class="padding">
+                            <font color="#a9a9a9">Редактировать(Арендовано)</font>
+                        </td>
+                        <td class="padding">
+                            <font color="#a9a9a9">Удалить(Арендовано)</font>
+                        </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
         {% else %}

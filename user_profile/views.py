@@ -423,28 +423,44 @@ def my_all_houses_owner(request):
     return render(request, 'Profile/MyAllHousesOwner.html', {'houses': houses})
 
 
-def add_image(request, id_rent):
+def edit_my_house(request, id_rent):
+    rent = models.Rent.objects.get(id=id_rent)
+
+    class EditRent(forms.Form):
+        name = forms.CharField(label="Название:", max_length=50, required=True, initial=rent.name)
+        address = forms.CharField(label="Адрес:", max_length=50, required=True, initial=rent.address)
+        min_rent_time = forms.IntegerField(label="Срок аренды:", required=True, initial=rent.min_rent_time)
+        area = forms.IntegerField(label='Площадь:', required=True, initial=rent.area)
+        date_of_construction = forms.IntegerField(label='Год строительства:', required=True, initial=rent.date_of_construction)
+        other = forms.CharField(label="Другое:", max_length=100, required=True, initial=rent.other,
+                                widget=forms.Textarea(attrs={'placeholder': 'Введите описание дома...', 'rows': '4'}))
+        cost = forms.CharField(label='Цена аренды:', max_length=50, required=True, initial=rent.cost)
+
     if request.method == 'POST':
-        form = AddImageForm(request.POST, request.FILES)
+        form = EditRent(request.POST)
         if form.is_valid():
-            print("GOOOOOOOOD")
-            image = form.cleaned_data['image']
-            name = form.cleaned_data['name']
-            describe = form.cleaned_data['describe']
-            models.AddImage.objects.create(id_rent=id_rent, image=image, name=name, describe=describe)
-            print("gone")
+            rent.name = form.cleaned_data['name']
+            rent.address = form.cleaned_data['address']
+            rent.min_rent_time = form.cleaned_data['min_rent_time']
+            rent.area = form.cleaned_data['area']
+            rent.date_of_construction = form.cleaned_data['date_of_construction']
+            rent.other = form.cleaned_data['other']
+            rent.cost = form.cleaned_data['cost']
+            rent.save()
+            message = 'Данные о доме под названием: ' + rent.name + ' успешно обновлены и сохранены!'
+            return render(request, 'Profile/Thanks.html', {'mes': message})
+
     else:
-        form = AddImageForm()
-    return render(request, 'Profile/AddPhoto.html', {'form': form})
+        form = EditRent()
+        return render(request, 'Profile/EditMyRent.html', {'form': form})
 
 
-def handler_view(request):
-    form = AddImageForm(request.POST, request.FILES)
-    if form.is_valid():
-        form.save()
-
-
-def save_file(request):
-    mymodel = models.AddImage2.objects.get(id=1)
-    file_content = ContentFile(request.FILES['image'].read())
-    mymodel.image.save(request.FILES['image'].name, file_content)
+def delete_my_house(request, id_rent):
+    rent = models.Rent.objects.get(id=id_rent)
+    message = ''
+    if rent.status_rent:
+        message = 'Дом под названием ' + rent.name + ' успешно удален!'
+        rent.delete()
+    else:
+        message = 'Дом под названием ' + rent.name + ' не может быть удален! Он арендован.'
+    return render(request, 'Profile/Thanks.html', {'mes': message})

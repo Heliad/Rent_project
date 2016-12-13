@@ -24,5 +24,6 @@ urlpatterns = [
     url(r'make_pay_penalties/(?P<id_penalty>\d*)', views.make_pay_penalty, name='MakePayPenalty'),
 
     url(r'my_houses_owner', views.my_all_houses_owner, name='MyAllHousesOwner'),
-    url(r'add_image/(?P<id_rent>\d*)', views.add_image, name='AddImage'),
+    url(r'edit_my_rent/(?P<id_rent>\d*)', views.edit_my_house, name='EditMyRent'),
+    url(r'delete_my_rent/(?P<id_rent>\d*)', views.delete_my_house, name='DeleteMyRent'),
 ]
