@@ -466,6 +466,18 @@ def delete_my_house(request, id_rent):
 
 
 def auto_payment(request):
-    auto_payments = models.AutoPayment.objects.filter(user_id=request.user)
+    auto_payments = models.AutoPayment.objects.filter(user_id=request.user.id)
 
-    return render(request, 'Profile/AutoPayment/AutoPayment.html', {'auto_payment': auto_payment})
+    return render(request, 'Profile/AutoPayment/AutoPayment.html', {'auto_payments': auto_payments})
+
+
+def about_auto_payment(request, id_auto):
+    print("dsfgdfg")
+    id_done_rent = models.AutoPayment.objects.get(id=id_auto).id
+    house = models.Rent.objects.get(id=id_done_rent)
+    login_owner = models.MyUser.objects.get(id=id_done_rent.id_user_owner).username
+    size = house.cost
+    return render(request, 'Profile/AutoPayment/AboutAutoPayment.html', {'name_house': house.name,
+                                                                        'min_time_rent': house.min_rent_time,
+                                                                        'login_owner': login_owner,
+                                                                        'size': size})

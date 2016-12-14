@@ -2,14 +2,22 @@
 {% block title %}Автоматический платёж{% endblock %}
 {% block content %}
     {% csrf_token %}
-    <table>
-        {% for ap in auto_payment %}
-            <tr>
+    <table class="center">
+        {% if auto_payments %}
+            {% for ap in auto_payments %}
+                <tr class="padding">
+                    <td class="padding">
+                        <a href="about_auto_payment/{{ ap.id }}">Автоматический платёж №{{ ap.id }}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr class="padding">
                 <td class="padding">
-
+                    У вас нет автоматических платежей
                 </td>
             </tr>
-        {% endfor %}
+        {% endif %}
     </table>
 
 {% endblock %}

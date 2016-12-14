@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Автоматический платёж {% endblock %}
+{% block content %}
+    {% csrf_token %}
+    <table class="center">
+        <tr class="padding">
+            <td>Название дома: </td>
+            <td>{{ name_house }}</td>
+        </tr>
+
+        <tr class="padding">
+            <td>Период(дней): </td>
+            <td>{{ min_time_rent }}</td>
+        </tr>
+
+        <tr class="padding">
+            <td>Владелец: </td>
+            <td>{{ login_owner }}</td>
+        </tr>
+
+        <tr class="padding">
+            <td>Стоимость(BYN): </td>
+            <td>{{ size }}</td>
+        </tr>
+
+        <tr class="padding">
+            <td>
+                <a href="">Удалить автоматический платёж</a>
+            </td>
+        </tr>
+    </table>
+
+{% endblock %}
