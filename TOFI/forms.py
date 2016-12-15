@@ -10,18 +10,19 @@ class UserForm(forms.ModelForm):
                                validators=[RegexValidator('^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$')])
     password1 = forms.CharField(label='Подтвержение пароля', max_length=50, min_length=10, widget=forms.PasswordInput)
 
-    name = forms.CharField(label='Имя:', required=True, validators=[RegexValidator('^[а-яА-Я]*$')], initial='тест')
-    surname = forms.CharField(label='Фамилия:', required=True, validators=[RegexValidator('^[а-яА-Я]*$')], initial='тест')
-    last_name = forms.CharField(label='Отчество:', required=True, validators=[RegexValidator('^[а-яА-Я]*$')], initial='тест')
-    age = forms.IntegerField(label='Возраст:', validators=[MaxValueValidator(100), MinValueValidator(18)], initial=20)
+    name = forms.CharField(label='Имя:', required=True, validators=[RegexValidator('^[а-яА-Я]*$')])
+    surname = forms.CharField(label='Фамилия:', required=True, validators=[RegexValidator('^[а-яА-Я]*$')])
+    last_name = forms.CharField(label='Отчество:', required=True, validators=[RegexValidator('^[а-яА-Я]*$')])
+    age = forms.IntegerField(label='Возраст:', validators=[MaxValueValidator(100), MinValueValidator(18)])
 
     email = forms.CharField(label='Email:', validators=[EmailValidator()])
-    phone = forms.CharField(label='Телефон:', help_text='Необходимо ввести номер с кодом страны и оператора', initial='+375 45 4 3',
+    phone = forms.CharField(label='Телефон:', help_text='Необходимо ввести номер с кодом страны и оператора',
                             validators=[RegexValidator('^\+[0-9\-\ ]*$')])
-    address = forms.CharField(label='Адрес:', max_length=50, validators=[RegexValidator('^[0-9а-яА-Я/./,/;/ /-]*$')], initial='Минск')
-    passport_id = forms.CharField(label='Номер пасспорта:', max_length='50', initial='test')
+    address = forms.CharField(label='Адрес:', max_length=50, validators=[RegexValidator('^[0-9а-яА-Я/./,/;/ /-]*$')])
+    passport_id = forms.CharField(label='Номер пасспорта:', max_length='50')
 
-    ie = forms.BooleanField(label='ИП', widget=forms.CheckboxInput(attrs={'onchange': "onChange()"}), required=False, initial=True)
+    ie = forms.BooleanField(label='ИП', widget=forms.CheckboxInput(attrs={'onchange': "onChange()"}),
+                            required=False, initial=True)
     taxpayer_account_number = forms.IntegerField(label='УНН', required=False)
     license_field = forms.CharField(label='Лицензия', required=False)
 
@@ -33,9 +34,22 @@ class UserForm(forms.ModelForm):
 
 
 class RentForm(forms.ModelForm):
-
-    other = forms.CharField(label="Другое:", max_length=100, required=True,
-                            widget=forms.Textarea(attrs={'placeholder': 'Введите описание дома...', 'rows': '4'}))
+    name = forms.CharField(label='Имя:', required=True,
+                           validators=[RegexValidator('^[а-яА-Я]*$')])
+    address = forms.CharField(label='Адрес:', max_length=50, validators=[RegexValidator('^[0-9а-яА-Я/./,/;/ /-]*$')])
+    other = forms.CharField(label="Описание дома:", max_length=100, required=True,
+                            widget=forms.Textarea(attrs={'placeholder': 'Введите описание дома...', 'rows': '4'}),
+                            validators=[RegexValidator('^[0-9а-яА-Я/./,/;/ /-]*$')])
+    min_rent_time = forms.IntegerField(label="Время аренды:", required=True,
+                                       validators=[MinValueValidator(1), MaxValueValidator(365)])
+    area = forms.IntegerField(label="Жилая площадь(кв.м.):", required=True,
+                              validators=[MinValueValidator(3), MaxValueValidator(1000)])
+    date_of_construction = forms.IntegerField(label="Год постройки:", required=True,
+                                              validators=[MinValueValidator(1950), MaxValueValidator(2020)])
+    cost = forms.IntegerField(label="Цена:", required=True,
+                              validators=[MinValueValidator(1), MaxValueValidator(1000000)])
+    payment_interval = forms.IntegerField(label="Интервал оплаты:", required=True,
+                                          validators=[MinValueValidator(1), MaxValueValidator(30)])
 
     class Meta:
         model = Rent

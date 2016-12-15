@@ -1,6 +1,18 @@
 {% extends "base.html" %}
 {% block title %}Поиск жилья{% endblock %}
 {% block content %}
+    {% if error %}
+        <div class="left">
+            <table>
+                <tr>
+                    <td>
+                        <font color="red">{{ error }}</font>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    {% endif %}
+
     <form method="POST" class="center">
         {% csrf_token %}
         <table>
@@ -15,14 +27,6 @@
     </form>
 
     <table class="center">
-    {% if error %}
-        <tr>
-            <td class="padding">
-                <font color="red">{{ error }}</font>
-            </td>
-        </tr>
-    {% endif %}
-
         {% if results %}
             <tr>
                 <td class="padding">
@@ -36,6 +40,14 @@
                     </td>
                 </tr>
             {% endfor %}
+        {% endif %}
+
+        {% if no_rez and not error %}
+            <tr>
+                <td class="padding">
+                    <b id="fon">{{ no_rez }}</b>
+                </td>
+            </tr>
         {% endif %}
     </table>
 {% endblock %}

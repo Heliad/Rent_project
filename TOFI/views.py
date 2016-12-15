@@ -37,6 +37,7 @@ class AddRent(View):
         return render(request, self.template_name, {'form': form})
 
     def post(self, request):
+        error = ''
         form = self.form_class(request.POST)
         print(request.POST)
         if form.is_valid():
@@ -53,9 +54,28 @@ class AddRent(View):
             models.Rent.objects.create(name=name, address=address, min_rent_time=min_rent_time, area=area,
                                        date_of_construction=date_of_construction, creation_date=creation_date,
                                        other=other, cost=cost, user_login=cur_user.id)
-
             return HttpResponseRedirect('/')
-        return render(request, self.template_name, {'form': form})
+
+        else:
+            err = form.errors.as_data()
+            print(err)
+            if 'name' in err:
+                error = 'Недопустимые символы в поле Имя!'
+            if 'address' in err:
+                error = 'Недопустимые символы в поле Адрес!'
+            if 'min_rent_time' in err:
+                error = 'Время ареннды должно быть от 1 до 365 дней!'
+            if 'area' in err:
+                error = 'Размер площади должен быть от 3 до 1000 кв.м.!'
+            if 'date_of_construction' in err:
+                error = 'Год постройки должен быть от 1950 до 2020 года!'
+            if 'cost' in err:
+                error = 'Цена должна быть в диапозоне от 1 до 1млн!'
+            if 'payment_interval' in err:
+                error = 'Интервал оплаты должен быть от 1 до 30 дней!'
+            if 'other' in err:
+                error = 'Недопустимые символы в описании дома!'
+        return render(request, self.template_name, {'form': form, 'error': error})
 
 
 class Registration(View):

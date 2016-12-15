@@ -13,7 +13,7 @@ def search_rent(request):
         form = SearchRent(request.POST)
 
         if form.is_valid():
-            results, errors = [], ''
+            results, no_rez, errors = [], '', ''
             type_search = form.cleaned_data['type_search']
             max_interval = form.cleaned_data['max_interval']
             min_interval = form.cleaned_data['min_interval']
@@ -54,7 +54,10 @@ def search_rent(request):
                 else:
                     errors = 'Укажите размер площади!'
 
-            return render(request, 'Search/SearchRent.html', {'form': form, 'results': results, 'error': errors})
+            if len(results) == 0:
+                no_rez = 'Поиск не дал результатов...'
+
+            return render(request, 'Search/SearchRent.html', {'form': form, 'results': results, 'error': errors, 'no_rez': no_rez})
     else:
         form = SearchRent()
         return render(request, "Search/SearchRent.html", {'form': form})
@@ -65,7 +68,7 @@ def search_user(request):
         form = SearchUser(request.POST)
 
         if form.is_valid():
-            results = None
+            results, no_rez = None, ''
             type_search = form.cleaned_data['type_search']
             attr_search = form.cleaned_data['field_search']
             if type_search == '1':
@@ -74,7 +77,9 @@ def search_user(request):
                 results = models.MyUser.objects.all().filter(surname=attr_search)
             if type_search == '3':
                 results = models.MyUser.objects.all().filter(email=attr_search)
-            return render(request, 'Search/SearchUser.html', {'form': form, 'results': results})
+            if len(results) == 0:
+                no_rez = 'Поиск не дал результатов...'
+            return render(request, 'Search/SearchUser.html', {'form': form, 'results': results, 'no_rez': no_rez})
     else:
         form = SearchUser()
         return render(request, "Search/SearchUser.html", {'form': form})
