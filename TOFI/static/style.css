@@ -95,7 +95,7 @@ body {
     background: cornflowerblue;
     transition: 0.2s;
     border-width: 0;
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .button7:hover

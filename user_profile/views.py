@@ -35,14 +35,20 @@ def profile(request):
 
 
 def add_card(request):
+    error = ''
     if request.user.is_anonymous:
         return HttpResponseRedirect("/login")
 
     class AddCard(forms.Form):
-        card_num = forms.CharField(label="Номер карты/Card number", max_length=16, required=True)
-        period_validity = forms.CharField(label="Срок действия (ММГГ)", max_length=5, required=True)
-        name_card_owner = forms.CharField(label="Имя держателя карты", max_length=50, required=True)
-        CVC2_CVV = forms.CharField(label="CVC2/CVV", max_length=3, required=True)
+        card_num = forms.CharField(label="Номер карты/Card number:", max_length=16, min_length=16,
+                                   required=True, validators=[RegexValidator('^[0-9]*$')])
+        period_validity = forms.CharField(label="Срок действия (ММ/ГГ):", max_length=5, min_length=5,
+                                          required=True, validators=[RegexValidator('^[0-9]{2,2}/{1,1}[0-9]*$')],
+                                          widget=forms.TextInput(attrs={'placeholder': 'ММ/ГГ'}))
+        name_card_owner = forms.CharField(label="Имя держателя карты:", max_length=50, required=True,
+                                          validators=[RegexValidator('^[a-zA-Z\ ]*$')])
+        CVC2_CVV = forms.CharField(label="CVC2/CVV:", max_length=3, min_length=3, required=True,
+                               validators=[RegexValidator('^[0-9]*$')])
 
     if request.method == 'POST':
         form = AddCard(request.POST)
@@ -57,16 +63,27 @@ def add_card(request):
                     if i.card_num == card_num:
                         return render(request, 'Profile/Thanks.html', {'mes': 'карта уже добавлена'})
                 request.user.user_card_id.add(models.UserCard.objects.get(card_num=card_num))
-                return render(request, 'Profile/Thanks.html', {'mes': 'карта успешно добавлена'})
+                return render(request, 'Profile/Thanks.html', {'mes': 'Карта успешно добавлена'})
             else:
-                return render(request, 'Profile/Thanks.html', {'mes': 'Неверные данные', 'redirect_address': 'profile'})
+                return render(request, 'Profile/Thanks.html', {'mes': 'Введены неверные данные', 'redirect_address': 'profile'})
+        else:
+            err = form.errors.as_data()
+            if 'card_num' in err:
+                error = 'Номер карты должен содержать только цифры!'
+            if 'period_validity' in err:
+                error = 'Срок действия карты указан неверно!(Пример: 12/17)'
+            if 'name_card_owner' in err:
+                error = 'В поле Имя держателя карты введены недопустимые символы!'
+            if 'CVC2_CVV' in err:
+                error = 'В поле CVC2_CVV введены недопустимые символы!'
     else:
         form = AddCard()
 
-    return render(request, 'Profile/RefillBalance.html', {'form': form})
+    return render(request, 'Profile/RefillBalance.html', {'form': form, 'error': error})
 
 
 def refillBalance(request):
+    error, mes = '', ''
     if request.user.is_anonymous:
         return HttpResponseRedirect("/login")
     if request.method == 'POST':
@@ -88,17 +105,33 @@ def refillBalance(request):
                                                                size) + " BYN",
                                                            date_operation=datetime.date.today())
 
-                context = {'mes': request.user.name + ", баланс успешно пополнен на " + str(size) + " BYN"}
-                return render(request, 'Profile/Thanks.html', context)
+                mes = request.user.name + ", баланс успешно пополнен на " + str(size) + " BYN"
+                return render(request, 'Profile/Thanks.html', {'mes': mes})
             else:
-                return render(request, 'Profile/Thanks.html', {'mes': 'message'})
+                return render(request, 'Profile/Thanks.html', {'mes': 'Введены неверные данные!'})
+
+        else:
+            err = form.errors.as_data()
+            print(err)
+            if 'card_num' in err:
+                error = 'Номер карты должен содержать только цифры!'
+            if 'period_validity' in err:
+                error = 'Срок действия карты указан неверно!(Пример: 12/17)'
+            if 'name_card_owner' in err:
+                error = 'В поле Имя держателя карты введены недопустимые символы!'
+            if 'CVC2_CVV' in err:
+                error = 'В поле CVC2_CVV введены недопустимые символы!'
+            if 'size' in err:
+                error = 'Сумма может быть от 10 BYN до 1млн BYN!'
+
     else:
         form = RefillBalance()
 
-    return render(request, 'Profile/RefillBalance.html', {'form': form})
+    return render(request, 'Profile/RefillBalance.html', {'form': form, 'error': error})
 
 
 def unfillBalance(request):
+    error, mes = '', ''
     if request.user.is_anonymous:
         return HttpResponseRedirect("/login")
     if request.method == 'POST':
@@ -111,7 +144,6 @@ def unfillBalance(request):
             CVC2_CVV = form.cleaned_data['CVC2_CVV']
             size = form.cleaned_data['size']
 
-            context = {'mes': ''}
             if t.Check(card_num, period_validity, name_card_owner, CVC2_CVV).check_card():
                 t.Transaction(size, request.user, card_num).make_transaction()
 
@@ -121,14 +153,29 @@ def unfillBalance(request):
                                                                size) + " BYN, успешно проведён.",
                                                            date_operation=datetime.date.today())
 
-                context = {'mes': request.user.name + ", средства на сумму " + str(size) +
-                                  " BYN, успешно выведены на карту"}
+                mes = request.user.name + ", средства на сумму " + str(size)\
+                      + " BYN, успешно выведены на карту"
+            else:
+                mes = "Введены неверные данные!"
+            return render(request, 'Profile/Thanks.html', {'mes': mes})
 
-            return render(request, 'Profile/Thanks.html', context)
+        else:
+            err = form.errors.as_data()
+            print(err)
+            if 'card_num' in err:
+                error = 'Номер карты должен содержать только цифры!'
+            if 'period_validity' in err:
+                error = 'Срок действия карты указан неверно!(Пример: 12/17)'
+            if 'name_card_owner' in err:
+                error = 'В поле Имя держателя карты введены недопустимые символы!'
+            if 'CVC2_CVV' in err:
+                error = 'В поле CVC2_CVV введены недопустимые символы!'
+            if 'size' in err:
+                error = 'Сумма может быть от 10 BYN до 1млн BYN!'
     else:
         form = RefillBalance()
 
-    return render(request, 'Profile/UnfillBalance.html', {'form': form})
+    return render(request, 'Profile/UnfillBalance.html', {'form': form, 'error': error})
 
 
 def profileChangePassword(request):
@@ -487,9 +534,7 @@ def delete_my_house(request, id_rent):
 
 def auto_payment(request):
     auto_payments = models.AutoPayment.objects.filter(quick_payment=
-                                                      models.QuickPayment.objects.get(username_id=
-                                                                                      request.user.id))
-
+                                                      models.QuickPayment.objects.get(username_id=request.user.id))
     return render(request, 'Profile/AutoPayment/AutoPayment.html', {'auto_payments': auto_payments})
 
 

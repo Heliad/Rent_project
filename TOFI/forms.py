@@ -57,11 +57,17 @@ class RentForm(forms.ModelForm):
 
 
 class RefillBalance(forms.Form):
-    card_num = forms.CharField(label="Номер карты/Card number", max_length=16, required=True)
-    period_validity = forms.CharField(label="Срок действия (ММГГ)", max_length=5, required=True)
-    name_card_owner = forms.CharField(label="Имя держателя карты", max_length=50, required=True)
-    CVC2_CVV = forms.CharField(label="CVC2/CVV", max_length=3, required=True)
-    size = forms.IntegerField(label="Сумма", required=True)
+    card_num = forms.CharField(label="Номер карты/Card number:", max_length=16, min_length=16,
+                               required=True, validators=[RegexValidator('^[0-9]*$')])
+    period_validity = forms.CharField(label="Срок действия (ММ/ГГ):", max_length=5, min_length=5,
+                                      required=True, validators=[RegexValidator('^[0-9]{2,2}/{1,1}[0-9]*$')],
+                                      widget=forms.TextInput(attrs={'placeholder': 'ММ/ГГ'}))
+    name_card_owner = forms.CharField(label="Имя держателя карты:", max_length=50, required=True,
+                                      validators=[RegexValidator('^[a-zA-Z\ ]*$')])
+    CVC2_CVV = forms.CharField(label="CVC2/CVV:", max_length=3, min_length=3, required=True,
+                               validators=[RegexValidator('^[0-9]*$')])
+    size = forms.IntegerField(label="Сумма:", required=True,
+                              validators=[MinValueValidator(10), MaxValueValidator(1000000)])
 
 
 class ChangePassword(forms.Form):
