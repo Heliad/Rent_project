@@ -3,14 +3,13 @@ import json
 
 from django.contrib.auth import logout
 from django.contrib.auth.hashers import check_password
-from django.core.files.base import ContentFile
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
+from TOFI import check as ch
 from TOFI import models
 from TOFI import transaction as t
-from TOFI import check as ch
 from TOFI.forms import *
 
 
@@ -239,7 +238,7 @@ def accept_rent(request, id_mes):
 
     models.DoneRent.objects.create(id_house=message.id_rent, id_user_owner=message.id_user_to,
                                    id_user_renter=message.id_user_from, date_rent=datetime.date.today(),
-                                   cost=house.cost, pay_number=0, paid_user=0)
+                                   cost=house.cost, next_payment_date=datetime.datetime.today())
 
     message.is_done = True
     house.status_rent = False
@@ -279,7 +278,7 @@ def reject_rent(request, id_mes):
 def all_rents_renter(request):
     id_user = request.user.id
     my_rents = models.DoneRent.objects.all().filter(id_user_renter=id_user)
-    return render(request, 'Profile/AllRentsRentor.html', {'my_rents': my_rents})
+    return render(request, 'Profile/AllRentsRenter.html', {'my_rents': my_rents})
 
 
 def all_rents_owner(request):
@@ -304,17 +303,17 @@ def choose_payment(request, id_donerent):
 
         if c:
             drent = models.DoneRent.objects.get(id=id_donerent)
-            drent.paid_user += 1
+            drent.next_payment_date += datetime.timedelta(days=models.Rent.objects.get(id=
+                                                                                       drent.id_house).payment_interval)
             drent.save()
 
         response = {"message": m, "status": c}
 
         # Логирование операции оплаты аренды
-        if c:
-            models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Оплата аренды',
-                                                       describe_operation="Оплата на сумму " +
-                                                                          str(request.POST['size']) + " BYN. " +
-                                                                          str(m), date_operation=datetime.date.today())
+        models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Оплата аренды',
+                                                   describe_operation="Оплата на сумму " +
+                                                                      str(request.POST['size']) + " BYN. " +
+                                                                      str(m), date_operation=datetime.date.today())
 
         response = json.dumps(response, ensure_ascii=False)
 
@@ -358,18 +357,32 @@ def quick_payment(request):
         list_payments = list()
         payments = models.QuickPayment.objects.filter(username=request.user)
         for i in payments:
-            list_payments.append([i, i.user_payment, i.amount,
-                                  models.Rent.objects.get(id=models.DoneRent.objects.get(id=i.rent_id).id_house).name])
-        return render(request, 'Profile/QuickPayment.html', {'payments': list_payments})
+            try:
+                list_payments.append([i, i.user_payment, i.amount,
+                                      models.Rent.objects.get(
+                                          id=models.DoneRent.objects.get(id=i.rent_id).id_house).name])
+            except:
+                continue
+        context = {'payments': list_payments}
+        try:
+            if request.GET['type'] == 'addautopayment':
+                context.update({'addautopayment': True})
+            else:
+                context.update({'addautopayment': False})
+        except:
+            context.update({'addautopayment': False})
+        return render(request, 'Profile/QuickPayment.html', context)
 
 
 def quick_payment_info(request, id):
     if request.method == 'GET':
         payment = models.QuickPayment.objects.get(id=id)
-        return render(request, 'Profile/QuickPaymentInfo.html', {'payment': payment,
-                                                                 'rent': models.Rent.objects.get(
-                                                                     id=models.DoneRent.objects.get(
-                                                                         id=payment.rent_id).id_house)})
+        rent = []
+        try:
+            rent = models.Rent.objects.get(id=models.DoneRent.objects.get(id=payment.rent_id).id_house)
+        except:
+            pass
+        return render(request, 'Profile/QuickPaymentInfo.html', {'payment': payment, 'rent': rent})
     else:
         payment = models.QuickPayment.objects.get(id=id)
         if payment.user_payment == 'Кошелек':
@@ -379,6 +392,11 @@ def quick_payment_info(request, id):
         tr_to = models.MyUser.objects.get(
             id=models.Rent.objects.get(id=models.DoneRent.objects.get(id=payment.rent_id).id_house).user_login)
         c, m = t.Transaction(payment.amount, tr_from, tr_to).make_transaction()
+        if c:
+            drent = models.DoneRent.objects.get(id=payment.rent_id)
+            drent.next_payment_date += datetime.timedelta(days=models.Rent.objects.get(id=
+                                                                                       drent.id_house).payment_interval)
+            drent.save()
         return render(request, 'Profile/Thanks.html', {'mes': m})
 
 
@@ -396,8 +414,8 @@ def make_pay_penalty(request, id_penalty):
     done_rent = models.DoneRent.objects.get(id=id_done_rent)
 
     if done_rent.paid_user < done_rent.pay_number:
-            return render(request, 'Profile/MyPenalties.html',
-                  {'pen': my_pens, 'message': "Сначала оплатите задолженность за аренду."})
+        return render(request, 'Profile/MyPenalties.html',
+                      {'pen': my_pens, 'message': "Сначала оплатите задолженность за аренду."})
 
     else:
         user_from = models.MyUser.objects.get(id=done_rent.id_user_renter)
@@ -406,7 +424,8 @@ def make_pay_penalty(request, id_penalty):
                              user_to, True).make_transaction()
 
         if c:
-            models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Оплата штрафа за просрочку аренды',
+            models.LogOperationsBalance.objects.create(id_user=request.user.id,
+                                                       type_operation='Оплата штрафа за просрочку аренды',
                                                        describe_operation="Оплата на сумму " +
                                                                           str(pen.size_penalty) + " BYN. " +
                                                                           str(m), date_operation=datetime.date.today())
@@ -414,7 +433,7 @@ def make_pay_penalty(request, id_penalty):
             pen.save()
 
         return render(request, 'Profile/MyPenalties.html',
-                    {'pen': my_pens, 'message': "Штраф оплачен.", 'stat': m})
+                      {'pen': my_pens, 'message': "Штраф оплачен.", 'stat': m})
 
 
 def my_all_houses_owner(request):
@@ -431,7 +450,8 @@ def edit_my_house(request, id_rent):
         address = forms.CharField(label="Адрес:", max_length=50, required=True, initial=rent.address)
         min_rent_time = forms.IntegerField(label="Срок аренды:", required=True, initial=rent.min_rent_time)
         area = forms.IntegerField(label='Площадь:', required=True, initial=rent.area)
-        date_of_construction = forms.IntegerField(label='Год строительства:', required=True, initial=rent.date_of_construction)
+        date_of_construction = forms.IntegerField(label='Год строительства:', required=True,
+                                                  initial=rent.date_of_construction)
         other = forms.CharField(label="Другое:", max_length=100, required=True, initial=rent.other,
                                 widget=forms.Textarea(attrs={'placeholder': 'Введите описание дома...', 'rows': '4'}))
         cost = forms.CharField(label='Цена аренды:', max_length=50, required=True, initial=rent.cost)
@@ -466,18 +486,51 @@ def delete_my_house(request, id_rent):
 
 
 def auto_payment(request):
-    auto_payments = models.AutoPayment.objects.filter(user_id=request.user.id)
+    auto_payments = models.AutoPayment.objects.filter(quick_payment=
+                                                      models.QuickPayment.objects.get(username_id=
+                                                                                      request.user.id))
 
     return render(request, 'Profile/AutoPayment/AutoPayment.html', {'auto_payments': auto_payments})
 
 
 def about_auto_payment(request, id_auto):
-    print("dsfgdfg")
     id_done_rent = models.AutoPayment.objects.get(id=id_auto).id
     house = models.Rent.objects.get(id=id_done_rent)
     login_owner = models.MyUser.objects.get(id=id_done_rent.id_user_owner).username
     size = house.cost
     return render(request, 'Profile/AutoPayment/AboutAutoPayment.html', {'name_house': house.name,
-                                                                        'min_time_rent': house.min_rent_time,
-                                                                        'login_owner': login_owner,
-                                                                        'size': size})
+                                                                         'min_time_rent': house.min_rent_time,
+                                                                         'login_owner': login_owner,
+                                                                         'size': size})
+
+
+def add_auto_payment(request):
+    class AutoPayForm(forms.Form):
+        quick_payment = forms.IntegerField(widget=forms.HiddenInput(), label='')
+        pay_date = forms.DateField(input_formats=['%d/%m/%Y'], label='Дата оплаты:')
+        payment_interval = forms.IntegerField(label='Интервал оплаты:')
+
+    if request.method == 'GET':
+        context = dict()
+        try:
+            if int(request.GET['id']):
+                pay = models.QuickPayment.objects.get(id=request.GET['id'])
+                context = {'pay': pay,
+                           'rent': models.Rent.objects.get(
+                               id=models.DoneRent.objects.get(id=pay.rent_id).id_house).name}
+        except:
+            pass
+
+        form = AutoPayForm()
+        context.update({'form': form})
+        return render(request, 'Profile/AutoPayment/AddAutoPayment.html', context)
+    else:
+        form = AutoPayForm(request.POST)
+        if form.is_valid():
+            payment_date = form.cleaned_data['pay_date']
+            quick_payment = form.cleaned_data['quick_payment']
+            payment_interval = form.cleaned_data['payment_interval']
+            models.AutoPayment.objects.create(next_payment_date=payment_date,
+                                              quick_payment=models.QuickPayment.objects.get(id=quick_payment),
+                                              payment_interval=payment_interval)
+        return HttpResponseRedirect('/')

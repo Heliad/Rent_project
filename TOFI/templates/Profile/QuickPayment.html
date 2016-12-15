@@ -6,9 +6,16 @@
             <div class="center">
                 {% for i, payment, amount, to in payments %}
                     <div>
-                    <form action="payment_info/{{ i.id }}">
-                        <input type="submit" class="button9" value="Тип оплаты: {{ payment }}, цена: {{ amount }} BYN, Аренда: {{ to }}">
-                    </form>
+                        {% if addautopayment %}
+                            <input type="button" onclick="func({{ i.id }})" class="button9"
+                                   value="Тип оплаты: {{ payment }}, цена: {{ amount }} BYN, Аренда: {{ to }}">
+                        {% else %}
+                            <form action="payment_info/{{ i.id }}">
+                                <input type="submit" class="button9"
+                                       value="Тип оплаты: {{ payment }}, цена: {{ amount }} BYN, Аренда: {{ to }}">
+                            </form>
+                        {% endif %}
+
                     </div>
                 {% endfor %}
             </div>
@@ -17,4 +24,5 @@
         <div class="center">Быстрых платежей нет</div>
     {% endif %}
     {% csrf_token %}
+    <script src="/static/javascript/get_auto.js"></script>
 {% endblock %}

@@ -2,9 +2,29 @@
     width: 100%;
     max-width: 700px;
     padding: 10px;
-    margin: 100px auto auto;
-    background: whitesmoke;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+    margin: 50px auto auto;
+    background: white;
+}
+
+a {
+    color: darkslateblue;
+}
+
+a:hover {
+    color: dodgerblue;
+}
+
+body {
+    margin: auto;
+    padding-bottom: 0;
+    height: auto;
+    background-color: whitesmoke;
+    link: dodgerblue;
+}
+
+.main-body {
+    padding-top: 50px;
+    padding-bottom: auto;
 }
 
 .narrow-center{
@@ -16,12 +36,11 @@
 
 .left
 {
-    background-color: whitesmoke; /* Цвет фона слоя */
+    background-color: white; /* Цвет фона слоя */
     padding: 10px; /* Поля вокруг текста */
     float: left; /* Обтекание по правому краю */
     width: 200px; /* Ширина слоя */
-    margin: 100px auto auto;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+    margin: 50px auto auto;
 }
 
 .padding100{
@@ -35,57 +54,61 @@
 
 .button8
 {
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
     color: black;
     height: 40px;
     width: 250px;
     padding-top: 0;
     padding-bottom: 0;
-    background: whitesmoke;
+    background: white;
     transition: 0.2s;
     border-width: 0;
 }
 
 .button8:hover
 {
-    background: darkgray;
+    background: lightgray;
 }
 
 .button9
 {
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
     color: black;
     height: 40px;
     width: 100%;
     max-width: 700px;
     padding-top: 0;
     padding-bottom: 0;
-    background: whitesmoke;
+    background: white;
     transition: 0.2s;
     border-width: 0;
+    border-top: 1px;
 }
 
 .button9:hover
 {
-    background: darkgray;
+    background: whitesmoke;
 }
 
 .button7
 {
     color: white;
     padding: 7px;
-    background: rgb(64,199,129);
+    background: darkgray;
     transition: 0.2s;
-    border-width: 0px;
+    border-width: 0;
+    text-decoration: underline;
 }
 
 .button7:hover
 {
-    background: rgb(53, 167, 110);
+    background: gray;
 }
 
 .button7:active
 {
   background: rgb(33,147,90);
   box-shadow: 0 3px rgb(33,147,90) inset;
+}
+
+.color {
+    background-color: cornflowerblue;
 }

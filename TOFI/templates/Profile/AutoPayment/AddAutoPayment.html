@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Добавление автоматического платёжа{% endblock %}
+{% block content %}
+    <script>window.onload = function () {
+        function func(id) {
+            document.getElementById('id_quick_payment').value = id
+        }
+
+        func({{ pay.id }})
+    }
+    </script>
+    <form method="post">
+        {% csrf_token %}
+        <table class="center">
+            <tr>
+                <td class="padding">
+                    {% if pay %}
+                        <input type="button" class="button9"
+                               value="Тип оплаты: {{ pay.user_payment }}, цена: {{ pay.amount }} BYN, Аренда: {{ rent }}">
+                    {% else %}
+                        <a href="/profile/quickpayment/?type=addautopayment">Выберите платеж</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% for field in form %}
+                <tr>
+                    {% if field.label != '' %}
+                        <td class="padding">{{ field.label }}</td>
+                    {% endif %}
+                    <td>{{ field }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td><input type="submit" value="Создать"></td>
+            </tr>
+        </table>
+    </form>
+
+{% endblock %}

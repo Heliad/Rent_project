@@ -18,12 +18,9 @@
                         <td class="padding">{{ rent.cost }} + Комиссия</td>
                     </tr>
                     <tr>
-                        <td class="padding">Выплат должно быть(на текущий месяц):</td>
-                        <td class="padding">{{ rent.pay_number }}</td>
+                        <td class="padding">Дата следующей оплаты:</td>
+                        <td class="padding">{{ rent.next_payment_date }}</td>
                     </tr>
-                    <tr>
-                        <td class="padding">Выплат проведено:</td>
-                        <td class="padding">{{ rent.paid_user }}</td>
                     </tr>
 
                     <tr class="padding">

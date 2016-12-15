@@ -1,4 +1,5 @@
 import datetime
+
 from TOFI import models
 
 
@@ -32,11 +33,11 @@ def check_rent_number_pay():
         # Выдаем пиздюлей и письма
         penalty = models.Penalties.objects.get(id=1)
         check_repeat = models.DonePenalty.objects.filter(id_done_rent=r.id)  # Проверяем не высылали ли ему уже такое письмо
-        if r.pay_number > r.paid_user:
+        '''if r.pay_number > r.paid_user:
             if not check_repeat:
                 mes = "Вы просрочили платёж за аренду дома, под названием: " + rent.name + \
                       ", после прочтения этого письма, вам необходимо выплатить полную сумму штрафа," + \
                       " в размере: " + str(penalty.cost_penalty) + " BYN, а так же вам необходимо выплатить " + \
                       "полную сумму просрочки за аренду"
                 models.DonePenalty.objects.create(describe_penalty=mes, id_user_for=r.id_user_renter,
-                                                  size_penalty=penalty.cost_penalty, id_done_rent=r.id)
+                                                  size_penalty=penalty.cost_penalty, id_done_rent=r.id)'''

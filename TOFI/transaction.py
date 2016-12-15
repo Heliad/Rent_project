@@ -69,24 +69,34 @@ class Check(object):
         if not self.tr_from and not self.tr_to and not self.amount:
             return 'error'
         result = list()
-        for i in [self.tr_from, self.tr_to]:
+        try:
+            card = models.UserCard.objects.get(card_num=self.tr_from.card_num)
+            if card.size < self.amount:
+                return 'Недостаточно средств на карте'
+            if self.is_monetize and card.size < self.amount + self.amount * models.Monetization.objects.get(
+                    id=1).value_mon:
+                return 'Недостаточно средств на карте'
+            result.append(True)
+        except:
             try:
-                card = models.UserCard.objects.get(card_num=i.card_num)
-                if card.size < self.amount:
+                balance = models.MyUser.objects.get(username=self.tr_from.username)
+                if balance.balance < self.amount:
+                    return 'Недостаточно средств на счете'
+                if self.is_monetize and balance.balance < self.amount + self.amount * models.Monetization.objects.get(
+                        id=1).value_mon:
                     return 'Недостаточно средств на карте'
-                if self.is_monetize and card.size < self.amount + self.amount * models.Monetization.objects.get(id=1).value_mon:
-                    return 'Недостаточно средств на карте'
-                result.append(True)
+                result.append(False)
             except:
-                try:
-                    balance = models.MyUser.objects.get(username=i.username)
-                    if balance.balance < self.amount:
-                        return 'Недостаточно средств на счете'
-                    if self.is_monetize and balance.balance < self.amount + self.amount * models.Monetization.objects.get(id=1).value_mon:
-                        return 'Недостаточно средств на карте'
-                    result.append(False)
-                except:
-                    return 'Введены неверные данные'
+                return 'Введены неверные данные'
+        try:
+            models.UserCard.objects.get(card_num=self.tr_to.card_num)
+            result.append(True)
+        except:
+            try:
+                models.MyUser.objects.get(username=self.tr_to.username)
+                result.append(False)
+            except:
+                return 'Карты с таким номером не существует'
         return result
 
     def check_card(self):

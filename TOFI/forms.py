@@ -1,7 +1,8 @@
 from django import forms
-from django.forms import SelectDateWidget
-from .models import MyUser, Rent, AddImage
 from django.core.validators import *
+from django.forms import SelectDateWidget
+
+from .models import MyUser, Rent, AddImage
 
 
 class UserForm(forms.ModelForm):
@@ -38,7 +39,7 @@ class RentForm(forms.ModelForm):
 
     class Meta:
         model = Rent
-        fields = ['name', 'address', 'min_rent_time', 'area', 'date_of_construction', 'cost']
+        fields = ['name', 'address', 'min_rent_time', 'area', 'date_of_construction', 'cost', 'payment_interval']
 
 
 class RefillBalance(forms.Form):

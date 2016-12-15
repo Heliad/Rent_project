@@ -1,6 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import User, AbstractBaseUser, BaseUserManager
-from django.forms import ImageField, FileField
+from django.db import models
 
 
 class MyUserManager(BaseUserManager):
@@ -107,7 +106,8 @@ class Rent(models.Model):
     name = models.CharField(verbose_name='Название:', max_length=50)
     address = models.CharField(verbose_name='Адрес:', max_length=50)
     min_rent_time = models.IntegerField(verbose_name='Срок аренды:')
-    area = models.IntegerField(verbose_name='Площадь:', )
+    area = models.IntegerField(verbose_name='Площадь:')
+    payment_interval = models.IntegerField(verbose_name='Срок оплаты', default=None, null=True, blank=True)
     date_of_construction = models.IntegerField(verbose_name='Год строительства:', default=None)
     creation_date = models.DateField(default=None)
     other = models.CharField(verbose_name='Другое:', max_length=100)
@@ -153,8 +153,7 @@ class DoneRent(models.Model):
     id_user_renter = models.IntegerField()
     date_rent = models.DateField(default=None)
     cost = models.CharField(max_length=50)  # Цена одной платы
-    pay_number = models.IntegerField()  # Сколько платежей должно быть
-    paid_user = models.IntegerField()  # Сколько раз арендатор заплатил
+    next_payment_date = models.DateField(default=None)
 
 
 class LogOperationsBalance(models.Model):  # Модель для логирования операций
@@ -196,9 +195,9 @@ class DonePenalty(models.Model):  # Назначенные штрафы
 
 
 class AutoPayment(models.Model):
-    id_quick_payment = models.IntegerField()
-    user_id = models.IntegerField()
-    id_rent = models.IntegerField()
+    quick_payment = models.ForeignKey(QuickPayment)
+    next_payment_date = models.DateField(default=None)
+    payment_interval = models.IntegerField(default=30)
 
 
 class AddImage(models.Model):
