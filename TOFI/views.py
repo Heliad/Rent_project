@@ -127,12 +127,23 @@ class Login(FormView):
     def get(self, request, *args, **kwargs):
         if not request.user.is_anonymous:
             return HttpResponseRedirect("/")
+
         return render(request, self.template_name,  {'form': self.form_class})
 
     def form_valid(self, form):
         self.user = form.get_user()
         login(self.request, self.user)
         return super(Login, self).form_valid(form)
+
+    def form_invalid(self, form):
+        login_user = form.cleaned_data['username']
+        user = models.MyUser.objects.get(username=login_user)
+        if not user.is_active:
+            print("sgfdgf")
+            return render(self.request, 'BlockedAcc.html', {'us': user.username, 'reason': user.reason_block})
+        err = form.errors.as_data()
+        print(err)
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 def logout_view(request):
