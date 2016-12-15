@@ -39,6 +39,14 @@
       <column name="date_comment" sqlType="DATE" precision="0" scale="-1" nullable="false" jdbcType="12"/>
       <primary-key columns="id"/>
     </table>
+    <table name="TOFI_complaint" schema="" catalog="" type="TABLE">
+      <column name="id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
+      <column name="login_user_from" sqlType="VARCHAR(100)" precision="0" scale="-1" nullable="false" jdbcType="12"/>
+      <column name="login_user_to" sqlType="VARCHAR(100)" precision="0" scale="-1" nullable="false" jdbcType="12"/>
+      <column name="describe" sqlType="VARCHAR(150)" precision="0" scale="-1" nullable="false" jdbcType="12"/>
+      <column name="date" sqlType="DATE" precision="0" scale="-1" nullable="false" jdbcType="12"/>
+      <primary-key columns="id"/>
+    </table>
     <table name="TOFI_currency" schema="" catalog="" type="TABLE">
       <column name="id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
       <column name="currency_name" sqlType="VARCHAR(10)" precision="0" scale="-1" nullable="false" jdbcType="12"/>

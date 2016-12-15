@@ -37,6 +37,15 @@
             </tr>
             {% endif %}
         </table>
+
+    <table class="center">
+        <tr class="padding">
+            <td class="padding">
+                <a href="/make_complaint/{{ user.id }}">Жалоба</a>
+            </td>
+        </tr>
+    </table>
+
     {% csrf_token %}
     <script src="/static/javascript/post_comment.js"></script>
     <table class="center">

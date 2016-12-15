@@ -201,6 +201,13 @@ class AutoPayment(models.Model):
     id_rent = models.IntegerField()
 
 
+class Complaint(models.Model):
+    login_user_from = models.CharField(verbose_name="От кого жалоба", max_length=100)
+    login_user_to = models.CharField(verbose_name="На кого жалоба", max_length=100)
+    describe = models.CharField(verbose_name="Текаст жалобы", max_length=150)
+    date = models.DateField(verbose_name="Дата подачи жалобы", default=None)
+
+
 class AddImage(models.Model):
     id_rent = models.IntegerField()
     image = models.ImageField(upload_to='imagesHouses/', height_field=None, width_field=None)
