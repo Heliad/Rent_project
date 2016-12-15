@@ -127,12 +127,23 @@ class Login(FormView):
     def get(self, request, *args, **kwargs):
         if not request.user.is_anonymous:
             return HttpResponseRedirect("/")
+
         return render(request, self.template_name,  {'form': self.form_class})
 
     def form_valid(self, form):
         self.user = form.get_user()
         login(self.request, self.user)
         return super(Login, self).form_valid(form)
+
+    def form_invalid(self, form):
+        login_user = form.cleaned_data['username']
+        user = models.MyUser.objects.get(username=login_user)
+        if not user.is_active:
+            print("sgfdgf")
+            return render(self.request, 'BlockedAcc.html', {'us': user.username, 'reason': user.reason_block})
+        err = form.errors.as_data()
+        print(err)
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 def logout_view(request):
@@ -230,3 +241,32 @@ def comment(request):
         response = {'com': com, 'user': request.user.username, 'date': datetime.date.today().strftime('%b. %d, %Y')}
         response = json.dumps(response, ensure_ascii=False)
         return HttpResponse(response, content_type="text/html; charset=utf-8")
+
+
+def make_complaint(request, id_user_to):
+
+    user_to = models.MyUser.objects.get(id=id_user_to)
+
+    class MakeComplaint(forms.Form):
+        login_user_to = forms.CharField(label="Жалоба на пользователя:", max_length=100, required=True,
+                                        widget=forms.TextInput(attrs={'readonly': 'readonly'}), initial=user_to.username)
+        describe = forms.CharField(label="Опишите жалобу:", max_length=150, required=True,
+                                   widget=forms.Textarea(attrs={'rows': '4'}))
+
+    if request.method == 'POST':
+        form = MakeComplaint(request.POST)
+
+        if form.is_valid():
+            login_user_from = request.user.username
+            login_user_to = user_to.username
+            describe = form.cleaned_data['describe']
+            models.Complaint.objects.create(login_user_from=login_user_from, login_user_to=login_user_to,
+                                            describe=describe, date=datetime.date.today())
+            mes = "Ваша жалоба на пользователя " + user_to.username + " отправлена на сервер и " \
+                                                             "будет рассмотрена в ближайшее время."
+
+            return render(request, 'Profile/Thanks.html', {'mes': mes})
+
+    else:
+        form = MakeComplaint()
+    return render(request, 'MakeComplaint.html', {'form': form})
