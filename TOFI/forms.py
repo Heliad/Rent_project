@@ -15,9 +15,8 @@ class UserForm(forms.ModelForm):
     last_name = forms.CharField(label='Отчество:', required=True, validators=[RegexValidator('^[а-яА-Я]*$')])
     age = forms.IntegerField(label='Возраст:', validators=[MaxValueValidator(100), MinValueValidator(18)])
 
-    email = forms.CharField(label='Email:', validators=[EmailValidator()])
-    phone = forms.CharField(label='Телефон:', help_text='Необходимо ввести номер с кодом страны и оператора',
-                            validators=[RegexValidator('^\+[0-9\-\ ]*$')])
+    email = forms.CharField(label='Email:', max_length=50, validators=[EmailValidator()])
+    phone = forms.CharField(label='Телефон:', max_length=50, validators=[RegexValidator('^\+[0-9\-\ ]*$')])
     address = forms.CharField(label='Адрес:', max_length=50, validators=[RegexValidator('^[0-9а-яА-Я/./,/;/ /-]*$')])
     passport_id = forms.CharField(label='Номер пасспорта:', max_length='50')
 
@@ -71,9 +70,14 @@ class RefillBalance(forms.Form):
 
 
 class ChangePassword(forms.Form):
-    old_password = forms.CharField(label="Старый пароль:", max_length=50, required=True)
-    new_password = forms.CharField(label="Новый пароль:", max_length=50, required=True)
-    new_password_repeat = forms.CharField(label="Повторите пароль:", max_length=50, required=True)
+    old_password = forms.CharField(label="Старый пароль:", max_length=50, required=True,
+                                   widget=forms.PasswordInput)
+    new_password = forms.CharField(label="Новый пароль:", max_length=50, min_length=10, required=True,
+                                   widget=forms.PasswordInput,
+                                   validators=[RegexValidator('^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$')])
+    new_password_repeat = forms.CharField(label="Повторите пароль:", max_length=50, min_length=10, required=True,
+                                          widget=forms.PasswordInput,
+                                          validators=[RegexValidator('^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$')])
 
 
 class DeleteMySelf(forms.Form):

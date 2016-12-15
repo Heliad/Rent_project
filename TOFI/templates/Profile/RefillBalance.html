@@ -24,10 +24,25 @@
             {% endfor %}
             <tr>
                 <td>
-                    <button type="submit" class="button7">Пополнить баланс</button>
+                    <button type="submit" id="butRefill" class="button7">Пополнить баланс</button>
+                    <button type="submit" id="butAddCard" class="button7">Добавить карту</button>
                 </td>
             </tr>
         </table>
     </form>
-
+    <script>
+    var url = document.location.href;
+    var butRefill = document.getElementById('butRefill');
+    var butAddCard = document.getElementById('butAddCard');
+    if (url.localeCompare("http://127.0.0.1:8000/profile/add_card"))
+    {
+        butAddCard.hidden = true;
+        butRefill.hidden = false;
+    }
+    else
+    {
+        butAddCard.hidden = false;
+        butRefill.hidden = true;
+    }
+    </script>
 {% endblock %}

@@ -41,90 +41,78 @@
                 </td>
             </tr>
         {% if not request.user.is_admin and not request.user.is_moder %}
-                {% if request.user.ie %}
-                    <tr class="padding">
-                    <td></td>
-                        <td class="padding">
-                            <a href="{% url 'UnfillBalance' %}">Вывод средств</a>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr class="padding">
-                    <td></td>
-                        <td class="padding">
-                            <a href="{% url 'RefillBalance' %}">Пополнить счет</a>
-                        </td>
-                    </tr>
-                {% endif %}
+            {% if request.user.ie %}
                 <tr class="padding">
-                    <td></td>
+                <td></td>
                     <td class="padding">
-                        {% if new %}
-                            <a href="{% url 'Mails' %}">Оповещения <font color="red">(New +{{ number }})</font></a>
-                        {% else %}
-                            <a href="{% url 'Mails' %}">Оповещения </a>
-                        {% endif %}
+                        <a href="{% url 'UnfillBalance' %}">Вывод средств</a>
                     </td>
                 </tr>
+            {% else %}
+                <tr class="padding">
+                <td></td>
+                    <td class="padding">
+                        <a href="{% url 'RefillBalance' %}">Пополнить счет</a>
+                    </td>
+                </tr>
+            {% endif %}
+            <tr class="padding">
+                <td></td>
+                <td class="padding">
+                    {% if new %}
+                        <a href="{% url 'Mails' %}">Оповещения <font color="red">(New +{{ number }})</font></a>
+                    {% else %}
+                        <a href="{% url 'Mails' %}">Оповещения </a>
+                    {% endif %}
+                </td>
+            </tr>
 
-                {% if request.user.ie %}
-                    <tr class="padding">
-                        <td></td>
-                        <td class="padding">
-                            <a href="{% url 'AllRentsOwner' %}">Мои арендуемые дома</a>
-                        </td>
-                    </tr>
-                    <tr class="padding">
-                        <td></td>
-                        <td class="padding">
-                            <a href="{% url 'MyAllHousesOwner' %}">Мои объявления</a>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr class="padding">
-                        <td></td>
-                        <td class="padding">
-                            <a href="{% url 'AllRentsRenter' %}">Мои аренды</a>
-                        </td>
-                    </tr>
-                {% endif %}
+            {% if request.user.ie %}
                 <tr class="padding">
                     <td></td>
                     <td class="padding">
-                        <a href="{% url 'ExtractBalance' %}">Получить выписку о балансе</a>
+                        <a href="{% url 'AllRentsOwner' %}">Мои арендуемые дома</a>
                     </td>
                 </tr>
                 <tr class="padding">
                     <td></td>
                     <td class="padding">
-                        <a href="{% url 'AutoPayment' %}">Автоматический платёж</a>
+                        <a href="{% url 'MyAllHousesOwner' %}">Мои объявления</a>
                     </td>
                 </tr>
+            {% else %}
                 <tr class="padding">
                     <td></td>
                     <td class="padding">
-                        <a href="{% url 'QuickPayment' %}">Быстрый платеж</a>
+                        <a href="{% url 'AllRentsRenter' %}">Мои аренды</a>
                     </td>
                 </tr>
+            {% endif %}
+            <tr class="padding">
+                <td></td>
+                <td class="padding">
+                    <a href="{% url 'ExtractBalance' %}">Получить выписку о балансе</a>
+                </td>
+            </tr>
+            <tr class="padding">
+                <td></td>
+                <td class="padding">
+                    <a href="{% url 'AutoPayment' %}">Автоматический платёж</a>
+                </td>
+            </tr>
+            <tr class="padding">
+                <td></td>
+                <td class="padding">
+                    <a href="{% url 'QuickPayment' %}">Быстрый платеж</a>
+                </td>
+            </tr>
         {% endif %}
-                <tr class="padding">
-                    <td></td>
-                    <td class="padding">
-                        <a href="{% url 'ChangePassword' %}">Сменить пароль</a>
-                    </td>
-                </tr>
-                <tr class="padding">
-                    <td></td>
-                    <td class="padding">
-                        <a href="{% url 'EditProfile' %}">Редактированть личные данные</a>
-                    </td>
-                </tr>
-                <tr class="padding">
-                    <td></td>
-                    <td class="padding">
-                        <a href="{% url 'DeleteMySelf' %}">Удалить аккаунт</a>
-                    </td>
-                </tr>
+            <tr class="padding">
+                <td></td>
+                <td class="padding">
+                    <a href="{% url 'EditProfile' %}">Редактированть личные данные</a>
+                </td>
+            </tr>
         </table>
     </div>
 

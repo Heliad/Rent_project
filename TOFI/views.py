@@ -117,7 +117,6 @@ class Registration(View):
 
         else:
             err = form.errors.as_data()
-            print(err)
             if 'password' in err:
                 error = 'Пароль должен содержать в себе арабские цифры и латинские буквы!'
             if 'phone' in err:
@@ -157,14 +156,13 @@ class Login(FormView):
 
     def form_invalid(self, form):
         login_user = form.cleaned_data['username']
-        user = models.MyUser.objects.get(username=login_user)
-        if not user.is_active:
-            print("sgfdgf")
-            return render(self.request, 'BlockedAcc.html', {'us': user.username, 'reason': user.reason_block})
-        err = form.errors.as_data()
-        print(err)
+        try:
+            user = models.MyUser.objects.get(username=login_user)
+            if not user.is_active:
+                return render(self.request, 'BlockedAcc.html', {'us': user.username, 'reason': user.reason_block})
+        except:
+            pass
         return self.render_to_response(self.get_context_data(form=form))
-
 
 def logout_view(request):
     if request.user.is_anonymous:

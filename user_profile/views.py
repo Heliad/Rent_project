@@ -202,6 +202,11 @@ def profileChangePassword(request):
                     error = 'Вы ввели неверный пароль'
             else:
                 error = 'Пароли не совпадают'
+        else:
+            err = form.errors.as_data()
+            print(err)
+            if 'newPassword' in err:
+                error = 'Пароль должен содержать в себе арабские цифры и латинские буквы!'
     else:
         form = ChangePassword()
 
@@ -236,16 +241,24 @@ def edit_profile(request):
     if request.user.is_anonymous:
         return HttpResponseRedirect("/login")
 
+    error = ''
     class EditProfile(forms.Form):
-        email = forms.CharField(label="Почтовый адрес", max_length=50, required=True, initial=request.user.email)
-        name = forms.CharField(label="Ваше имя", max_length=50, required=True, initial=request.user.name)
-        surname = forms.CharField(label="Ваша фамилия", max_length=50, required=True, initial=request.user.surname)
-        last_name = forms.CharField(label="Ваше отчество", max_length=50, required=True, initial=request.user.last_name)
-        age = forms.IntegerField(label="Ваш возраст", required=True, initial=request.user.age)
+        name = forms.CharField(label="Ваше имя", max_length=50, required=True, initial=request.user.name,
+                               validators=[RegexValidator('^[а-яА-Я]*$')])
+        surname = forms.CharField(label="Ваша фамилия", max_length=50, required=True, initial=request.user.surname,
+                                  validators=[RegexValidator('^[а-яА-Я]*$')])
+        last_name = forms.CharField(label="Ваше отчество", max_length=50, required=True, initial=request.user.last_name,
+                                    validators=[RegexValidator('^[а-яА-Я]*$')])
+        age = forms.IntegerField(label="Ваш возраст", required=True, initial=request.user.age,
+                                 validators=[MaxValueValidator(100), MinValueValidator(18)])
+        email = forms.CharField(label="Почтовый адрес", max_length=50, required=True, initial=request.user.email,
+                                validators=[EmailValidator()])
         passport_id = forms.CharField(label="Номер вашего паспорта", max_length=50, required=True,
                                       initial=request.user.passport_id)
-        phone = forms.CharField(label="Ваш номер телефона", max_length=50, required=True, initial=request.user.phone)
-        address = forms.CharField(label="Ваш адрес", max_length=50, required=True, initial=request.user.address)
+        phone = forms.CharField(label="Ваш номер телефона", max_length=50, required=True, initial=request.user.phone,
+                                validators=[RegexValidator('^\+[0-9\-\ ]*$')])
+        address = forms.CharField(label="Ваш адрес", max_length=50, required=True, initial=request.user.address,
+                                  validators=[RegexValidator('^[0-9а-яА-Я/./,/;/ /-]*$')])
 
     if request.method == 'POST':
         form = EditProfile(request.POST)
@@ -262,10 +275,27 @@ def edit_profile(request):
             user.address = form.cleaned_data['address']
             user.save()
             return render(request, 'Profile/EditProfileDone.html')
-
+        else:
+            err = form.errors.as_data()
+            if 'phone' in err:
+                error = 'Недопустимый номер телефона!'
+            if 'username' in err:
+                error = 'Пользователь с таким логином уже существует!'
+            if 'name' in err:
+                error = 'Недопустимые символы в поле Имя!'
+            if 'surname' in err:
+                error = 'Недопустимые символы в поле Фамилия!'
+            if 'last_name' in err:
+                error = 'Недопустимые символы в поле Отчество!'
+            if 'age' in err:
+                error = 'Недопустимые значение в поле Возраст!'
+            if 'email' in err:
+                error = 'Недопустимые значение в поле Email!'
+            if 'address' in err:
+                error = 'Недопустимые значение в поле Адрес!'
     else:
         form = EditProfile()
-    return render(request, "Profile/EditProfile.html", {'form': form})
+    return render(request, "Profile/EditProfile.html", {'form': form, 'error': error})
 
 
 def mails(request):
@@ -533,8 +563,12 @@ def delete_my_house(request, id_rent):
 
 
 def auto_payment(request):
-    auto_payments = models.AutoPayment.objects.filter(quick_payment=
+    auto_payments = None
+    try:
+        auto_payments = models.AutoPayment.objects.filter(quick_payment=
                                                       models.QuickPayment.objects.get(username_id=request.user.id))
+    except:
+        pass
     return render(request, 'Profile/AutoPayment/AutoPayment.html', {'auto_payments': auto_payments})
 
 

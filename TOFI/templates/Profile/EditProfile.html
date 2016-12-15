@@ -1,8 +1,20 @@
 {% extends "base.html" %}
 {% block title %}Редактирование личных данных{% endblock %}
 {% block content %}
+    {% if error %}
+        <div class="left">
+            <table>
+                <tr>
+                    <td>
+                        <font color="red">{{ error }}</font>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    {% endif %}
     <form method="POST" class="center">
         {% csrf_token %}
+
         <table>
             {% for field in form %}
                 <tr>
@@ -10,7 +22,24 @@
                     <td>{{ field }}</td>
                 </tr>
             {% endfor %}
-            <tr><td><button type="submit" class="button7">Сохранить</button></td></tr>
+            <tr>
+                <td>
+                    <button type="submit" class="button7">Сохранить</button>
+                </td>
+            </tr>
         </table>
     </form>
+    <table class="center">
+        <tr class="padding">
+            <td class="padding">
+                <a href="{% url 'ChangePassword' %}">Сменить пароль</a>
+            </td>
+        </tr>
+        <tr class="padding">
+            <td class="padding">
+                <a href="{% url 'DeleteMySelf' %}">Удалить аккаунт</a>
+            </td>
+        </tr>
+    </table>
+
 {% endblock %}
