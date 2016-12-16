@@ -254,7 +254,8 @@ def edit_profile(request):
                                  validators=[MaxValueValidator(100), MinValueValidator(18)])
         email = forms.CharField(label="Почтовый адрес:", max_length=50, required=True, initial=request.user.email,
                                 validators=[EmailValidator()])
-        passport_id = forms.CharField(label="Номер вашего паспорта:", max_length=50, required=True,
+        passport_id = forms.CharField(label='Номер пасспорта:', max_length='9', min_length=9, required=True,
+                                      validators=[RegexValidator('^[А-Я]{2,2}[0-9]{7,7}$')],
                                       initial=request.user.passport_id)
         phone = forms.CharField(label="Ваш номер телефона:", max_length=50, required=True, initial=request.user.phone,
                                 validators=[RegexValidator('^\+[0-9\-\ ]*$')])
@@ -294,6 +295,8 @@ def edit_profile(request):
                 error = 'Недопустимые значение в поле Email!'
             if 'address' in err:
                 error = 'Недопустимые значение в поле Адрес!'
+            if 'passport_id' in err:
+                error = 'Недопустимые значение в поле Номер пасспорта!'
     else:
         form = EditProfile()
     return render(request, "Profile/EditProfile.html", {'form': form, 'error': error})

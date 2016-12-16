@@ -1,6 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Изменение курса валюты{% endblock %}
+{% block title %}Редактирование штрафа{% endblock %}
 {% block content %}
+    {% if error %}
+        <div class="left">
+            <table>
+                <tr>
+                    <td>
+                        <font color="red">{{ error }}</font>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    {% endif %}
+
     <form method="POST" class="center">
         {% csrf_token %}
         <table>

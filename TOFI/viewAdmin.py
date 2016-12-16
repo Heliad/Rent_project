@@ -40,13 +40,23 @@ def delete_block(request, id_user):
 
 
 def search_by_id(request):
+    class SearchId(forms.Form):
+        field_id = forms.IntegerField(label="Введите Id пользователя:", required=True, min_value=1, max_value=1000000)
+
+    results, no_rez = None, ''
     if request.method == 'POST':
         form = SearchId(request.POST)
 
         if form.is_valid():
             user_id = form.cleaned_data['field_id']
-            results = models.MyUser.objects.get(id=user_id)
-            return render(request, 'Search/SearchById.html', {'form': form, 'results': results})
+            try:
+                results = models.MyUser.objects.get(id=user_id)
+            except:
+                pass
+
+            if results is None:
+                no_rez = 'Поиск не дал результатов...'
+            return render(request, 'Search/SearchById.html', {'form': form, 'results': results, 'no_rez': no_rez})
     else:
         form = SearchId()
         return render(request, "Search/SearchById.html", {'form': form})
@@ -67,7 +77,8 @@ def edit_user_admin(request, id_user):
                                  validators=[MaxValueValidator(100), MinValueValidator(18)])
         email = forms.CharField(label="Почтовый адрес:", max_length=50, required=True, initial=user_for_edit.email,
                                 validators=[EmailValidator()])
-        passport_id = forms.CharField(label="Номер вашего паспорта:", max_length=50, required=True,
+        passport_id = forms.CharField(label='Номер пасспорта:', max_length='9', min_length=9, required=True,
+                                      validators=[RegexValidator('^[А-Я]{2,2}[0-9]{7,7}$')],
                                       initial=user_for_edit.passport_id)
         phone = forms.CharField(label="Ваш номер телефона:", max_length=50, required=True, initial=user_for_edit.phone,
                                 validators=[RegexValidator('^\+[0-9\-\ ]*$')])
@@ -109,6 +120,8 @@ def edit_user_admin(request, id_user):
                 error = 'Недопустимые значение в поле Email!'
             if 'address' in err:
                 error = 'Недопустимые значение в поле Адрес!'
+            if 'passport_id' in err:
+                error = 'Недопустимые значение в поле Номер пасспорта!'
             if 'balance' in err:
                 error = 'Недопустимые значение в поле Баланс(Пример: XXX,XX)!'
 
@@ -156,12 +169,14 @@ def edit_currency(request, id_cur):
 
 
 def monetization(request):
+    error = ''
     mon = models.Monetization.objects.get(id=1)
 
     class Monet(forms.Form):
-        describe_mon = forms.CharField(label="Описание:", required=True, max_length=150,
-                                           initial=mon.describe_mon, widget=forms.Textarea(attrs={'rows': '3'}))
-        value_mon = forms.FloatField(label="Размер:", required=True, initial=mon.value_mon)
+        describe_mon = forms.CharField(label="Описание:", required=True, max_length=150, min_length=5,
+                                       initial=mon.describe_mon, widget=forms.Textarea(attrs={'rows': '3'}))
+        value_mon = forms.FloatField(label="Размер:", required=True, initial=mon.value_mon,
+                                     validators=[RegexValidator('^[0-9]{1,6}(,|.){1,1}[0-9]{1,2}$')])
 
     if request.method == 'POST':
         form = Monet(request.POST)
@@ -173,7 +188,12 @@ def monetization(request):
 
             mes = 'Изменения приняты и сохранены'
             return render(request, 'Admin/Done.html', {'message': mes})
+
+        else:
+            err = form.errors.as_data()
+            if 'value_mon' in err:
+                error = 'Недопустимые значение в поле Размер(Пример: XX,XXX)!'
     else:
         form = Monet()
 
-    return render(request, 'Admin/Monetization.html', {'form': form})
+    return render(request, 'Admin/Monetization.html', {'form': form, 'error': error})
