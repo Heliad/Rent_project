@@ -1,4 +1,12 @@
-    function func(card_id, balance_to, amount, id) {
+function func(card_id, balance_to, id) {
+    amount = document.getElementById('amount').value;
+    if (!amount) {
+        return 0;
+    }
+    else if (Number(amount) < 0) {
+        return 0;
+    }
+    amount = Number(amount);
         var xmlhttp = getXmlHttp();
         var params = 'card_from=' + encodeURIComponent(card_id) +
                 '&size=' + encodeURIComponent(amount) + '&balance_to=' + encodeURIComponent(balance_to);

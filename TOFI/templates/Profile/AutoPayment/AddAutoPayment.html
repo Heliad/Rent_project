@@ -3,7 +3,9 @@
 {% block content %}
     <script>window.onload = function () {
         function func(id) {
-            document.getElementById('id_quick_payment').value = id
+            if (id != null) {
+                document.getElementById('id_quick_payment').value = id
+            }
         }
 
         func({{ pay.id }})
@@ -11,29 +13,29 @@
     </script>
     <form method="post">
         {% csrf_token %}
-        <table class="center">
-            <tr>
-                <td class="padding">
-                    {% if pay %}
-                        <input type="button" class="button9"
-                               value="Тип оплаты: {{ pay.user_payment }}, цена: {{ pay.amount }} BYN, Аренда: {{ rent }}">
-                    {% else %}
-                        <a href="/profile/quickpayment/?type=addautopayment">Выберите платеж</a>
-                    {% endif %}
-                </td>
-            </tr>
+        <div class="center">
             {% for field in form %}
-                <tr>
-                    {% if field.label != '' %}
-                        <td class="padding">{{ field.label }}</td>
+                <div class="row padding">
+                    <div class="col-md-6">{{ field.label }}</div>
+                    {% if field.label == 'Платеж:' %}
+                        <div class="col-md-6">{% if pay %}
+                            <a href="/profile/quickpayment/?type=addautopayment" class="btn btn-default">
+                                Быстрый платеж №{{ pay.id }}</a>
+                            {{ field }}
+                    {% else %}
+                            <a href="/profile/quickpayment/?type=addautopayment" class="btn btn-default">Выберите
+                                платеж</a>
+                        {% endif %}</div>
+                    {% else %}
+                        <div class="col-md-6">{{ field }}</div>
                     {% endif %}
-                    <td>{{ field }}</td>
-                </tr>
+                </div>
             {% endfor %}
-            <tr>
-                <td><input type="submit" value="Создать"></td>
-            </tr>
-        </table>
+            <div class="row padding">
+                <div class="col-md-6">
+                    <button type="submit" class="btn btn-primary">Создать</button>
+                </div>
+            </div>
+        </div>
     </form>
-
 {% endblock %}

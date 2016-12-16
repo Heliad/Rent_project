@@ -380,10 +380,11 @@ def choose_payment(request, id_donerent):
                              request.POST['balance_to'], True).make_transaction()
 
         if c:
-            drent = models.DoneRent.objects.get(id=id_donerent)
-            drent.next_payment_date += datetime.timedelta(days=models.Rent.objects.get(id=
-                                                                                       drent.id_house).payment_interval)
-            drent.save()
+            rent = models.DoneRent.objects.get(id=id_donerent)
+            size = float(request.POST['size'])
+            cost = float(rent.cost)
+            payed = float(rent.payed_until_time)
+            t.PaymentManager(size, cost, payed, rent).run()
 
         response = {"message": m, "status": c}
 
@@ -436,9 +437,7 @@ def quick_payment(request):
         payments = models.QuickPayment.objects.filter(username=request.user)
         for i in payments:
             try:
-                list_payments.append([i, i.user_payment, i.amount,
-                                      models.Rent.objects.get(
-                                          id=models.DoneRent.objects.get(id=i.rent_id).id_house).name])
+                list_payments.append(i)
             except:
                 continue
         context = {'payments': list_payments}
@@ -471,10 +470,12 @@ def quick_payment_info(request, id):
             id=models.Rent.objects.get(id=models.DoneRent.objects.get(id=payment.rent_id).id_house).user_login)
         c, m = t.Transaction(payment.amount, tr_from, tr_to).make_transaction()
         if c:
-            drent = models.DoneRent.objects.get(id=payment.rent_id)
-            drent.next_payment_date += datetime.timedelta(days=models.Rent.objects.get(id=
-                                                                                       drent.id_house).payment_interval)
-            drent.save()
+            q_pay = models.QuickPayment.objects.get(id=id)
+            rent = models.DoneRent.objects.get(id=q_pay.rent_id)
+            size = float(q_pay.amount)
+            cost = float(rent.cost)
+            payed = float(rent.payed_until_time)
+            t.PaymentManager(size, cost, payed, rent).run()
         return render(request, 'Profile/Thanks.html', {'mes': m})
 
 
@@ -564,10 +565,14 @@ def delete_my_house(request, id_rent):
 
 
 def auto_payment(request):
-    auto_payments = None
+    auto_payments = list()
     try:
-        auto_payments = models.AutoPayment.objects.filter(quick_payment=
-                                                      models.QuickPayment.objects.get(username_id=request.user.id))
+        pay_id = models.QuickPayment.objects.filter(username_id=request.user.id)
+        for i in pay_id:
+            try:
+                auto_payments.append(models.AutoPayment.objects.get(quick_payment=i))
+            except:
+                continue
     except:
         pass
     return render(request, 'Profile/AutoPayment/AutoPayment.html', {'auto_payments': auto_payments})
@@ -586,8 +591,10 @@ def about_auto_payment(request, id_auto):
 
 def add_auto_payment(request):
     class AutoPayForm(forms.Form):
-        quick_payment = forms.IntegerField(widget=forms.HiddenInput(), label='')
-        pay_date = forms.DateField(input_formats=['%d/%m/%Y'], label='Дата оплаты:')
+        quick_payment = forms.IntegerField(widget=forms.HiddenInput(), label='Платеж:')
+        pay_date = forms.DateField(input_formats=['%d/%m/%Y'],
+                                   label='Дата оплаты:',
+                                   widget=forms.DateInput())
         payment_interval = forms.IntegerField(label='Интервал оплаты:')
 
     if request.method == 'GET':
@@ -609,8 +616,12 @@ def add_auto_payment(request):
         if form.is_valid():
             payment_date = form.cleaned_data['pay_date']
             quick_payment = form.cleaned_data['quick_payment']
-            payment_interval = form.cleaned_data['payment_interval']
-            models.AutoPayment.objects.create(next_payment_date=payment_date,
-                                              quick_payment=models.QuickPayment.objects.get(id=quick_payment),
-                                              payment_interval=payment_interval)
+            try:
+                models.AutoPayment.objects.get(quick_payment_id=quick_payment)
+                return HttpResponseRedirect('/')
+            except:
+                payment_interval = form.cleaned_data['payment_interval']
+                models.AutoPayment.objects.create(next_payment_date=payment_date,
+                                                  quick_payment=models.QuickPayment.objects.get(id=quick_payment),
+                                                  payment_interval=payment_interval)
         return HttpResponseRedirect('/')

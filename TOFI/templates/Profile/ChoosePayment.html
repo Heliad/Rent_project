@@ -3,26 +3,29 @@
 {% block content %}
     {% csrf_token %}
     <script src="/static/javascript/post_choose_payment.js"></script>
-    <div class="center">
-            <table>
-                <tr>
-                    <td class="padding">Выберите способ оплаты</td>
-                </tr>
+    <div class="narrow-center">
+        {% for card, card_num in cards %}
+            <input type="button" class="button8" onclick="func({{ card.card_num }}, '{{ balance_to }}', {{ id }})"
+                   value="{{ card_num }}">
+        {% endfor %}
+        <input type="button" class="button8" onclick="func('{{ request.user.username }}', '{{ balance_to }}', {{ id }})"
+               value="Кошелек">
+        <table class="button8">
         <tr>
-            <td class="padding">Сохранить текущий платеж</td>
+            <td class="padding">Сохранить платеж</td>
             <td>
                 <input type="checkbox" id="check_box" title="Сохранить текущий платеж">
             </td>
         </tr>
     </table>
-    </div>
-{% for card, card_num in cards %}
-    <div class="narrow-center">
-    <input type="button" class="button8" onclick="func({{ card.card_num }}, '{{ balance_to }}', {{ amount }}, {{ id }})" value="{{ card_num }}">
-    </div>
-{% endfor %}
-    <div class="narrow-center">
-        <input type="button" class="button8" onclick="func('{{ request.user.username }}', '{{ balance_to }}', {{ amount }}, {{ id }})" value="Кошелек">
+        <table class="button8">
+            <tr>
+                <td class="padding">Сумма</td>
+                <td>
+                    <input type="number" id="amount" title="Сумма">
+                </td>
+            </tr>
+        </table>
     </div>
     <div id="response" class="narrow-center"></div>
 {% endblock %}

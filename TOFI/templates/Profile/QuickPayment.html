@@ -3,19 +3,18 @@
 {% block content %}
     {% if payments %}
         <div id="response">
-            <div class="center">
-                {% for i, payment, amount, to in payments %}
+            <div class="hidden-center">
+                {% for i in payments %}
                     <div>
                         {% if addautopayment %}
-                            <input type="button" onclick="func({{ i.id }})" class="button9"
-                                   value="Тип оплаты: {{ payment }}, цена: {{ amount }} BYN, Аренда: {{ to }}">
+                            <input type="button" onclick="func({{ i.id }})" class="button8"
+                                   value="Быстрый платеж №{{ i.id }}">
                         {% else %}
                             <form action="payment_info/{{ i.id }}">
-                                <input type="submit" class="button9"
-                                       value="Тип оплаты: {{ payment }}, цена: {{ amount }} BYN, Аренда: {{ to }}">
+                                <input type="submit" class="button8"
+                                       value="Быстрый платеж №{{ i.id }}">
                             </form>
                         {% endif %}
-
                     </div>
                 {% endfor %}
             </div>

@@ -152,6 +152,7 @@ class DoneRent(models.Model):
     id_user_owner = models.IntegerField()
     id_user_renter = models.IntegerField()
     date_rent = models.DateField(default=None)
+    payed_until_time = models.FloatField(default=0)
     cost = models.CharField(max_length=50)  # Цена одной платы
     next_payment_date = models.DateField(default=None)
 
