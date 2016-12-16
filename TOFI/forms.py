@@ -81,6 +81,7 @@ class ChangePassword(forms.Form):
                                           validators=[RegexValidator('^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$')])
 
 
+
 class DeleteMySelf(forms.Form):
     password = forms.CharField(label="Введите пароль:", max_length=50, required=True)
 
