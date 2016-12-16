@@ -35,7 +35,8 @@ class UserForm(forms.ModelForm):
 class RentForm(forms.ModelForm):
     name = forms.CharField(label='Имя:', required=True,
                            validators=[RegexValidator('^[а-яА-Я]*$')])
-    address = forms.CharField(label='Адрес:', max_length=50, validators=[RegexValidator('^[0-9а-яА-Я/./,/;/ /-]*$')])
+    address = forms.CharField(label='Адрес:', max_length=50,
+                              validators=[RegexValidator('^[0-9а-яА-Я/./,/;/ /-]*$')])
     other = forms.CharField(label="Описание дома:", max_length=100, required=True,
                             widget=forms.Textarea(attrs={'placeholder': 'Введите описание дома...', 'rows': '4'}),
                             validators=[RegexValidator('^[0-9а-яА-Я/./,/;/ /-]*$')])

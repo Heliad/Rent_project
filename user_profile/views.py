@@ -242,22 +242,23 @@ def edit_profile(request):
         return HttpResponseRedirect("/login")
 
     error = ''
+
     class EditProfile(forms.Form):
-        name = forms.CharField(label="Ваше имя", max_length=50, required=True, initial=request.user.name,
+        name = forms.CharField(label="Ваше имя:", max_length=50, required=True, initial=request.user.name,
                                validators=[RegexValidator('^[а-яА-Я]*$')])
-        surname = forms.CharField(label="Ваша фамилия", max_length=50, required=True, initial=request.user.surname,
+        surname = forms.CharField(label="Ваша фамилия:", max_length=50, required=True, initial=request.user.surname,
                                   validators=[RegexValidator('^[а-яА-Я]*$')])
-        last_name = forms.CharField(label="Ваше отчество", max_length=50, required=True, initial=request.user.last_name,
+        last_name = forms.CharField(label="Ваше отчество:", max_length=50, required=True, initial=request.user.last_name,
                                     validators=[RegexValidator('^[а-яА-Я]*$')])
-        age = forms.IntegerField(label="Ваш возраст", required=True, initial=request.user.age,
+        age = forms.IntegerField(label="Ваш возраст:", required=True, initial=request.user.age,
                                  validators=[MaxValueValidator(100), MinValueValidator(18)])
-        email = forms.CharField(label="Почтовый адрес", max_length=50, required=True, initial=request.user.email,
+        email = forms.CharField(label="Почтовый адрес:", max_length=50, required=True, initial=request.user.email,
                                 validators=[EmailValidator()])
-        passport_id = forms.CharField(label="Номер вашего паспорта", max_length=50, required=True,
+        passport_id = forms.CharField(label="Номер вашего паспорта:", max_length=50, required=True,
                                       initial=request.user.passport_id)
-        phone = forms.CharField(label="Ваш номер телефона", max_length=50, required=True, initial=request.user.phone,
+        phone = forms.CharField(label="Ваш номер телефона:", max_length=50, required=True, initial=request.user.phone,
                                 validators=[RegexValidator('^\+[0-9\-\ ]*$')])
-        address = forms.CharField(label="Ваш адрес", max_length=50, required=True, initial=request.user.address,
+        address = forms.CharField(label="Ваш адрес:", max_length=50, required=True, initial=request.user.address,
                                   validators=[RegexValidator('^[0-9а-яА-Я/./,/;/ /-]*$')])
 
     if request.method == 'POST':
