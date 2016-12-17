@@ -30,8 +30,12 @@ def profile(request):
             new = True
             number += 1
 
+    id_user = request.user.id
+    my_rents = models.DoneRent.objects.all().filter(id_user_renter=id_user)
     penalties = models.DonePenalty.objects.filter(id_user_for=request.user.id)
-    return render(request, "Profile.html", {'cards': cards, 'new': new, 'number': number, 'penalties': penalties})
+    balance = round(request.user.balance, 3)
+    return render(request, "Profile.html", {'cards': cards, 'new': new, 'number': number, 'penalties': penalties,
+                                            'my_rents': my_rents, 'balance': balance})
 
 
 def add_card(request):
@@ -233,8 +237,9 @@ def deleteMySelf(request):
                 error = 'Вы ввели неверный пароль'
     else:
         form = DeleteMySelf()
+        balance = round(request.user.balance, 2)
 
-    return render(request, "Profile/DeleteMySelf.html", {'form': form, 'error': error})
+    return render(request, "Profile/DeleteMySelf.html", {'form': form, 'error': error, 'balance': balance})
 
 
 def edit_profile(request):
@@ -274,8 +279,21 @@ def edit_profile(request):
             user.passport_id = form.cleaned_data['passport_id']
             user.phone = form.cleaned_data['phone']
             user.address = form.cleaned_data['address']
-            user.save()
-            return render(request, 'Profile/EditProfileDone.html')
+            try:
+                models.MyUser.objects.get(
+                    email=form.cleaned_data['email'],
+                    name=form.cleaned_data['name'],
+                    surname=form.cleaned_data['surname'],
+                    last_name=form.cleaned_data['last_name'],
+                    age=form.cleaned_data['age'],
+                    passport_id=form.cleaned_data['passport_id'],
+                    phone=form.cleaned_data['phone'],
+                    address=form.cleaned_data['address']
+                )
+                return HttpResponseRedirect('/profile/editprofile')
+            except models.MyUser.DoesNotExist:
+                user.save()
+                return render(request, 'Profile/EditProfileDone.html')
         else:
             err = form.errors.as_data()
             if 'phone' in err:
@@ -424,11 +442,12 @@ def extract_balance(request):
             for ex in extracts:
                 if period_end >= ex.date_operation >= period_start:
                     result.append(ex)
-
+            result = reversed(result)
             return render(request, 'Profile/ExtractBalance.html', {'form': form, 'result': result})
     else:
         form = ExtractBalance()
-        return render(request, "Profile/ExtractBalance.html", {'form': form})
+        extracts = reversed(models.LogOperationsBalance.objects.filter(id_user=request.user.id))
+        return render(request, "Profile/ExtractBalance.html", {'form': form, 'result': extracts})
 
 
 def quick_payment(request):
@@ -594,7 +613,7 @@ def add_auto_payment(request):
         quick_payment = forms.IntegerField(widget=forms.HiddenInput(), label='Платеж:')
         pay_date = forms.DateField(input_formats=['%d/%m/%Y'],
                                    label='Дата оплаты:',
-                                   widget=forms.DateInput())
+                                   widget=forms.DateInput(attrs={'class': 'datetime'}))
         payment_interval = forms.IntegerField(label='Интервал оплаты:')
 
     if request.method == 'GET':

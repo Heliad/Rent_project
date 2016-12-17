@@ -1,18 +1,25 @@
 {% extends "base.html" %}
 {% block title %}Удаление аккаунта{% endblock %}
 {% block content %}
+    <table class="left">
+        <tr>
+            <td class="padding">
+                <a class="btn button7 text-left form-control" href="{% url 'EditProfile' %}">Назад</a>
+            </td>
+        </tr>
+    </table>
     <form method="POST" class="center">
         {% csrf_token %}
         <table>
             <tr class="padding">
                 <td class="padding">
-                    Вы уверенны что хотите удалить ваш аккаунт?
+                    Вы уверены?
                 </td>
             </tr>
         {% if request.user.balance != 0 %}
             <tr class="padding">
                 <td class="padding">
-                    На вашем балансе находится: {{ request.user.balance }} BYN
+                    Баланс: {{ balance }} BYN
                 </td>
             </tr>
         {% endif %}
@@ -26,11 +33,9 @@
                 {% if error != '' %}
                     <td class="padding">{{ error }}</td>
                 {% endif %}
-                <td>
-                    <button type="submit" class="button7">Удалить аккаунт</button>
-                </td>
-            </tr>
+
         </table>
+        <button type="submit" class="btn btn-outline-danger btn-block">Удалить аккаунт</button>
     </form>
 
 {% endblock %}

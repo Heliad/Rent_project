@@ -6,11 +6,24 @@
     background: white;
 }
 
+.center-table {
+    width: 100%;
+    max-width: 90%;
+    padding: 10px;
+    margin: auto auto 50px;
+    background: white;
+}
+
+.while-color-fill {
+    background: white;
+    fill: 100%;
+    margin-bottom: 50px;
+}
+
 .hidden-center {
     width: 100%;
     max-width: 700px;
-    padding: auto auto 10px 10px;
-    margin: auto auto 50px;
+    margin: auto auto;
 }
 
 a {
@@ -29,23 +42,9 @@ body {
     link: dodgerblue;
 }
 
-input[type="text"] {
-    width: 90%;
+input[type="text"], input[type="number"], input[type="password"] {
+    width: 100%;
     border-radius: 4px;
-    border: thin solid darkgrey;
-    height: 35px;
-}
-
-input[type="number"] {
-    width: 90%;
-    border-radius: 3px;
-    border: thin solid darkgrey;
-    height: 35px;
-}
-
-input[type="password"] {
-    width: 90%;
-    border-radius: 3px;
     border: thin solid darkgrey;
     height: 35px;
 }
@@ -74,10 +73,17 @@ table {
 
 .left
 {
-    background-color: white; /* Цвет фона слоя */
     padding: 10px; /* Поля вокруг текста */
     float: left; /* Обтекание по правому краю */
     width: 200px; /* Ширина слоя */
+    margin: auto auto 50px;
+}
+
+.right {
+    background-color: white; /* Цвет фона слоя */
+    padding: 10px; /* Поля вокруг текста */
+    float: right; /* Обтекание по правому краю */
+    width: 202px; /* Ширина слоя */
     margin: auto auto 50px;
 }
 
@@ -88,6 +94,11 @@ table {
 .padding
 {
     padding: 10px;
+}
+
+.padding-top10 {
+    padding: 10px 0 0 0;
+    height: 0;
 }
 
 .button8
@@ -147,25 +158,74 @@ table {
 
 .button7
 {
-    color: white;
-    padding: 7px;
-    background: cornflowerblue;
-    transition: 0.2s;
+    color: gray;
+    background-color: whitesmoke;
+    height: 25px;
+    padding: 0;
+    width: 100%;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.button7:hover .button:active {
+    background-color: whitesmoke;
     border-width: 0;
-    text-decoration: none;
 }
 
-.button7:hover
-{
-    background: gray;
-}
-
-.button7:active
-{
-  background: rgb(33,147,90);
-  box-shadow: 0 3px rgb(33,147,90) inset;
+.gray {
+    background: lightgray;
 }
 
 .color {
     background-color: cornflowerblue;
+}
+
+.color:hover, .color:active {
+    background: cornflowerblue;
+}
+
+.navbar-default {
+    background-color: cornflowerblue;
+    border-color: cornflowerblue;
+}
+
+/* title */
+.navbar-default .navbar-brand {
+    color: whitesmoke;
+}
+
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus {
+    color: lightgray;
+}
+
+/* link */
+.navbar-default .navbar-nav > li > a {
+    color: whitesmoke;
+}
+
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+    color: lightgray;
+}
+
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+    color: gray;
+    background-color: whitesmoke;
+}
+
+.navbar-default .navbar-nav > .open > a,
+.navbar-default .navbar-nav > .open > a:hover,
+.navbar-default .navbar-nav > .open > a:focus {
+    color: whitesmoke;
+    background-color: royalblue;
+}
+
+.navbar-default .navbar-nav > .dropdown > a .caret {
+    border-top-color: #777;
+    border-bottom-color: #777;
 }

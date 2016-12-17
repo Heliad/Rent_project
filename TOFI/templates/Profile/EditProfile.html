@@ -6,15 +6,31 @@
             <table>
                 <tr>
                     <td>
-                        <font color="red">{{ error }}</font>
+                        <span style="color: red; ">{{ error }}</span>
                     </td>
                 </tr>
             </table>
         </div>
     {% endif %}
+    <table class="left">
+        <tr>
+            <td class="padding">
+                <a class="btn button7 text-left form-control" href="{% url 'Profile' %}">Назад</a>
+            </td>
+        </tr>
+        <tr>
+            <td class="padding">
+                <a class="btn button7 text-left form-control" href="{% url 'ChangePassword' %}">Сменить пароль</a>
+            </td>
+        </tr>
+        <tr>
+            <td class="padding">
+                <a class="btn button7 text-left form-control" href="{% url 'DeleteMySelf' %}">Удалить аккаунт</a>
+            </td>
+        </tr>
+    </table>
     <form method="POST" class="center">
         {% csrf_token %}
-
         <table>
             {% for field in form %}
                 <tr>
@@ -22,24 +38,8 @@
                     <td>{{ field }}</td>
                 </tr>
             {% endfor %}
-            <tr>
-                <td>
-                    <button type="submit" class="button7">Сохранить</button>
-                </td>
-            </tr>
         </table>
+        <button type="submit" class="btn btn-outline-warning btn-block">Изменить данные</button>
     </form>
-    <table class="center">
-        <tr class="padding">
-            <td class="padding">
-                <a href="{% url 'ChangePassword' %}">Сменить пароль</a>
-            </td>
-        </tr>
-        <tr class="padding">
-            <td class="padding">
-                <a href="{% url 'DeleteMySelf' %}">Удалить аккаунт</a>
-            </td>
-        </tr>
-    </table>
 
 {% endblock %}

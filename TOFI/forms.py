@@ -1,6 +1,5 @@
 from django import forms
 from django.core.validators import *
-from django.forms import SelectDateWidget
 
 from .models import MyUser, Rent, AddImage
 
@@ -116,9 +115,10 @@ class RejectRent(forms.Form):
 
 
 class ExtractBalance(forms.Form):
-    YEARS_START = ('2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017')
-    period_start = forms.DateField(label="Начало периода:", widget=SelectDateWidget(years=YEARS_START), required=True)
-    period_end = forms.DateField(label="Конец периода:", widget=SelectDateWidget, required=True)
+    period_start = forms.DateField(input_formats=['%d/%m/%Y'], label="Начало периода:",
+                                   widget=forms.DateInput(attrs={'class': 'datetime'}), required=True)
+    period_end = forms.DateField(input_formats=['%d/%m/%Y'], label="Конец периода:",
+                                 widget=forms.DateInput(attrs={'class': 'datetime'}), required=True)
 
 
 class CreateBlock(forms.ModelForm):

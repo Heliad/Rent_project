@@ -1,36 +1,41 @@
 {% extends "base.html" %}
 {% block title %}Получить выписку о балансе{% endblock %}
 {% block content %}
-        <form method="POST" class="center">
+    <form method="POST">
         {% csrf_token %}
-        <table>
+        <div class="center">
             {% for field in form %}
-                <tr>
-                    <td class="padding">{{ field.label }}</td>
-                    <td>{{ field }}</td>
-                </tr>
+                <div class="row">
+                    <div class="padding col-md-6">{{ field.label }}</div>
+                    <div class="col-md-6">{{ field }}</div>
+                </div>
             {% endfor %}
-            <tr>
-                <td><button type="submit" class="button7">Получить выписку</button></td>
-            </tr>
-        </table>
+            <div class="row">
+                <div class="padding">
+                    <button type="submit" class="btn btn-default">Получить выписку</button>
+                </div>
+            </div>
+        </div>
 
-        {% if  result %}
-            <table>
+        {% if result %}
+            <table class="table table-hover table-bordered center-table">
+                <thead>
                 <tr class="padding">
-                    <td class="padding">Наименование операции</td>
-                    <td>Описание операции</td>
-                    <td>Дата проведения операции</td>
+                    <td class="padding text-center lead gray">Наименование операции</td>
+                    <td class="text-center lead gray">Описание операции</td>
+                    <td class="text-center lead gray">Дата операции</td>
                 </tr>
+                </thead>
+                <tbody>
                 {% for res in result %}
                     <tr class="padding">
-                        <td class="padding">{{ res.type_operation }}</td>
+                        <td class="padding text-center">{{ res.type_operation }}</td>
                         <td>{{ res.describe_operation }}</td>
-                        <td>{{ res.date_operation }}</td>
+                        <td class="text-center text-muted">{{ res.date_operation|date:"d-m-Y" }}</td>
                     </tr>
 
                 {% endfor %}
-                <tr>Сделать норм стиль и шапку таблицы!!!</tr>
+                </tbody>
             </table>
 
         {% endif %}
