@@ -100,7 +100,7 @@ table {
     background-color: white; /* Цвет фона слоя */
     padding: 10px; /* Поля вокруг текста */
     width: 205px; /* Ширина слоя */
-    margin: auto auto 90% 72%;
+    margin: auto auto 0 72vw;
 }
 
 .padding100{
