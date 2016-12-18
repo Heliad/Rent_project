@@ -1,5 +1,4 @@
 import json
-
 from django.contrib.auth import logout
 from django.contrib.auth.hashers import check_password
 from django.http import HttpResponse
@@ -105,15 +104,17 @@ def refillBalance(request):
             size = form.cleaned_data['size']
 
             if t.Check(card_num, period_validity, name_card_owner, CVC2_CVV).check_card():
-                t.Transaction(size, card_num, request.user).make_transaction()
+                c, m = t.Transaction(size, card_num, request.user).make_transaction()
 
                 # Логирование операции пополнения баланса
                 models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Пополнение баланса',
                                                            describe_operation="Баланс успешно пополнен на " + str(
                                                                size) + " BYN",
                                                            date_operation=datetime.date.today())
-
-                mes = request.user.name + ", баланс успешно пополнен на " + str(size) + " BYN"
+                if c:
+                    mes = request.user.name + ", баланс успешно пополнен на " + str(size) + " BYN"
+                else:
+                    mes = m
                 return render(request, 'Profile/Thanks.html', {'mes': mes})
             else:
                 return render(request, 'Profile/Thanks.html', {'mes': 'Введены неверные данные!'})
