@@ -134,6 +134,8 @@ class Registration(View):
                 error = 'Недопустимые значение в поле Email!'
             if 'address' in err:
                 error = 'Недопустимые значение в поле Адрес!'
+            if 'passport_id' in err:
+                error = 'Недопустимые значение в поле Номер пасспорта!'
         return render(request, self.template_name, {'form': form, 'error': error})
 
 

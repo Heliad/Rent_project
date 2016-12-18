@@ -2,6 +2,7 @@ import datetime
 
 from django import forms
 from django.core.validators import *
+from django.forms import SelectDateWidget
 
 from .models import MyUser, Rent, AddImage
 
@@ -19,12 +20,13 @@ class UserForm(forms.ModelForm):
     email = forms.CharField(label='Email:', max_length=50, validators=[EmailValidator()])
     phone = forms.CharField(label='Телефон:', max_length=50, validators=[RegexValidator('^\+[0-9\-\ ]*$')])
     address = forms.CharField(label='Адрес:', max_length=50, validators=[RegexValidator('^[0-9а-яА-Я/./,/;/ /-]*$')])
-    passport_id = forms.CharField(label='Номер пасспорта:', max_length='50')
+    passport_id = forms.CharField(label='Номер пасспорта:', max_length='9', min_length=9, required=True,
+                                  validators=[RegexValidator('^[А-Я]{2,2}[0-9]{7,7}$')])
 
     ie = forms.BooleanField(label='ИП', widget=forms.CheckboxInput(attrs={'onchange': "onChange()"}),
                             required=False, initial=True)
-    taxpayer_account_number = forms.IntegerField(label='УНН', required=False)
-    license_field = forms.CharField(label='Лицензия', required=False)
+    taxpayer_account_number = forms.IntegerField(label='УНН:', required=False)
+    license_field = forms.CharField(label='Лицензия:', required=False)
 
     class Meta:
         model = MyUser
@@ -108,10 +110,6 @@ class SearchUser(forms.Form):
     field_search = forms.CharField(label="Введите информацию о пользователе:", max_length=50)
 
 
-class SearchId(forms.Form):
-    field_id = forms.IntegerField(label="Введите id пользователя:")
-
-
 class RejectRent(forms.Form):
     reject_reason = forms.CharField(label="Укажите причину отказа:", max_length=100)
 
@@ -133,9 +131,13 @@ class CreateBlock(forms.ModelForm):
 
 
 class EditPenalty(forms.Form):
-    kind_penalty = forms.CharField(label="Название:", required=True, max_length=50)
-    describe_penalty = forms.CharField(label="Описание:", required=True, max_length=150, widget=forms.Textarea)
-    cost_penalty = forms.FloatField(label="Размер штрафа:", required=True)
+    kind_penalty = forms.CharField(label="Название:", required=True, max_length=50, min_length=5,
+                                   validators=[RegexValidator('^[а-яёЁА-Я\ ]*$')])
+    describe_penalty = forms.CharField(label="Описание:", required=True, max_length=150, min_length=5,
+                                       validators=[RegexValidator('^[а-яЁёА-Я0-9\.\,\(\)\; ]*$')],
+                                       widget=forms.Textarea)
+    cost_penalty = forms.FloatField(label="Размер штрафа:", required=True, min_value=0,
+                                    validators=[RegexValidator('^[0-9]{1,6}(,|.){1,1}[0-9]{1,2}$')])
 
 
 class AddImageForm(forms.ModelForm):

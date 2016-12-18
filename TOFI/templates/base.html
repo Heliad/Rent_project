@@ -48,7 +48,6 @@
             {% if request.user.is_anonymous %}
                 <li><a href="{% url 'Registration' %}">Регистрация</a></li>
                 <li><a href="{% url 'Login' %}">Вход</a></li>
-                <li><a href="{% url 'Search' %}">Поиск</a></li>
             {% else %}
                 <li><a href="{% url 'Search' %}">Поиск</a></li>
                 <li class="dropdown">
@@ -67,6 +66,16 @@
                     </ul>
                 </li>
             {% endif %}
+                <li>
+                    <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Поиск</button>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'SearchUser' %}">Поиск пользователей</a></li>
+                        <li><a href="{% url 'SearchRent' %}">Поиск жилья</a></li>
+                        <li><a href="{% url 'SearchId' %}">Поиск пользователей по Id</a></li>
+                    </ul>
+                    </div>
+                </li>
 
           </ul>
         </div>

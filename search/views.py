@@ -57,7 +57,8 @@ def search_rent(request):
             if len(results) == 0:
                 no_rez = 'Поиск не дал результатов...'
 
-            return render(request, 'Search/SearchRent.html', {'form': form, 'results': results, 'error': errors, 'no_rez': no_rez})
+            return render(request, 'Search/SearchRent.html', {'form': form, 'results': results,
+                                                              'error': errors, 'no_rez': no_rez})
     else:
         form = SearchRent()
         return render(request, "Search/SearchRent.html", {'form': form})
