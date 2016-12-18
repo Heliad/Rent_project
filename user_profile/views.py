@@ -1,4 +1,3 @@
-import datetime
 import json
 
 from django.contrib.auth import logout
@@ -30,12 +29,17 @@ def profile(request):
             new = True
             number += 1
 
+    user_cards = request.user.user_card_id.all()
     id_user = request.user.id
-    my_rents = models.DoneRent.objects.all().filter(id_user_renter=id_user)
+    my_rents = models.DoneRent.objects.select_related('id_house__user_login').filter(id_user_renter=id_user)
+    print(my_rents)
     penalties = models.DonePenalty.objects.filter(id_user_for=request.user.id)
+    c = [[i, j] for i, j in zip(cards, user_cards)]
+    print(c)
     balance = round(request.user.balance, 3)
-    return render(request, "Profile.html", {'cards': cards, 'new': new, 'number': number, 'penalties': penalties,
-                                            'my_rents': my_rents, 'balance': balance})
+    mon = models.Monetization.objects.get(id=1).value_mon
+    return render(request, "Profile.html", {'cards': c, 'new': new, 'number': number, 'penalties': penalties,
+                                            'my_rents': my_rents, 'balance': balance, 'mon': mon})
 
 
 def add_card(request):
@@ -332,7 +336,8 @@ def accept_rent(request, id_mes):
     message = models.MessageStatusRent.objects.get(id=id_mes)
     house = models.Rent.objects.get(id=message.id_rent)
 
-    models.DoneRent.objects.create(id_house=message.id_rent, id_user_owner=message.id_user_to,
+    models.DoneRent.objects.create(id_house=models.Rent.objects.get(id=message.id_rent),
+                                   id_user_owner=models.MyUser.objects.get(id=message.id_user_to),
                                    id_user_renter=message.id_user_from, date_rent=datetime.date.today(),
                                    cost=house.cost, next_payment_date=datetime.datetime.today())
 
@@ -475,7 +480,7 @@ def quick_payment_info(request, id):
         payment = models.QuickPayment.objects.get(id=id)
         rent = []
         try:
-            rent = models.Rent.objects.get(id=models.DoneRent.objects.get(id=payment.rent_id).id_house)
+            rent = models.Rent.objects.get(id=models.DoneRent.objects.get(id=payment.rent_id).id_house.id)
         except:
             pass
         return render(request, 'Profile/QuickPaymentInfo.html', {'payment': payment, 'rent': rent})

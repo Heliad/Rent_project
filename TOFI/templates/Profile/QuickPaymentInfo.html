@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Оплата{% endblock %}
 {% block content %}
+    {% load filter_extra %}
 <div>
     <table class="center">
             <tr class="padding">
@@ -43,11 +44,11 @@
         </table>
 </div>
     <div class="center">
-        <p>Оплата через: {{ payment.user_payment }}</p>
+        <p>Оплата: {{ payment.user_payment|card_num_beautify }}</p>
         <p>Сумма: {{ payment.amount }} BYN</p>
         <form method="POST">
                 {% csrf_token %}
-        <input class="button7" type="submit" value="Оплатить">
+            <input class="btn btn-outline-success" type="submit" value="Оплатить">
     </form>
     </div>
 {% endblock %}

@@ -129,7 +129,7 @@ class PaymentManager(object):
             o = self.size / (self.cost - self.payed)
             self.rent.next_payment_date += datetime.timedelta(days=
                                                               models.Rent.objects.get(id=
-                                                                                      self.rent.id_house).payment_interval * int(
+                                                                                      self.rent.id_house.id).payment_interval * int(
                                                                   o))
             self.rent.payed_until_time = (self.size - (self.cost - self.payed) * int(o))
         self.rent.save()

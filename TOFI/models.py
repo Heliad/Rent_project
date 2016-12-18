@@ -112,7 +112,7 @@ class Rent(models.Model):
     creation_date = models.DateField(default=None)
     other = models.CharField(verbose_name='Другое:', max_length=100)
     cost = models.CharField(verbose_name='Цена аренды:', max_length=50)
-    user_login = models.CharField(max_length=50, null=True)
+    user_login = models.ForeignKey(MyUser)
     status_rent = models.BooleanField(default=True)  # True - свободно, False - уже арендовано арендой
 
     def getId(self):
@@ -148,8 +148,8 @@ class CommentUser(models.Model):
 
 
 class DoneRent(models.Model):
-    id_house = models.IntegerField()
-    id_user_owner = models.IntegerField()
+    id_house = models.ForeignKey(Rent)
+    id_user_owner = models.ForeignKey(MyUser)
     id_user_renter = models.IntegerField()
     date_rent = models.DateField(default=None)
     payed_until_time = models.FloatField(default=0)
@@ -168,7 +168,7 @@ class QuickPayment(models.Model):
     username = models.ForeignKey(MyUser)
     rent = models.ForeignKey(DoneRent)
     user_payment = models.CharField(max_length=50, default=None)
-    amount = models.IntegerField(default=None)
+    amount = models.FloatField(default=None)
 
 
 class Currency(models.Model):

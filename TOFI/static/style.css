@@ -20,6 +20,10 @@
     margin-bottom: 50px;
 }
 
+.height70 {
+    height: 35px;
+}
+
 .hidden-center {
     width: 100%;
     max-width: 700px;
@@ -34,6 +38,11 @@ a:hover {
     color: dodgerblue;
 }
 
+.narrow {
+    width: 20px;
+}
+
+
 body {
     margin: auto;
     padding-bottom: 0;
@@ -41,14 +50,6 @@ body {
     background-color: whitesmoke;
     link: dodgerblue;
 }
-
-input[type="text"], input[type="number"], input[type="password"] {
-    width: 100%;
-    border-radius: 4px;
-    border: thin solid darkgrey;
-    height: 35px;
-}
-
 textarea {
     width: 90%;
 }
@@ -71,8 +72,22 @@ table {
     padding-right: 35%;
 }
 
+.img_size_wallet {
+    width: 20px;
+    height: 20px;
+    padding-bottom: 3px;
+}
+
+.borders {
+    border-radius: 4px;
+    border: thin solid darkgrey;
+    height: 35px;
+}
+
 .left
 {
+    position: fixed;
+    overflow: auto;
     padding: 10px; /* Поля вокруг текста */
     float: left; /* Обтекание по правому краю */
     width: 200px; /* Ширина слоя */
@@ -80,11 +95,12 @@ table {
 }
 
 .right {
+    position: fixed;
+    overflow: auto;
     background-color: white; /* Цвет фона слоя */
     padding: 10px; /* Поля вокруг текста */
-    float: right; /* Обтекание по правому краю */
-    width: 202px; /* Ширина слоя */
-    margin: auto auto 50px;
+    width: 205px; /* Ширина слоя */
+    margin: auto auto 90% 72%;
 }
 
 .padding100{
@@ -122,20 +138,12 @@ table {
 
 .button9
 {
-    color: black;
-    height: 40px;
-    width: 100%;
-    max-width: 700px;
-    padding-top: 0;
-    padding-bottom: 0;
-    background: white;
-    transition: 0.2s;
-    border-width: 0;
-    border-top: 1px;
-}
-
-.button10:hover {
-    background: whitesmoke;
+    background-color: white;
+    width: 27px;
+    text-align: right;
+    border-width: 1px;
+    border-color: limegreen;
+    padding: 0;
 }
 
 .button10 {
@@ -169,7 +177,7 @@ table {
     text-align: left;
 }
 
-.button7:hover .button:active {
+.button7:hover .button7:active {
     background-color: whitesmoke;
     border-width: 0;
 }
@@ -228,4 +236,58 @@ table {
 .navbar-default .navbar-nav > .dropdown > a .caret {
     border-top-color: #777;
     border-bottom-color: #777;
+}
+
+.hidden {
+    display: none
+}
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: hidden; /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+input.formInvalid::-webkit-input-placeholder {
+    color: red;
+}
+
+.light_gray {
+    color: darkgray;
+}
+
+input.formValid::-webkit-input-placeholder {
+    color: lightgray;
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 40%;
+}
+
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
 }

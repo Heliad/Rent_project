@@ -1,11 +1,21 @@
-function func(card_id, balance_to, id) {
-    amount = document.getElementById('amount').value;
-    if (!amount) {
+function func(card_id) {
+    amount = document.getElementById('amount');
+    if (amount.value == "") {
+        amount.className = "form-control height70 formInvalid";
+        amount.placeholder = "Введите сумму оплаты";
+        amount.style.borderColor = "red";
         return 0;
     }
-    else if (Number(amount) < 0) {
+    else if (Number(amount.value) < 0 || !(Number(amount.value)) || (Number(amount.value) == "Infinity")) {
+        amount.value = "";
+        amount.className = "form-control height70 formInvalid";
+        amount.placeholder = "Введите корректные данные";
+        amount.style.borderColor = "red";
         return 0;
     }
+    var amount = amount.value;
+    var balance_to = document.getElementById('user').innerHTML;
+    var id = document.getElementById('rent').innerHTML;
     amount = Number(amount);
         var xmlhttp = getXmlHttp();
         var params = 'card_from=' + encodeURIComponent(card_id) +
@@ -19,9 +29,13 @@ function func(card_id, balance_to, id) {
             params += '&is_save=' + false;
         }
         params += '&csrfmiddlewaretoken=' + document.getElementsByName('csrfmiddlewaretoken')[0].value;
-        xmlhttp.open("POST", id, true);
+    xmlhttp.open("POST", 'choose_payment/' + id, true);
         xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         xmlhttp.send(params);
+    var b = document.getElementsByTagName('input');
+    for (var i = 0; i < b.length; i++) {
+        b[i].disabled = true;
+    }
         xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4){
                 div = document.getElementById('response');
@@ -36,6 +50,9 @@ function func(card_id, balance_to, id) {
                 else {
                     div.style.color = "red";
                     div.innerHTML = JSON.parse(xmlhttp.responseText)["message"];
+                    for (var i = 0; i < b.length; i++) {
+                        b[i].disabled = false;
+                    }
                 }
             }
         }
@@ -58,3 +75,27 @@ function func(card_id, balance_to, id) {
     return xmlhttp;
     }
 
+document.getElementById('amount').onfocus = function () {
+    var amount = document.getElementById('amount');
+    amount.placeholder = "Сумма";
+    amount.style.borderColor = "lightgray";
+    amount.className = "form-control height70 formValid";
+};
+
+document.getElementById('amount').oninput = function () {
+    document.getElementById('response').innerHTML = "";
+    var amount = document.getElementById('amount');
+    var mon_notification = document.getElementById('mon_notification');
+    if (Number(amount.value) > 0 && Number(amount.value)) {
+        var num = (Number(amount.value) * Number(document.getElementById('mon_value').innerHTML) + Number(amount.value)).toFixed(2);
+        if (num == "Infinity") {
+            mon_notification.innerHTML = ''
+        }
+        else {
+            mon_notification.innerHTML = 'Игото к оплате: ' + num + ' BYN'
+        }
+    }
+    else {
+        mon_notification.innerHTML = ''
+    }
+};

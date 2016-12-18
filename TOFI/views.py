@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import datetime
 import json
 
 from django.contrib.auth import authenticate, login
@@ -184,7 +183,7 @@ def make_rent(request, number):
     if request.user.is_anonymous:
         return HttpResponseRedirect("/login")
     rent = models.Rent.objects.all().get(id=number)
-    user = models.MyUser.objects.all().get(id=str(rent.user_login))
+    user = models.MyUser.objects.all().get(id=str(rent.user_login.id))
 
     class MakeMessage(forms.Form):
         text_message = 'Запрос на аренду вашего дома под номером ' + str(number) + " (" + str(

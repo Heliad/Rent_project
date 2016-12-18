@@ -1,3 +1,5 @@
+import datetime
+
 from django import forms
 from django.core.validators import *
 
@@ -118,7 +120,8 @@ class ExtractBalance(forms.Form):
     period_start = forms.DateField(input_formats=['%d/%m/%Y'], label="Начало периода:",
                                    widget=forms.DateInput(attrs={'class': 'datetime'}), required=True)
     period_end = forms.DateField(input_formats=['%d/%m/%Y'], label="Конец периода:",
-                                 widget=forms.DateInput(attrs={'class': 'datetime'}), required=True)
+                                 widget=forms.DateInput(attrs={'class': 'datetime'}), required=True,
+                                 initial=datetime.date.today().strftime('%d/%m/%Y'))
 
 
 class CreateBlock(forms.ModelForm):
