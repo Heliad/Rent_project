@@ -215,7 +215,7 @@ def profileChangePassword(request):
             err = form.errors.as_data()
             print(err)
             if 'newPassword' in err:
-                error = 'Пароль должен содержать в себе арабские цифры и латинские буквы!'
+                error = 'Пароль должен содержать в себе арабские цифры и латинские буквы, нижнего и верхнего регистра!'
     else:
         form = ChangePassword()
 

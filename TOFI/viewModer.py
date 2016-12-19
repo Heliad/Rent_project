@@ -91,3 +91,8 @@ def edit_penalty(request, id_penalty):
 
     return render(request, "Moder/EditPenalty.html", {'form': form, 'error': error})
 
+
+def all_complaints(request):
+    complaints = models.Complaint.objects.all()
+    return render(request, 'Moder/AllComplaints.html', {'complaints': complaints})
+

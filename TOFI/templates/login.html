@@ -16,12 +16,15 @@
                 </td>
             </tr>
             {% if error %}
-                <tr class="padding">
-                    <td class="padding">
-                        {{ error }}
-                    </td>
-                </tr>
-
+                <div class="left">
+                    <table>
+                        <tr>
+                            <td>
+                                <span style="color: red; ">{{ error }}</span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             {% endif %}
         </table>
     </form>

@@ -117,7 +117,7 @@ class Registration(View):
         else:
             err = form.errors.as_data()
             if 'password' in err:
-                error = 'Пароль должен содержать в себе арабские цифры и латинские буквы!'
+                error = 'Пароль должен содержать в себе арабские цифры и латинские буквы, нижнего и верхнего регистра!'
             if 'phone' in err:
                 error = 'Недопустимый номер телефона!'
             if 'username' in err:
@@ -152,6 +152,7 @@ class Login(FormView):
 
     def form_valid(self, form):
         self.user = form.get_user()
+        print("dgdfg")
         login(self.request, self.user)
         return super(Login, self).form_valid(form)
 
@@ -163,7 +164,10 @@ class Login(FormView):
                 return render(self.request, 'BlockedAcc.html', {'us': user.username, 'reason': user.reason_block})
         except:
             pass
-        return self.render_to_response(self.get_context_data(form=form))
+
+        error = 'Введы некорректные Логин и/или Пароль. Оба поля чувствительны к верхнему регистру!'
+        return render(self.request, 'login.html', {'form': form, 'error': error})
+
 
 def logout_view(request):
     if request.user.is_anonymous:
