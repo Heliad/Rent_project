@@ -9,7 +9,7 @@ def main_admin(request):
 
 
 def blocked_accounts(request):
-    blocked_accounts = models.MyUser.objects.all()
+    blocked_accounts = models.MyUser.objects.all().exclude(is_admin=True)
     return render(request, 'Admin/BlockedAccounts.html', {'blocked_accounts': blocked_accounts})
 
 

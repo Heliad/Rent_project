@@ -75,7 +75,7 @@ class MyUser(AbstractBaseUser):
     passport_id = models.CharField(verbose_name='Номер паспорта', max_length=50)
     phone = models.CharField(verbose_name='Телефон', max_length=50)
     address = models.CharField(verbose_name='Адрес', max_length=50)
-    email = models.CharField(verbose_name='Электронная почта', max_length=50)
+    email = models.CharField(verbose_name='Электронная почта', max_length=50, unique=True)
     taxpayer_account_number = models.IntegerField(verbose_name='УНН', null=True)
     license_field = models.CharField(verbose_name='Лицензия', max_length=50, null=True)
     ie = models.BooleanField(verbose_name='ИП', default=False)

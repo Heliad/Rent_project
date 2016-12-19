@@ -135,7 +135,10 @@ class Registration(View):
             if 'age' in err:
                 error = 'Недопустимые значение в поле Возраст!'
             if 'email' in err:
-                error = 'Недопустимые значение в поле Email!'
+                if 'My user with this Электронная почта already exists.' in err['email'][0]:
+                    error = 'Пользователь с таким почтовым адресом уже зарегистрирован!'
+                else:
+                    error = 'Недопустимые значение в поле Email!'
             if 'address' in err:
                 error = 'Недопустимые значение в поле Адрес!'
             if 'passport_id' in err:
