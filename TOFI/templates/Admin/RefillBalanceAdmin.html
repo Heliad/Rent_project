@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Редактирование личных данных{% endblock %}
+{% block title %}Пополнение баланса пользователя{% endblock %}
 {% block content %}
     {% if error %}
         <div class="left">
@@ -22,14 +22,7 @@
                     <td>{{ field }}</td>
                 </tr>
             {% endfor %}
-            <tr><td><button type="submit" class="button7">Сохранить</button></td></tr>
         </table>
+        <input type="submit" id="butRefill" class="btn btn-outline-success" value="Пополнить баланс пользователя">
     </form>
-    <table class="center">
-        <tr class="padding">
-            <td>
-                <a href="/refill_balance_admin/{{ id_user }}">Пополнить баланс пользователя</a>
-            </td>
-        </tr>
-    </table>
 {% endblock %}

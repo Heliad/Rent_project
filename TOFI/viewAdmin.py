@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from TOFI import models
+from TOFI import transaction as t
 from .forms import *
 
 
@@ -142,7 +143,7 @@ def edit_user_admin(request, id_user):
 
     else:
         form = EditUserAdmin()
-    return render(request, "Admin/EditUser.html", {'form': form, 'error': error})
+    return render(request, "Admin/EditUser.html", {'form': form, 'id_user': user_for_edit.id, 'error': error})
 
 
 def all_currency(request):
@@ -212,3 +213,51 @@ def monetization(request):
         form = Monet()
 
     return render(request, 'Admin/Monetization.html', {'form': form, 'error': error})
+
+
+def refill_balance_admin(request, id_user):
+    error = ''
+    if request.method == 'POST':
+        form = RefillBalance(request.POST)
+
+        if form.is_valid():
+            card_num = form.cleaned_data['card_num']
+            period_validity = form.cleaned_data['period_validity']
+            name_card_owner = form.cleaned_data['name_card_owner']
+            CVC2_CVV = form.cleaned_data['CVC2_CVV']
+            size = form.cleaned_data['size']
+            user = models.MyUser.objects.get(id=id_user)
+
+            if t.Check(card_num, period_validity, name_card_owner, CVC2_CVV).check_card():
+                c, m = t.Transaction(size, card_num, user).make_transaction()
+
+                # Логирование операции пополнения баланса
+                models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Пополнение баланса',
+                                                           describe_operation="Баланс успешно пополнен на " + str(
+                                                               size) + " BYN",
+                                                           date_operation=datetime.date.today())
+                if c:
+                    mes = request.user.name + ", баланс пользователя " + user.username + ", успешно пополнен на " + str(size) + " BYN."
+                else:
+                    mes = m
+                return render(request, 'Admin/Done.html', {'message': mes})
+            else:
+                return render(request, 'Admin/Done.html', {'message': 'Введены неверные данные!'})
+
+        else:
+            err = form.errors.as_data()
+            print(err)
+            if 'card_num' in err:
+                error = 'Номер карты должен содержать только цифры!'
+            if 'period_validity' in err:
+                error = 'Срок действия карты указан неверно!(Пример: 12/17)'
+            if 'name_card_owner' in err:
+                error = 'В поле Имя держателя карты введены недопустимые символы!'
+            if 'CVC2_CVV' in err:
+                error = 'В поле CVC2_CVV введены недопустимые символы!'
+            if 'size' in err:
+                error = 'Сумма может быть от 10 BYN до 1млн BYN!'
+
+    else:
+        form = RefillBalance()
+    return render(request, "Admin/RefillBalanceAdmin.html", {'form': form, 'error': error})
