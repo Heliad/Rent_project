@@ -86,6 +86,7 @@ def edit_user_admin(request, id_user):
                                   validators=[RegexValidator('^[0-9а-яА-Я/./,/;/ /-]*$')])
         balance = forms.FloatField(label="Баланс:", required=True, initial=user_for_edit.balance,
                                    validators=[RegexValidator('^[0-9]{1,6}(,|.){1,1}[0-9]{1,2}$')])
+        is_moder = forms.BooleanField(label="Модератор:", initial=user_for_edit.is_moder, required=False)
 
     if request.method == 'POST':
         form = EditUserAdmin(request.POST)
@@ -101,8 +102,21 @@ def edit_user_admin(request, id_user):
             user.phone = form.cleaned_data['phone']
             user.address = form.cleaned_data['address']
             user.balance = form.cleaned_data['balance']
+            mes = "Личные данные пользователя " + user.username + " успешно изменены и сохранены. "
+            if form.cleaned_data['is_moder']:
+                if not user.ie:
+                    doned_rents = models.DoneRent.objects.all().filter(id_user_renter=user.id)
+                    if not doned_rents:
+                        user.is_moder = form.cleaned_data['is_moder']
+                    else:
+                        mes += "Но пользователь " + user.username + " не может быть модератором, " \
+                                                                    "т.к. арендует дом."
+                else:
+                    mes += "Но пользователь " + user.username + " не может быть модератором, " \
+                                                                "т.к. является арендодатором."
+            else:
+                user.is_moder = False
             user.save()
-            mes = "Личные данные пользователя " + user.username + " успешно изменены и сохранены"
             return render(request, 'Admin/Done.html', {'message': mes})
         else:
             err = form.errors.as_data()
