@@ -17,6 +17,10 @@ from .forms import *
 
 def main_view(request):
     if not request.user.is_anonymous:
+        user = models.MyUser.objects.get(id=request.user.id)
+        user.wrong_password_number = 0
+        user.save()
+
         if request.user.is_admin:
             return HttpResponseRedirect("/mainadmin")
         if request.user.is_moder:
@@ -156,7 +160,9 @@ class Login(FormView):
         return super(Login, self).form_valid(form)
 
     def form_invalid(self, form):
+        error = ''
         login_user = form.cleaned_data['username']
+        user = None
         try:
             user = models.MyUser.objects.get(username=login_user)
             if not user.is_active:
@@ -164,7 +170,17 @@ class Login(FormView):
         except:
             pass
 
-        error = 'Введы некорректные Логин и/или Пароль. Оба поля чувствительны к верхнему регистру!'
+        if not user is None:
+            user.wrong_password_number += 1
+            user.save()
+            if user.wrong_password_number == 4:
+                error += "У вас осталась последняя попытка ввода корректного пароля! "
+            if user.wrong_password_number == 5:
+                user.reason_block = "5 раз ввёл некорректный пароль."
+                user.is_active = 0
+                user.save()
+
+        error += ' Введены некорректные Логин и/или Пароль. Оба поля чувствительны к верхнему регистру!'
         return render(self.request, 'login.html', {'form': form, 'error': error})
 
 

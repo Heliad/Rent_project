@@ -21,8 +21,9 @@ def create_block(request, id_user):
             user = models.MyUser.objects.get(id=id_user)
             user.reason_block = reason
             user.is_active = 0
+            user.wrong_password_number = 0
             user.save()
-            mes = user.username + " заблокирован"
+            mes = user.username + " заблокирован."
             return render(request, 'Admin/Done.html', {'message': mes})
     else:
         form = CreateBlock()

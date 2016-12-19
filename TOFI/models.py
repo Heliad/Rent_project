@@ -91,6 +91,7 @@ class MyUser(AbstractBaseUser):
     reason_block = models.CharField(max_length=100, null=True)
     is_admin = models.BooleanField(default=False)
     is_moder = models.BooleanField(default=False)
+    wrong_password_number = models.IntegerField(default=0)
 
     def get_full_name(self):
         return self.Login
