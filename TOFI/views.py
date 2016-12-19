@@ -152,7 +152,6 @@ class Login(FormView):
 
     def form_valid(self, form):
         self.user = form.get_user()
-        print("dgdfg")
         login(self.request, self.user)
         return super(Login, self).form_valid(form)
 
@@ -268,28 +267,58 @@ def comment(request):
 
 def make_complaint(request, id_user_to):
 
-    user_to = models.MyUser.objects.get(id=id_user_to)
+    if id_user_to == '0':
+        class MakeComplaint(forms.Form):
+            describe = forms.CharField(label="Опишите проблему:", max_length=150, required=True,
+                                       widget=forms.Textarea(attrs={'rows': '4'}))
 
-    class MakeComplaint(forms.Form):
-        login_user_to = forms.CharField(label="Жалоба на пользователя:", max_length=100, required=True,
-                                        widget=forms.TextInput(attrs={'readonly': 'readonly'}), initial=user_to.username)
-        describe = forms.CharField(label="Опишите жалобу:", max_length=150, required=True,
-                                   widget=forms.Textarea(attrs={'rows': '4'}))
+        if request.method == 'POST':
+            form = MakeComplaint(request.POST)
 
-    if request.method == 'POST':
-        form = MakeComplaint(request.POST)
+            if form.is_valid():
+                if request.user.is_anonymous:
+                    login_user_from = "Guest"
+                else:
+                    login_user_from = request.user.username
+                login_user_to = "message for moder"
+                describe = form.cleaned_data['describe']
+                models.Complaint.objects.create(login_user_from=login_user_from, login_user_to=login_user_to,
+                                                describe=describe, date=datetime.date.today())
+                mes = "Ваше письмо отправлено на сервер и будет рассмотрено в ближайшее время."
 
-        if form.is_valid():
-            login_user_from = request.user.username
-            login_user_to = user_to.username
-            describe = form.cleaned_data['describe']
-            models.Complaint.objects.create(login_user_from=login_user_from, login_user_to=login_user_to,
-                                            describe=describe, date=datetime.date.today())
-            mes = "Ваша жалоба на пользователя " + user_to.username + " отправлена на сервер и " \
-                                                             "будет рассмотрена в ближайшее время."
+                return render(request, 'Profile/Thanks.html', {'mes': mes})
 
-            return render(request, 'Profile/Thanks.html', {'mes': mes})
+        else:
+            form = MakeComplaint()
+        return render(request, 'MakeComplaint.html', {'form': form})
 
     else:
-        form = MakeComplaint()
-    return render(request, 'MakeComplaint.html', {'form': form})
+        if request.user.is_anonymous:
+            return HttpResponseRedirect("/login")
+        user_to = models.MyUser.objects.get(id=id_user_to)
+
+        class MakeComplaint(forms.Form):
+            login_user_to = forms.CharField(label="Жалоба на :", max_length=100, required=True,
+                                            widget=forms.TextInput(attrs={'readonly': 'readonly'}),
+                                            initial=user_to.username)
+            describe = forms.CharField(label="Опишите жалобу:", max_length=150, required=True,
+                                       widget=forms.Textarea(attrs={'rows': '4'}))
+
+        if request.method == 'POST':
+            form = MakeComplaint(request.POST)
+
+            if form.is_valid():
+                login_user_from = request.user.username
+                login_user_to = user_to.username
+                describe = form.cleaned_data['describe']
+                models.Complaint.objects.create(login_user_from=login_user_from, login_user_to=login_user_to,
+                                                describe=describe, date=datetime.date.today())
+                mes = "Ваша жалоба на пользователя " + user_to.username + " отправлена на сервер и " \
+                                                                          "будет рассмотрена в ближайшее время."
+
+                return render(request, 'Profile/Thanks.html', {'mes': mes})
+
+        else:
+            form = MakeComplaint()
+        return render(request, 'MakeComplaint.html', {'form': form})
+
