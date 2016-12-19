@@ -34,7 +34,13 @@
                 <tr class="padding">
                     <td class="padding">УНН:</td>
                     <td>{{ user.taxpayer_account_number }}</td>
-            </tr>
+                </tr>
+            {% endif %}
+
+            {% if not user.is_active %}
+                <tr class="padding">
+                    <td class="center" colspan="2" align="center"><font color="red">Пользователь заблокирован</font></td>
+                </tr>
             {% endif %}
         </table>
 
