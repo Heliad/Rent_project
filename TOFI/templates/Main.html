@@ -12,14 +12,16 @@
         </tr>
     </table>
 
-    <table class="center">
-        <tr class="padding">
+    <table class="center table table-striped">
+        <thead class="padding">
+        <tr>
             <td class="padding">Название</td>
             <td>Адрес</td>
             <td>Срок аренды(Дней)</td>
             <td>Цена(BYN)</td>
             <td>Площадь(кв.м.)</td>
         </tr>
+        </thead>
         {% for r in rent %}
             <tr>
                 <td class="padding"><a href="aboutHouse/{{ r.id }}">{{ r.name }}</a></td>

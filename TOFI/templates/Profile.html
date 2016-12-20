@@ -1,50 +1,29 @@
 {% extends "base.html" %}
 {% block title %}Личный кабинет{% endblock %}
 {% block content %}
-    <div id="myModal" class="modal">
 
-        <!-- Modal content -->
-        {% csrf_token %}
-        {% load filter_extra %}
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            {% for card, user_card in cards %}
-                <input type="button" class="button8" onclick="func({{ user_card.card_num }})"
-                       value="{{ card }}">
-            {% endfor %}
-            <input type="button" class="button8" onclick="func('{{ request.user.username }}')"
-                   value="Кошелек">
-            <table>
-                <tr>
-                    <td>Сохранить платеж</td>
-                    <td>
-                        <input class="narrow" type="checkbox" id="check_box" title="Сохранить текущий платеж">
-                    </td>
-                    <td>
-                        <input type="text" id="amount" placeholder="Сумма" title="Сумма">
-                    </td>
-                </tr>
-            </table>
-            <div id="mon_notification" class="light_gray"></div>
-
-            <div id="response" class="narrow-center"></div>
-            <div id="rent" class="hidden"></div>
-            <div id="user" class="hidden"></div>
-            <div id="mon_value" class="hidden">{{ mon }}</div>
-        </div>
-
-    </div>
+    {% csrf_token %}
+    {% load filter_extra %}
     {% if not request.user.is_admin and not request.user.is_moder %}
         <div class="right">
             <table>
                 {% for card, user_card in cards %}
                     <tr>
-                        <td>{{ card }}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm btn-group-justified btn-block" role="group"
+                                 aria-label="...">
+                                <button type="button" value="{{ card }}"
+                                        class="change btn btn-info text-center b1">{{ card }}</button>
+                                <a href="delete_card/{{ user_card.id }}" class="btn btn-outline-danger b2">&times;</a>
+                            </div>
+                        </td>
                     </tr>
                 {% endfor %}
                 <tr>
                     <td>
-                        <a class="btn button7 form-control" href="{% url 'AddCard' %}">Добавить карту</a>
+                        <button class="btn btn-outline-primary btn-block btn-sm" data-toggle="modal"
+                                data-target="#myModal" onclick="add_card_click()">Добавить карту
+                        </button>
                     </td>
                 </tr>
             </table>
@@ -64,64 +43,61 @@
     <div class="left">
         <table>
             <tr>
-                <td class="padding">
-                    <button id="hover" class="btn"><img src="/static/img/wallet.png"
-                                                        class="img_size_wallet"> {{ balance }} BYN
-                    </button>
+                <td>
+                    <div class="btn-group btn-group-justified" role="group" aria-label="...">
+                        <button type="button" class="btn btn-info">{{ balance }} BYN</button>
+                        <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#myModal"
+                                onclick="fill_balance_click()">+
+                        </button>
+                    </div>
                 </td>
             </tr>
         {% if not request.user.is_admin and not request.user.is_moder %}
             {% if request.user.ie %}
                 <tr>
-                    <td class="padding">
-                        <a class="btn button7 text-left form-control" href="{% url 'UnfillBalance' %}">Вывод средств</a>
+                    <td class="padding-top-bottom10">
+                        <a class="btn button7 text-left" href="{% url 'UnfillBalance' %}">Вывод средств</a>
                     </td>
                 </tr>
             {% else %}
-                <tr>
-                    <td class="padding">
-                        <a class="btn button7 text-left form-control" href="{% url 'RefillBalance' %}">Пополнить
-                            счет</a>
-                    </td>
-                </tr>
             {% endif %}
             <tr>
-                <td class="padding">
+                <td class="padding-top-bottom10">
                     {% if new %}
                         <a class="btn button7 text-left form-control" href="{% url 'Mails' %}">Оповещения <span
-                                style="color: red; ">(New +{{ number }})</span></a>
+                                class="tag tag-pill tag-danger">{{ number }}</span></a>
                     {% else %}
-                        <a class="btn button7 text-left form-control" href="{% url 'Mails' %}">Оповещения </a>
+                        <a class="btn button7 text-left" href="{% url 'Mails' %}">Оповещения </a>
                     {% endif %}
                 </td>
             </tr>
 
             {% if request.user.ie %}
                 <tr>
-                    <td class="padding">
-                        <a class="btn button7 text-left form-control" href="{% url 'MyAllHousesOwner' %}">Объявления</a>
+                    <td class="padding-top-bottom10">
+                        <a class="btn button7 text-left" href="{% url 'MyAllHousesOwner' %}">Объявления</a>
                     </td>
                 </tr>
             {% endif %}
             <tr>
-                <td class="padding">
-                    <a class="btn button7 text-left form-control" href="{% url 'ExtractBalance' %}">Транзакции</a>
+                <td class="padding-top-bottom10">
+                    <a class="btn button7 text-left" href="{% url 'ExtractBalance' %}">Транзакции</a>
                 </td>
             </tr>
             <tr>
-                <td class="padding">
-                    <a class="btn button7 text-left form-control" href="{% url 'AutoPayment' %}">Автоплатеж</a>
+                <td class="padding-top-bottom10">
+                    <a class="btn button7 text-left" href="{% url 'AutoPayment' %}">Автоплатеж</a>
                 </td>
             </tr>
             <tr>
-                <td class="padding">
-                    <a class="btn button7 text-left form-control" href="{% url 'QuickPayment' %}">Быстрый платеж</a>
+                <td class="padding-top-bottom10">
+                    <a class="btn button7 text-left" href="{% url 'QuickPayment' %}">Быстрый платеж</a>
                 </td>
             </tr>
         {% endif %}
             <tr>
-                <td class="padding">
-                    <a class="btn button7 text-left form-control" href="{% url 'EditProfile' %}">Настройки</a>
+                <td class="padding-top-bottom10">
+                    <a class="btn button7 text-left" href="{% url 'EditProfile' %}">Настройки</a>
                 </td>
             </tr>
         </table>
@@ -136,6 +112,7 @@
                             <td class="padding">
                                 <a href="aboutHouse/{{ rent.id_house.id }}">Информация о доме</a>
                             </td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td class="padding">Дата начала аренды:</td>
@@ -157,8 +134,12 @@
                             <td class="padding">Дата следующей оплаты:</td>
                             <td class="padding">{{ rent.next_payment_date }}</td>
                         </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
                     </table>
-                    <button class="btn btn-outline-success btn-block"
+                    <button class="btn btn-outline-success btn-block" data-toggle="modal" data-target="#myModal"
                             onclick="choose_rent({{ rent.id }}, '{{ rent.id_house.user_login }}')">Оплатить
                     </button>
                 </div>
@@ -173,45 +154,51 @@
             </tr>
         </table>
     {% endif %}
+
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="input_func()" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+
+
+    <script src="/static/javascript/get.js"></script>
     <script>
-        // Get the modal
-        var modal = document.getElementById('myModal');
-
-
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
-
-        // When the user clicks the button, open the modal
+        $(".change")
+                .hover(function () {
+                    $(this).html("<a class='hidden'>" + $(this).html() + "</a>" + "Изменить");
+                }, function () {
+                    $(this).html($(this).html().slice(18, 37));
+                });
         function choose_rent(id, username) {
-            modal.style.display = "block";
+            document.getElementsByClassName('modal-body')[0].innerHTML = get('choose_payment/' + id);
             var rent_id = document.getElementById('rent');
             var user = document.getElementById('user');
+            var mon = document.getElementById('mon_value');
+            document.getElementsByClassName('modal-title')[0].innerHTML = 'Выберите способ оплаты';
             rent_id.innerHTML = id;
             user.innerHTML = username;
-        }
-        function input_func() {
-            var amount = document.getElementById('amount');
-            amount.value = "";
-            amount.className = "form-control height70 formValid";
-            amount.placeholder = "Сумма";
-            amount.style.borderColor = "lightgray";
-            var mon_notification = document.getElementById('mon_notification').innerHTML = "";
-            document.getElementById('response').innerHTML = ""
+            mon.innerHTML = {{ mon }};
         }
 
-        // When the user clicks on <span> (x), close the modal
-        span.onclick = function () {
-            modal.style.display = "none";
-            input_func()
-        };
+        function fill_balance_click() {
+            document.getElementsByClassName('modal-body')[0].innerHTML = get('refillbalance/');
+            document.getElementsByClassName('modal-title')[0].innerHTML = 'Выберите карту';
+        }
 
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function (event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-                input_func()
-            }
-        };
+        function add_card_click() {
+            document.getElementsByClassName('modal-body')[0].innerHTML = get('add_card/');
+            document.getElementsByClassName('modal-title')[0].innerHTML = 'Введите данные';
+        }
     </script>
     <script src="/static/javascript/post_choose_payment.js"></script>
 

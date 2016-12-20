@@ -121,7 +121,7 @@ class PaymentManager(object):
         if self.size == self.cost - self.payed:
             self.rent.next_payment_date += datetime.timedelta(days=
                                                               models.Rent.objects.get(id=
-                                                                                      self.rent.id_house).payment_interval)
+                                                                                      self.rent.id_house.id).payment_interval)
             self.rent.payed_until_time = 0
         elif self.size < self.cost - self.payed:
             self.rent.payed_until_time += self.size

@@ -50,6 +50,7 @@ body {
     background-color: whitesmoke;
     link: dodgerblue;
 }
+
 textarea {
     width: 90%;
 }
@@ -59,7 +60,7 @@ table {
 }
 
 .main-body {
-    padding-top: 70px;
+    padding-top: 10px;
     padding-bottom: auto;
     margin-top: 20px;
 }
@@ -73,8 +74,8 @@ table {
 }
 
 .img_size_wallet {
-    width: 20px;
-    height: 20px;
+    width: 10%;
+    height: 10%;
     padding-bottom: 3px;
 }
 
@@ -88,10 +89,23 @@ table {
 {
     position: fixed;
     overflow: auto;
-    padding: 10px; /* Поля вокруг текста */
+    padding: 0; /* Поля вокруг текста */
     float: left; /* Обтекание по правому краю */
-    width: 200px; /* Ширина слоя */
-    margin: auto auto 50px;
+    width: 240px; /* Ширина слоя */
+    margin: auto auto 30px;
+}
+
+button.close {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.b1 {
+    width: 80%;
+}
+
+.b2 {
+    width: 20%;
 }
 
 .right {
@@ -99,7 +113,7 @@ table {
     overflow: auto;
     background-color: white; /* Цвет фона слоя */
     padding: 10px; /* Поля вокруг текста */
-    width: 205px; /* Ширина слоя */
+    width: 270px; /* Ширина слоя */
     margin: auto auto 0 57rem;
 }
 
@@ -113,8 +127,23 @@ table {
 }
 
 .padding-top10 {
-    padding: 10px 0 0 0;
+    padding-top: 10px;
     height: 0;
+}
+
+.padding-top5 {
+    padding-top: 5px;
+    height: 0;
+}
+
+.padding-top-bottom10 {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    height: 0;
+}
+
+.centered_text {
+    justify-content: center;
 }
 
 .button8
@@ -170,16 +199,20 @@ table {
     background-color: whitesmoke;
     height: 25px;
     padding: 0;
-    width: 100%;
+    width: 70%;
+    box-shadow: none;
+    border-style: hidden;
+}
+
+.button7:active .button7:hover .button7:checked {
+    box-shadow: none;
+    text-decoration: none;
+    background-color: whitesmoke;
+    border-style: hidden;
 }
 
 .text-left {
     text-align: left;
-}
-
-.button7:hover .button7:active {
-    background-color: whitesmoke;
-    border-width: 0;
 }
 
 .gray {
@@ -194,66 +227,12 @@ table {
     background: cornflowerblue;
 }
 
-.navbar-default {
+.navbar-light {
     background-color: cornflowerblue;
-    border-color: cornflowerblue;
-}
-
-/* title */
-.navbar-default .navbar-brand {
-    color: whitesmoke;
-}
-
-.navbar-default .navbar-brand:hover,
-.navbar-default .navbar-brand:focus {
-    color: lightgray;
-}
-
-/* link */
-.navbar-default .navbar-nav > li > a {
-    color: whitesmoke;
-}
-
-.navbar-default .navbar-nav > li > a:hover,
-.navbar-default .navbar-nav > li > a:focus {
-    color: lightgray;
-}
-
-.navbar-default .navbar-nav > .active > a,
-.navbar-default .navbar-nav > .active > a:hover,
-.navbar-default .navbar-nav > .active > a:focus {
-    color: gray;
-    background-color: whitesmoke;
-}
-
-.navbar-default .navbar-nav > .open > a,
-.navbar-default .navbar-nav > .open > a:hover,
-.navbar-default .navbar-nav > .open > a:focus {
-    color: whitesmoke;
-    background-color: royalblue;
-}
-
-.navbar-default .navbar-nav > .dropdown > a .caret {
-    border-top-color: #777;
-    border-bottom-color: #777;
 }
 
 .hidden {
     display: none
-}
-
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    padding-top: 100px; /* Location of the box */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: hidden; /* Enable scroll if needed */
-    background-color: rgb(0, 0, 0); /* Fallback color */
-    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
 
 input.formInvalid::-webkit-input-placeholder {
@@ -266,15 +245,6 @@ input.formInvalid::-webkit-input-placeholder {
 
 input.formValid::-webkit-input-placeholder {
     color: lightgray;
-}
-
-/* Modal Content */
-.modal-content {
-    background-color: #fefefe;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 40%;
 }
 
 /* The Close Button */
@@ -290,4 +260,8 @@ input.formValid::-webkit-input-placeholder {
     color: #000;
     text-decoration: none;
     cursor: pointer;
+}
+
+.card-deck-wrapper {
+    column-count: 3;
 }

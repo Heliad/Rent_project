@@ -13,29 +13,28 @@
     </script>
     <form method="post">
         {% csrf_token %}
-        <div class="center">
-            {% for field in form %}
-                <div class="row padding">
-                    <div class="col-md-6">{{ field.label }}</div>
-                    {% if field.label == 'Платеж:' %}
-                        <div class="col-md-6">{% if pay %}
-                            <a href="/profile/quickpayment/?type=addautopayment" class="btn btn-default">
-                                Быстрый платеж №{{ pay.id }}</a>
-                            {{ field }}
+        <table class="center">
+            <tr>
+                <td class="padding">
+                    {% if pay %}
+                        <input type="button" class="button9"
+                               value="Тип оплаты: {{ pay.user_payment }}, цена: {{ pay.amount }} BYN, Аренда: {{ rent }}">
                     {% else %}
-                            <a href="/profile/quickpayment/?type=addautopayment" class="btn btn-default">Выберите
-                                платеж</a>
-                        {% endif %}</div>
-                    {% else %}
-                        <div class="col-md-6">{{ field }}</div>
+                        <a href="/profile/quickpayment/?type=addautopayment">Выберите платеж</a>
                     {% endif %}
-                </div>
+                </td>
+            </tr>
+            {% for field in form %}
+                <tr>
+                    {% if field.label != '' %}
+                        <td class="padding">{{ field.label }}</td>
+                    {% endif %}
+                    <td>{{ field }}</td>
+                </tr>
             {% endfor %}
-            <div class="row padding">
-                <div class="col-md-6">
-                    <button type="submit" class="btn btn-primary">Создать</button>
-                </div>
-            </div>
-        </div>
+            <tr>
+                <td><input type="submit" value="Создать"></td>
+            </tr>
+        </table>
     </form>
 {% endblock %}

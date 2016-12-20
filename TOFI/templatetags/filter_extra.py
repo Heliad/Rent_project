@@ -3,13 +3,21 @@ from django import template
 
 def mon_cost(arg, value):
     if not type(arg) == list:
-        return float(arg) + float(arg) * value
+        result = float(arg) + float(arg) * value
+        if int(result) == result:
+            return int(result)
+        else:
+            return round(float(result), 2)
     else:
         return 0
 
 
 def percentage(arg):
-    return str(arg * 100) + '%'
+    result = arg * 100
+    if int(result) == result:
+        return str(int(result)) + '%'
+    else:
+        return str(round(float(arg), 2)) + '%'
 
 
 def card_num_beautify(arg):

@@ -215,7 +215,7 @@ def make_rent(request, number):
                        str(request.user.last_name) + "."
 
         text_message = forms.CharField(widget=forms.Textarea(attrs={'readonly':'readonly', 'rows': '2'}),
-                                       label="Содержание:",max_length=100, required=True, initial=text_message)
+                                       label="Содержание:", max_length=100, required=True, initial=text_message)
         text_more = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Введите сопроводительное письмо...', 'rows': '4'}),
                                     label="Дополнительно:", max_length=100, required=True)
 

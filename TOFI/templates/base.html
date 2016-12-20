@@ -1,3 +1,4 @@
+
 {% load staticfiles %}
 <!DOCTYPE html>
 <html lang="ru">
@@ -10,32 +11,20 @@
     <meta name="author" content="">
 
     <title>{% block title %}{% endblock %}</title>
-      <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/flatly/bootstrap.min.css" rel="stylesheet">
-      <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.5/css/bootstrap.css"
-            rel="stylesheet">
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.5/flatly/bootstrap.min.css" rel="stylesheet">
     <link href="{% static 'style.css' %}" rel="stylesheet">
-      <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet"
-            type="text/css"/>
-      <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css"
-            rel="stylesheet" type="text/css">
-      <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.43/css/bootstrap-datetimepicker.min.css"
-            rel="stylesheet" type="text/css">
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-      <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-      <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.5/js/bootstrap.js"></script>
-      <script src="/static/script/moment.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.43/js/bootstrap-datetimepicker.min.js"></script>
   </head>
 
 
   <body>
-  <nav class="navbar navbar-default navbar-fixed-top">
+
+  <nav class="navbar navbar-inverse navbar-fixed-top color">
       <div class="container">
-          <div class="navbar-header padding-top10">
-              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
-                      aria-expanded="t" aria-controls="navbar">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
@@ -48,51 +37,29 @@
             {% if request.user.is_anonymous %}
                 <li><a href="{% url 'Registration' %}">Регистрация</a></li>
                 <li><a href="{% url 'Login' %}">Вход</a></li>
+                <li><a href="{% url 'Search' %}">Поиск</a></li>
             {% else %}
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown">Поиск</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{% url 'SearchUser' %}">Поиск пользователей</a></li>
-                        <li><a href="{% url 'SearchRent' %}">Поиск жилья</a></li>
-                        <li><a href="{% url 'SearchId' %}">Поиск пользователей по Id</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false">{{ request.user.username }}</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{% url 'Profile' %}">Профиль</a></li>
-                        <li><a href="{% url 'EditProfile' %}">Настройки</a></li>
-                        {% if request.user.ie %}
+                <li><a href="{% url 'Search' %}">Поиск</a></li>
+                <li><a href="{% url 'Logout' %}">Выход</a></li>
+                <li><a href="{% url 'Profile' %}">Личный кабинет</a></li>
+                {% if request.user.ie %}
                     <li><a href="{% url 'AddRent' %}">Создать объявление</a></li>
-                        {% else %}
-                            <li><a href="{% url 'QuickPayment' %}">Быстрый платеж</a></li>
-                        {% endif %}
-                        <li role="separator" class="divider"></li>
-                        <li><a href="{% url 'Logout' %}">Выход</a></li>
-                    </ul>
-                </li>
+                {% endif %}
             {% endif %}
 
-          </ul>
-        </div>
-      </div>
-    </nav>
+      </ul>
+  </nav>
+
   <div class="main-body">
       <div class="container">
         {% block content %}
         {% endblock %}
     </div>
   </div>
-  <script>
 
-      $("input").addClass("form-control height70");
-      $(function () {
-          $(".datetime").datetimepicker({
-              format: 'DD/MM/YYYY',
-              locale: 'ru'
-          });
-      });
-  </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
   </body>
 </html>

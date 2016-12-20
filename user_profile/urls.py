@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'refillbalance', views.refillBalance, name='RefillBalance'),
     url(r'unfillbalance', views.unfillBalance, name='UnfillBalance'),
     url(r'add_card', views.add_card, name='AddCard'),
+    url(r'delete_card/(?P<id>\d*)', views.delete_card, name='DeleteCard'),
     url(r'editprofile', views.edit_profile, name='EditProfile'),
     url(r'mails', views.mails, name='Mails'),
     url(r'acceptrent/(?P<id_mes>\d*)', views.accept_rent, name='AcceptRent'),

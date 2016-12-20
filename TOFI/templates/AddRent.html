@@ -1,27 +1,16 @@
 {% extends "base.html" %}
 {% block title %}Создание объявления{% endblock %}
 {% block content %}
-    {% if error %}
-        <div class="left">
-            <table>
-                <tr>
-                    <td>
-                        <font color="red">{{ error }}</font>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    {% endif %}
         <form method="POST" class="center">
             {% csrf_token %}
-            <table>
-                {% for field in form %}
-                    <tr>
-                        <td class="padding">{{ field.label }}</td>
-                        <td>{{ field }}</td>
-                    </tr>
-                {% endfor %}
-                <tr><td><button type="submit" class="button7">Добавить</button></td></tr>
-            </table>
+        <table>
+            {% for field in form %}
+                <tr>
+                    <td class="padding">{{ field.label }}</td>
+                    <td>{{ field }}</td>
+                </tr>
+            {% endfor %}
+            <tr><td><button type="submit" class="button7">Добавить</button></td></tr>
+        </table>
         </form>
 {% endblock %}
