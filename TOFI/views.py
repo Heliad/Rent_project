@@ -120,6 +120,7 @@ class Registration(View):
 
         else:
             err = form.errors.as_data()
+            print(err)
             if 'password' in err:
                 error = 'Пароль должен содержать в себе арабские цифры и латинские буквы, нижнего и верхнего регистра!'
             if 'phone' in err:
@@ -133,16 +134,20 @@ class Registration(View):
             if 'last_name' in err:
                 error = 'Недопустимые символы в поле Отчество!'
             if 'age' in err:
-                error = 'Недопустимые значение в поле Возраст!'
+                error = 'Недопустимое значение в поле Возраст!'
             if 'email' in err:
                 if 'My user with this Электронная почта already exists.' in err['email'][0]:
                     error = 'Пользователь с таким почтовым адресом уже зарегистрирован!'
                 else:
-                    error = 'Недопустимые значение в поле Email!'
+                    error = 'Недопустимые символы в поле Email!'
             if 'address' in err:
-                error = 'Недопустимые значение в поле Адрес!'
+                error = 'Недопустимые символы в поле Адрес!'
             if 'passport_id' in err:
-                error = 'Недопустимые значение в поле Номер пасспорта!'
+                error = 'Недопустимые символы в поле Номер пасспорта!'
+            if 'taxpayer_account_number' in err:
+                error = 'Недопустимое значение в поле УНН!(Значение должно быть от 1 до 100000)'
+            if 'license_field' in err:
+                error = 'Недопустимые символы в поле Лицензия!'
         return render(request, self.template_name, {'form': form, 'error': error})
 
 

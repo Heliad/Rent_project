@@ -18,15 +18,15 @@
 
             <table class="table">
                 {% for field in form %}
-                    {% if field.label == 'УНН' %}
-                        <tr>
-                            <td id="hid1">{{ field.label }}</td>
+                    {% if field.label == 'УНН:' %}
+                        <tr id="hid1">
+                            <td>{{ field.label }}</td>
                             <td>{{ field }}</td>
                         </tr>
 
-                    {% elif field.label == 'Лицензия' %}
-                        <tr>
-                            <td id="hid2">{{ field.label }}</td>
+                    {% elif field.label == 'Лицензия:' %}
+                        <tr id="hid2">
+                            <td>{{ field.label }}</td>
                             <td>{{ field }}</td>
                         </tr>
                     {% else %}
@@ -37,11 +37,14 @@
                     {% endif %}
                 {% endfor %}
                 <tr>
-                    <td>
+                    <td colspan="2" align="center">
                         <button type="submit" class="btn btn-default">Регистрация</button>
                     </td>
                 </tr>
             </table>
         </form>
-
+        <script>
+            //Не убирай это отсюда падла!
+            onChange();
+        </script>
 {% endblock %}
