@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Аккаунт заблокирован{% endblock %}
+{% block content %}
+    {% if us %}
+        <table class="center">
+            <tr>
+                <td class="padding">Пользователь с логином: {{ us }}, заблокирован.</td>
+            </tr>
+            <tr>
+                <td class="padding">Причина блокировки: {{ reason }}</td>
+            </tr>
+        </table>
+    {% endif %}
+{% endblock %}

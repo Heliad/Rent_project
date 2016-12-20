@@ -27,5 +27,13 @@
                 </td>
             </tr>
         {% endif %}
+
+        {% if no_rez %}
+            <tr>
+                <td class="padding">
+                    <b id="fon">{{ no_rez }}</b>
+                </td>
+            </tr>
+        {% endif %}
     </table>
 {% endblock %}

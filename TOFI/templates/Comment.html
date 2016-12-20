@@ -15,16 +15,16 @@
                     <textarea placeholder="Введите отзыв о сервисе..." cols="70" rows="3px" id="comment" maxlength="150"></textarea>
                 </td>
                 <td>
-                    <input type="button" class="button7" value="Отправить" onclick="func()">
+                    <button type="button" class="btn btn-default" onclick="func()">Отправить</button>
                 </td>
             </tr>
         {% endif %}
     </table>
-    <table class="center" id="response">
+    <table class="center table table-striped table-bordered" id="response">
         {% for c in com %}
             <tr class="padding">
                 <td class="padding">{{ c.user_login}}</td>
-                <td>{{ c.date_comment }}</td>
+                <td class="text-center text-muted">{{ c.date_comment|date:"d-m-Y" }}</td>
                 <td>{{ c.text_comment }}</td>
             </tr>
         {% endfor %}

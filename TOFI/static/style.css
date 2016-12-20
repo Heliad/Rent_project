@@ -2,8 +2,32 @@
     width: 100%;
     max-width: 700px;
     padding: 10px;
-    margin: 50px auto auto;
+    margin: auto auto 50px;
     background: white;
+}
+
+.center-table {
+    width: 100%;
+    max-width: 90%;
+    padding: 10px;
+    margin: auto auto 50px;
+    background: white;
+}
+
+.while-color-fill {
+    background: white;
+    fill: 100%;
+    margin-bottom: 50px;
+}
+
+.height70 {
+    height: 35px;
+}
+
+.hidden-center {
+    width: 100%;
+    max-width: 700px;
+    margin: auto auto;
 }
 
 a {
@@ -14,6 +38,11 @@ a:hover {
     color: dodgerblue;
 }
 
+.narrow {
+    width: 20px;
+}
+
+
 body {
     margin: auto;
     padding-bottom: 0;
@@ -22,25 +51,70 @@ body {
     link: dodgerblue;
 }
 
+textarea {
+    width: 90%;
+}
+
+table {
+    width: 100%;
+}
+
 .main-body {
-    padding-top: 50px;
+    padding-top: 10px;
     padding-bottom: auto;
+    margin-top: 20px;
 }
 
 .narrow-center{
-    width: 100%;
-    max-width: 200px;
-    margin: 0 auto auto;
-    padding-top: 5px;
+    min-width: 400px;
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: 35%;
+    padding-right: 35%;
+}
+
+.img_size_wallet {
+    width: 10%;
+    height: 10%;
+    padding-bottom: 3px;
+}
+
+.borders {
+    border-radius: 4px;
+    border: thin solid darkgrey;
+    height: 35px;
 }
 
 .left
 {
+    position: fixed;
+    overflow: auto;
+    padding: 0; /* Поля вокруг текста */
+    float: left; /* Обтекание по правому краю */
+    width: 240px; /* Ширина слоя */
+    margin: auto auto 30px;
+}
+
+button.close {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.b1 {
+    width: 80%;
+}
+
+.b2 {
+    width: 20%;
+}
+
+.right {
+    position: fixed;
+    overflow: auto;
     background-color: white; /* Цвет фона слоя */
     padding: 10px; /* Поля вокруг текста */
-    float: left; /* Обтекание по правому краю */
-    width: 200px; /* Ширина слоя */
-    margin: 50px auto auto;
+    width: 270px; /* Ширина слоя */
+    margin: auto auto 0 57rem;
 }
 
 .padding100{
@@ -52,13 +126,35 @@ body {
     padding: 10px;
 }
 
+.padding-top10 {
+    padding-top: 10px;
+    height: 0;
+}
+
+.padding-top5 {
+    padding-top: 5px;
+    height: 0;
+}
+
+.padding-top-bottom10 {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    height: 0;
+}
+
+.centered_text {
+    justify-content: center;
+}
+
 .button8
 {
     color: black;
     height: 40px;
     width: 250px;
+    min-width: 100%;
     padding-top: 0;
     padding-bottom: 0;
+    margin-bottom: 15px;
     background: white;
     transition: 0.2s;
     border-width: 0;
@@ -71,12 +167,21 @@ body {
 
 .button9
 {
+    background-color: white;
+    width: 27px;
+    text-align: right;
+    border-width: 1px;
+    border-color: limegreen;
+    padding: 0;
+}
+
+.button10 {
     color: black;
-    height: 40px;
+    height: 30px;
     width: 100%;
-    max-width: 700px;
+    max-width: 100px;
     padding-top: 0;
-    padding-bottom: 0;
+    padding-bottom: 25px;
     background: white;
     transition: 0.2s;
     border-width: 0;
@@ -90,25 +195,73 @@ body {
 
 .button7
 {
-    color: white;
-    padding: 7px;
-    background: darkgray;
-    transition: 0.2s;
-    border-width: 0;
-    text-decoration: underline;
+    color: gray;
+    background-color: whitesmoke;
+    height: 25px;
+    padding: 0;
+    width: 70%;
+    box-shadow: none;
+    border-style: hidden;
 }
 
-.button7:hover
-{
-    background: gray;
+.button7:active .button7:hover .button7:checked {
+    box-shadow: none;
+    text-decoration: none;
+    background-color: whitesmoke;
+    border-style: hidden;
 }
 
-.button7:active
-{
-  background: rgb(33,147,90);
-  box-shadow: 0 3px rgb(33,147,90) inset;
+.text-left {
+    text-align: left;
+}
+
+.gray {
+    background: lightgray;
 }
 
 .color {
     background-color: cornflowerblue;
+}
+
+.color:hover, .color:active {
+    background: cornflowerblue;
+}
+
+.navbar-light {
+    background-color: cornflowerblue;
+}
+
+.hidden {
+    display: none
+}
+
+input.formInvalid::-webkit-input-placeholder {
+    color: red;
+}
+
+.light_gray {
+    color: darkgray;
+}
+
+input.formValid::-webkit-input-placeholder {
+    color: lightgray;
+}
+
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.card-deck-wrapper {
+    column-count: 3;
 }

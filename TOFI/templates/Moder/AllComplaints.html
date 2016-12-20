@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Жалобы{% endblock %}
+{% block content %}
+    {% if complaints %}
+        {% for comp in complaints %}
+            <table class="center">
+                <tr class="padding">
+                    <td class="padding">От кого жалоба:</td>
+                    <td class="padding">{{ comp.login_user_from }}</td>
+                </tr>
+                <tr class="padding">
+                    <td class="padding">На кого жалоба:</td>
+                    <td class="padding">{{ comp.login_user_to }}</td>
+                </tr>
+                <tr class="padding">
+                    <td class="padding">Описание:</td>
+                    <td class="padding">{{ comp.describe }}</td>
+                </tr>
+                <tr class="padding">
+                    <td class="padding">Дата:</td>
+                    <td class="padding">{{ comp.date }}</td>
+                </tr>
+            </table>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

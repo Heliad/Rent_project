@@ -9,34 +9,38 @@
                     <table>
                         <tr>
                             <td>
-                                <font color="red">{{ error }}</font>
+                                <span style="color: red; ">{{ error }}</span>
                             </td>
                         </tr>
                     </table>
                 </div>
             {% endif %}
 
-            <table>
+            <table class="table">
                 {% for field in form %}
                     {% if field.label == 'УНН' %}
                         <tr>
-                            <td class="padding" id="hid1">{{ field.label }}</td>
-                            <td>{{ field }}(Есть некоторые проблемы с require)</td>
+                            <td id="hid1">{{ field.label }}</td>
+                            <td>{{ field }}</td>
                         </tr>
 
                     {% elif field.label == 'Лицензия' %}
                         <tr>
-                            <td class="padding" id="hid2">{{ field.label }}</td>
+                            <td id="hid2">{{ field.label }}</td>
                             <td>{{ field }}</td>
                         </tr>
                     {% else %}
                         <tr>
-                            <td class="padding">{{ field.label }}</td>
-                            <td>{{ field }}</td>
+                            <td>{{ field.label }}</td>
+                            <td class="center-block">{{ field }}</td>
                         </tr>
                     {% endif %}
                 {% endfor %}
-                <tr><td><button type="submit" class="button7">Регистрация</button></td></tr>
+                <tr>
+                    <td>
+                        <button type="submit" class="btn btn-default">Регистрация</button>
+                    </td>
+                </tr>
             </table>
         </form>
 

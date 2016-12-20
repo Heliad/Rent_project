@@ -10,14 +10,21 @@
                     <td>{{ field }}</td>
                 </tr>
             {% endfor %}
-            <tr><td><button type="submit" class="button7">Вход</button></td></tr>
+            <tr>
+                <td>
+                    <button type="submit" class="btn btn-default">Вход</button>
+                </td>
+            </tr>
             {% if error %}
-                <tr class="padding">
-                    <td class="padding">
-                        {{ error }}
-                    </td>
-                </tr>
-
+                <div class="left">
+                    <table>
+                        <tr>
+                            <td>
+                                <span style="color: red; ">{{ error }}</span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             {% endif %}
         </table>
     </form>

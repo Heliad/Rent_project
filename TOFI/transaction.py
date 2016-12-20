@@ -1,3 +1,5 @@
+import datetime
+
 from TOFI import models
 
 
@@ -106,3 +108,28 @@ class Check(object):
             return True
         except:
             return False
+
+
+class PaymentManager(object):
+    def __init__(self, size, cost, payed, rent):
+        self.size = size
+        self.cost = cost
+        self.payed = payed
+        self.rent = rent
+
+    def run(self):
+        if self.size == self.cost - self.payed:
+            self.rent.next_payment_date += datetime.timedelta(days=
+                                                              models.Rent.objects.get(id=
+                                                                                      self.rent.id_house.id).payment_interval)
+            self.rent.payed_until_time = 0
+        elif self.size < self.cost - self.payed:
+            self.rent.payed_until_time += self.size
+        elif self.size > self.cost - self.payed:
+            o = self.size / (self.cost - self.payed)
+            self.rent.next_payment_date += datetime.timedelta(days=
+                                                              models.Rent.objects.get(id=
+                                                                                      self.rent.id_house.id).payment_interval * int(
+                                                                  o))
+            self.rent.payed_until_time = (self.size - (self.cost - self.payed) * int(o))
+        self.rent.save()

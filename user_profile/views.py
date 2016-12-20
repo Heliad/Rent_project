@@ -1,4 +1,3 @@
-import datetime
 import json
 
 from django.contrib.auth import logout
@@ -6,6 +5,7 @@ from django.contrib.auth.hashers import check_password
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.utils.translation import activate
 
 from TOFI import check as ch
 from TOFI import models
@@ -30,19 +30,42 @@ def profile(request):
             new = True
             number += 1
 
+    user_cards = request.user.user_card_id.all()
+    id_user = request.user.id
+    my_rents = models.DoneRent.objects.select_related('id_house__user_login').filter(id_user_renter=id_user)
+    print(my_rents)
     penalties = models.DonePenalty.objects.filter(id_user_for=request.user.id)
-    return render(request, "Profile.html", {'cards': cards, 'new': new, 'number': number, 'penalties': penalties})
+    c = [[i, j] for i, j in zip(cards, user_cards)]
+    print(c)
+    print(request.user.balance)
+    balance = round(float(request.user.balance), 2)
+    print(balance)
+    mon = models.Monetization.objects.get(id=1).value_mon
+    return render(request, "Profile.html", {'cards': c, 'new': new, 'number': number, 'penalties': penalties,
+                                            'my_rents': my_rents, 'balance': balance, 'mon': mon})
 
 
 def add_card(request):
     if request.user.is_anonymous:
         return HttpResponseRedirect("/login")
-
+    activate('ru')
     class AddCard(forms.Form):
-        card_num = forms.CharField(label="Номер карты/Card number", max_length=16, required=True)
-        period_validity = forms.CharField(label="Срок действия (ММГГ)", max_length=5, required=True)
-        name_card_owner = forms.CharField(label="Имя держателя карты", max_length=50, required=True)
-        CVC2_CVV = forms.CharField(label="CVC2/CVV", max_length=3, required=True)
+        card_num = forms.CharField(label="Номер карты/Card number:",
+                                   widget=forms.TextInput(attrs={'class': 'form-control height70'}),
+                                   max_length=16, min_length=16,
+                                   required=True, validators=[RegexValidator('^[0-9]*$')])
+        period_validity = forms.CharField(label="Срок действия (ММ/ГГ):",
+                                          max_length=5, min_length=5,
+                                          required=True, validators=[RegexValidator('^[0-9]{2,2}/{1,1}[0-9]*$')],
+                                          widget=forms.TextInput(attrs={'placeholder': 'ММ/ГГ',
+                                                                        'class': 'form-control height70'}))
+        name_card_owner = forms.CharField(label="Имя держателя карты:",
+                                          widget=forms.TextInput(attrs={'class': 'form-control height70'}),
+                                          max_length=50, required=True,
+                                          validators=[RegexValidator('^[a-zA-Z\ ]*$')])
+        CVC2_CVV = forms.CharField(label="CVC2/CVV:", widget=forms.TextInput(attrs={'class': 'form-control height70'}),
+                                   max_length=3, min_length=3, required=True,
+                                   validators=[RegexValidator('^[0-9]*$')])
 
     if request.method == 'POST':
         form = AddCard(request.POST)
@@ -57,48 +80,56 @@ def add_card(request):
                     if i.card_num == card_num:
                         return render(request, 'Profile/Thanks.html', {'mes': 'карта уже добавлена'})
                 request.user.user_card_id.add(models.UserCard.objects.get(card_num=card_num))
-                return render(request, 'Profile/Thanks.html', {'mes': 'карта успешно добавлена'})
+                response = json.dumps({'mes': 'Карта успешно добавлена', 'status': True}, ensure_ascii=False)
             else:
-                return render(request, 'Profile/Thanks.html', {'mes': 'Неверные данные', 'redirect_address': 'profile'})
+                response = json.dumps({'mes': 'Введены неверные данные', 'status': False}, ensure_ascii=False)
+        else:
+            val_err = form.errors.as_data()
+            error = list()
+            for err_name, err_mes in val_err.items():
+                if err_name == 'card_num':
+                    for e in err_mes:
+                        error.append({'card_num': e.messages})
+                elif err_name == 'period_validity':
+                    for e in err_mes:
+                        error.append({'period_validity': e.messages})
+                elif err_name == 'name_card_owner':
+                    for e in err_mes:
+                        error.append({'name_card_owner': e.messages})
+                elif err_name == 'CVC2_CVV':
+                    for e in err_mes:
+                        error.append({'CVC2_CVV': e.messages})
+            response = json.dumps({'errors': error, 'status': False}, ensure_ascii=False)
+        return HttpResponse(response)
     else:
         form = AddCard()
-
-    return render(request, 'Profile/RefillBalance.html', {'form': form})
+        return render(request, 'AddCard.html', {'form': form})
 
 
 def refillBalance(request):
-    if request.user.is_anonymous:
-        return HttpResponseRedirect("/login")
-    if request.method == 'POST':
-        form = RefillBalance(request.POST)
+    if request.method == 'GET':
+        cards = list()
+        for card in [str(i.card_num) for i in request.user.user_card_id.all()]:
+            cards.append(card[:4] + ' XXXX XXXX ' + card[-4:])
+        user_cards = request.user.user_card_id.all()
+        c = [[i, j] for i, j in zip(cards, user_cards)]
+        return render(request, "Profile/RefillBalance.html", {'cards': c})
+    elif request.method == 'POST':
+        c, m = t.Transaction(request.POST['size'], request.POST['card_from'],
+                             request.user, False).make_transaction()
 
-        if form.is_valid():
-            card_num = form.cleaned_data['card_num']
-            period_validity = form.cleaned_data['period_validity']
-            name_card_owner = form.cleaned_data['name_card_owner']
-            CVC2_CVV = form.cleaned_data['CVC2_CVV']
-            size = form.cleaned_data['size']
+        response = {"message": m, "status": c}
+        models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Пополнение',
+                                                   describe_operation="Оплата на сумму " +
+                                                                      str(request.POST['size']) + " BYN. " +
+                                                                      str(m), date_operation=datetime.date.today())
 
-            if t.Check(card_num, period_validity, name_card_owner, CVC2_CVV).check_card():
-                t.Transaction(size, card_num, request.user).make_transaction()
-
-                # Логирование операции пополнения баланса
-                models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Пополнение баланса',
-                                                           describe_operation="Баланс успешно пополнен на " + str(
-                                                               size) + " BYN",
-                                                           date_operation=datetime.date.today())
-
-                context = {'mes': request.user.name + ", баланс успешно пополнен на " + str(size) + " BYN"}
-                return render(request, 'Profile/Thanks.html', context)
-            else:
-                return render(request, 'Profile/Thanks.html', {'mes': 'message'})
-    else:
-        form = RefillBalance()
-
-    return render(request, 'Profile/RefillBalance.html', {'form': form})
+        response = json.dumps(response, ensure_ascii=False)
+        return HttpResponse(response, content_type="text/html; charset=utf-8")
 
 
 def unfillBalance(request):
+    error, mes = '', ''
     if request.user.is_anonymous:
         return HttpResponseRedirect("/login")
     if request.method == 'POST':
@@ -111,7 +142,6 @@ def unfillBalance(request):
             CVC2_CVV = form.cleaned_data['CVC2_CVV']
             size = form.cleaned_data['size']
 
-            context = {'mes': ''}
             if t.Check(card_num, period_validity, name_card_owner, CVC2_CVV).check_card():
                 t.Transaction(size, request.user, card_num).make_transaction()
 
@@ -121,14 +151,29 @@ def unfillBalance(request):
                                                                size) + " BYN, успешно проведён.",
                                                            date_operation=datetime.date.today())
 
-                context = {'mes': request.user.name + ", средства на сумму " + str(size) +
-                                  " BYN, успешно выведены на карту"}
+                mes = request.user.name + ", средства на сумму " + str(size) \
+                      + " BYN, успешно выведены на карту"
+            else:
+                mes = "Введены неверные данные!"
+            return render(request, 'Profile/Thanks.html', {'mes': mes})
 
-            return render(request, 'Profile/Thanks.html', context)
+        else:
+            err = form.errors.as_data()
+            print(err)
+            if 'card_num' in err:
+                error = 'Номер карты должен содержать только цифры!'
+            if 'period_validity' in err:
+                error = 'Срок действия карты указан неверно!(Пример: 12/17)'
+            if 'name_card_owner' in err:
+                error = 'В поле Имя держателя карты введены недопустимые символы!'
+            if 'CVC2_CVV' in err:
+                error = 'В поле CVC2_CVV введены недопустимые символы!'
+            if 'size' in err:
+                error = 'Сумма может быть от 10 BYN до 1млн BYN!'
     else:
         form = RefillBalance()
 
-    return render(request, 'Profile/UnfillBalance.html', {'form': form})
+    return render(request, 'Profile/UnfillBalance.html', {'form': form, 'error': error})
 
 
 def profileChangePassword(request):
@@ -155,6 +200,11 @@ def profileChangePassword(request):
                     error = 'Вы ввели неверный пароль'
             else:
                 error = 'Пароли не совпадают'
+        else:
+            err = form.errors.as_data()
+            print(err)
+            if 'newPassword' in err:
+                error = 'Пароль должен содержать в себе арабские цифры и латинские буквы, нижнего и верхнего регистра!'
     else:
         form = ChangePassword()
 
@@ -181,24 +231,36 @@ def deleteMySelf(request):
                 error = 'Вы ввели неверный пароль'
     else:
         form = DeleteMySelf()
+        balance = round(request.user.balance, 2)
 
-    return render(request, "Profile/DeleteMySelf.html", {'form': form, 'error': error})
+    return render(request, "Profile/DeleteMySelf.html", {'form': form, 'error': error, 'balance': balance})
 
 
 def edit_profile(request):
     if request.user.is_anonymous:
         return HttpResponseRedirect("/login")
 
+    error = ''
+
     class EditProfile(forms.Form):
-        email = forms.CharField(label="Почтовый адрес", max_length=50, required=True, initial=request.user.email)
-        name = forms.CharField(label="Ваше имя", max_length=50, required=True, initial=request.user.name)
-        surname = forms.CharField(label="Ваша фамилия", max_length=50, required=True, initial=request.user.surname)
-        last_name = forms.CharField(label="Ваше отчество", max_length=50, required=True, initial=request.user.last_name)
-        age = forms.IntegerField(label="Ваш возраст", required=True, initial=request.user.age)
-        passport_id = forms.CharField(label="Номер вашего паспорта", max_length=50, required=True,
+        name = forms.CharField(label="Ваше имя:", max_length=50, required=True, initial=request.user.name,
+                               validators=[RegexValidator('^[а-яА-Я]*$')])
+        surname = forms.CharField(label="Ваша фамилия:", max_length=50, required=True, initial=request.user.surname,
+                                  validators=[RegexValidator('^[а-яА-Я]*$')])
+        last_name = forms.CharField(label="Ваше отчество:", max_length=50, required=True,
+                                    initial=request.user.last_name,
+                                    validators=[RegexValidator('^[а-яА-Я]*$')])
+        age = forms.IntegerField(label="Ваш возраст:", required=True, initial=request.user.age,
+                                 validators=[MaxValueValidator(100), MinValueValidator(18)])
+        email = forms.CharField(label="Почтовый адрес:", max_length=50, required=True, initial=request.user.email,
+                                validators=[EmailValidator()])
+        passport_id = forms.CharField(label='Номер пасспорта:', max_length='9', min_length=9, required=True,
+                                      validators=[RegexValidator('^[А-Я]{2,2}[0-9]{7,7}$')],
                                       initial=request.user.passport_id)
-        phone = forms.CharField(label="Ваш номер телефона", max_length=50, required=True, initial=request.user.phone)
-        address = forms.CharField(label="Ваш адрес", max_length=50, required=True, initial=request.user.address)
+        phone = forms.CharField(label="Ваш номер телефона:", max_length=50, required=True, initial=request.user.phone,
+                                validators=[RegexValidator('^\+[0-9\-\ ]*$')])
+        address = forms.CharField(label="Ваш адрес:", max_length=50, required=True, initial=request.user.address,
+                                  validators=[RegexValidator('^[0-9а-яА-Я/./,/;/ /-]*$')])
 
     if request.method == 'POST':
         form = EditProfile(request.POST)
@@ -213,12 +275,44 @@ def edit_profile(request):
             user.passport_id = form.cleaned_data['passport_id']
             user.phone = form.cleaned_data['phone']
             user.address = form.cleaned_data['address']
-            user.save()
-            return render(request, 'Profile/EditProfileDone.html')
-
+            try:
+                models.MyUser.objects.get(
+                    email=form.cleaned_data['email'],
+                    name=form.cleaned_data['name'],
+                    surname=form.cleaned_data['surname'],
+                    last_name=form.cleaned_data['last_name'],
+                    age=form.cleaned_data['age'],
+                    passport_id=form.cleaned_data['passport_id'],
+                    phone=form.cleaned_data['phone'],
+                    address=form.cleaned_data['address']
+                )
+                return HttpResponseRedirect('/profile/editprofile')
+            except models.MyUser.DoesNotExist:
+                user.save()
+                return render(request, 'Profile/EditProfileDone.html')
+        else:
+            err = form.errors.as_data()
+            if 'phone' in err:
+                error = 'Недопустимый номер телефона!'
+            if 'username' in err:
+                error = 'Пользователь с таким логином уже существует!'
+            if 'name' in err:
+                error = 'Недопустимые символы в поле Имя!'
+            if 'surname' in err:
+                error = 'Недопустимые символы в поле Фамилия!'
+            if 'last_name' in err:
+                error = 'Недопустимые символы в поле Отчество!'
+            if 'age' in err:
+                error = 'Недопустимые значение в поле Возраст!'
+            if 'email' in err:
+                error = 'Недопустимые значение в поле Email!'
+            if 'address' in err:
+                error = 'Недопустимые значение в поле Адрес!'
+            if 'passport_id' in err:
+                error = 'Недопустимые значение в поле Номер пасспорта!'
     else:
         form = EditProfile()
-    return render(request, "Profile/EditProfile.html", {'form': form})
+    return render(request, "Profile/EditProfile.html", {'form': form, 'error': error})
 
 
 def mails(request):
@@ -236,7 +330,8 @@ def accept_rent(request, id_mes):
     message = models.MessageStatusRent.objects.get(id=id_mes)
     house = models.Rent.objects.get(id=message.id_rent)
 
-    models.DoneRent.objects.create(id_house=message.id_rent, id_user_owner=message.id_user_to,
+    models.DoneRent.objects.create(id_house=models.Rent.objects.get(id=message.id_rent),
+                                   id_user_owner=models.MyUser.objects.get(id=message.id_user_to),
                                    id_user_renter=message.id_user_from, date_rent=datetime.date.today(),
                                    cost=house.cost, next_payment_date=datetime.datetime.today())
 
@@ -289,23 +384,23 @@ def all_rents_owner(request):
 
 def choose_payment(request, id_donerent):
     if request.method == "GET":
+        cards = list()
+        for card in [str(i.card_num) for i in request.user.user_card_id.all()]:
+            cards.append(card[:4] + ' XXXX XXXX ' + card[-4:])
         user_cards = request.user.user_card_id.all()
-        cards_num = list(map(lambda x: x[:4] + ' XXXX XXXX ' + x[-4:],
-                             [str(i.card_num) for i in request.user.user_card_id.all()]))
-        cost = models.DoneRent.objects.get(id=id_donerent)
-        balance_to = models.MyUser.objects.get(id=cost.id_user_owner).username
-        return render(request, "Profile/ChoosePayment.html", {'amount': cost.cost, 'cards': zip(user_cards, cards_num),
-                                                              'id': id_donerent, 'balance_to': balance_to})
+        c = [[i, j] for i, j in zip(cards, user_cards)]
+        return render(request, "Profile/ChoosePayment.html", {'cards': c})
     else:
 
         c, m = t.Transaction(request.POST['size'], request.POST['card_from'],
                              request.POST['balance_to'], True).make_transaction()
 
         if c:
-            drent = models.DoneRent.objects.get(id=id_donerent)
-            drent.next_payment_date += datetime.timedelta(days=models.Rent.objects.get(id=
-                                                                                       drent.id_house).payment_interval)
-            drent.save()
+            rent = models.DoneRent.objects.get(id=id_donerent)
+            size = float(request.POST['size'])
+            cost = float(rent.cost)
+            payed = float(rent.payed_until_time)
+            t.PaymentManager(size, cost, payed, rent).run()
 
         response = {"message": m, "status": c}
 
@@ -345,11 +440,12 @@ def extract_balance(request):
             for ex in extracts:
                 if period_end >= ex.date_operation >= period_start:
                     result.append(ex)
-
+            result = reversed(result)
             return render(request, 'Profile/ExtractBalance.html', {'form': form, 'result': result})
     else:
         form = ExtractBalance()
-        return render(request, "Profile/ExtractBalance.html", {'form': form})
+        extracts = reversed(models.LogOperationsBalance.objects.filter(id_user=request.user.id))
+        return render(request, "Profile/ExtractBalance.html", {'form': form, 'result': extracts})
 
 
 def quick_payment(request):
@@ -358,9 +454,7 @@ def quick_payment(request):
         payments = models.QuickPayment.objects.filter(username=request.user)
         for i in payments:
             try:
-                list_payments.append([i, i.user_payment, i.amount,
-                                      models.Rent.objects.get(
-                                          id=models.DoneRent.objects.get(id=i.rent_id).id_house).name])
+                list_payments.append(i)
             except:
                 continue
         context = {'payments': list_payments}
@@ -379,7 +473,7 @@ def quick_payment_info(request, id):
         payment = models.QuickPayment.objects.get(id=id)
         rent = []
         try:
-            rent = models.Rent.objects.get(id=models.DoneRent.objects.get(id=payment.rent_id).id_house)
+            rent = models.Rent.objects.get(id=models.DoneRent.objects.get(id=payment.rent_id).id_house.id)
         except:
             pass
         return render(request, 'Profile/QuickPaymentInfo.html', {'payment': payment, 'rent': rent})
@@ -390,13 +484,15 @@ def quick_payment_info(request, id):
         else:
             tr_from = models.UserCard.objects.get(card_num=payment.user_payment)
         tr_to = models.MyUser.objects.get(
-            id=models.Rent.objects.get(id=models.DoneRent.objects.get(id=payment.rent_id).id_house).user_login)
+            id=models.Rent.objects.get(id=models.DoneRent.objects.get(id=payment.rent_id).id_house.id).user_login.id)
         c, m = t.Transaction(payment.amount, tr_from, tr_to).make_transaction()
         if c:
-            drent = models.DoneRent.objects.get(id=payment.rent_id)
-            drent.next_payment_date += datetime.timedelta(days=models.Rent.objects.get(id=
-                                                                                       drent.id_house).payment_interval)
-            drent.save()
+            q_pay = models.QuickPayment.objects.get(id=id)
+            rent = models.DoneRent.objects.get(id=q_pay.rent_id)
+            size = float(q_pay.amount)
+            cost = float(rent.cost)
+            payed = float(rent.payed_until_time)
+            t.PaymentManager(size, cost, payed, rent).run()
         return render(request, 'Profile/Thanks.html', {'mes': m})
 
 
@@ -486,10 +582,16 @@ def delete_my_house(request, id_rent):
 
 
 def auto_payment(request):
-    auto_payments = models.AutoPayment.objects.filter(quick_payment=
-                                                      models.QuickPayment.objects.get(username_id=
-                                                                                      request.user.id))
-
+    auto_payments = list()
+    try:
+        pay_id = models.QuickPayment.objects.filter(username_id=request.user.id)
+        for i in pay_id:
+            try:
+                auto_payments.append(models.AutoPayment.objects.get(quick_payment=i))
+            except:
+                continue
+    except:
+        pass
     return render(request, 'Profile/AutoPayment/AutoPayment.html', {'auto_payments': auto_payments})
 
 
@@ -506,8 +608,10 @@ def about_auto_payment(request, id_auto):
 
 def add_auto_payment(request):
     class AutoPayForm(forms.Form):
-        quick_payment = forms.IntegerField(widget=forms.HiddenInput(), label='')
-        pay_date = forms.DateField(input_formats=['%d/%m/%Y'], label='Дата оплаты:')
+        quick_payment = forms.IntegerField(widget=forms.HiddenInput(), label='Платеж:')
+        pay_date = forms.DateField(input_formats=['%d/%m/%Y'],
+                                   label='Дата оплаты:',
+                                   widget=forms.DateInput(attrs={'class': 'datetime'}))
         payment_interval = forms.IntegerField(label='Интервал оплаты:')
 
     if request.method == 'GET':
@@ -517,7 +621,7 @@ def add_auto_payment(request):
                 pay = models.QuickPayment.objects.get(id=request.GET['id'])
                 context = {'pay': pay,
                            'rent': models.Rent.objects.get(
-                               id=models.DoneRent.objects.get(id=pay.rent_id).id_house).name}
+                               id=models.DoneRent.objects.get(id=pay.rent_id).id_house.id).name}
         except:
             pass
 
@@ -529,8 +633,17 @@ def add_auto_payment(request):
         if form.is_valid():
             payment_date = form.cleaned_data['pay_date']
             quick_payment = form.cleaned_data['quick_payment']
-            payment_interval = form.cleaned_data['payment_interval']
-            models.AutoPayment.objects.create(next_payment_date=payment_date,
-                                              quick_payment=models.QuickPayment.objects.get(id=quick_payment),
-                                              payment_interval=payment_interval)
+            try:
+                models.AutoPayment.objects.get(quick_payment_id=quick_payment)
+                return HttpResponseRedirect('/')
+            except:
+                payment_interval = form.cleaned_data['payment_interval']
+                models.AutoPayment.objects.create(next_payment_date=payment_date,
+                                                  quick_payment=models.QuickPayment.objects.get(id=quick_payment),
+                                                  payment_interval=payment_interval)
         return HttpResponseRedirect('/')
+
+
+def delete_card(request, id):
+    request.user.user_card_id.remove(models.UserCard.objects.get(id=id))
+    return HttpResponseRedirect('/profile')

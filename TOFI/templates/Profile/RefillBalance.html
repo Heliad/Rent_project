@@ -1,21 +1,15 @@
-{% extends "base.html" %}
-{% block title %}Пополнение баланса{% endblock %}
-{% block content %}
-    <form method="POST" class="center">
-        {% csrf_token %}
-        <table>
-            {% for field in form %}
-                <tr>
-                    <td class="padding">{{ field.label }}</td>
-                    <td>{{ field }}</td>
-                </tr>
+<form method="POST" class="center">
+    <table>
+        {% if cards %}
+            {% for card, user_card in cards %}
+                <input type="button" class="button8" onclick="fill_balance({{ user_card.card_num }})"
+                       value="{{ card }}">
             {% endfor %}
-            <tr>
-                <td>
-                    <button type="submit" class="button7">Пополнить баланс</button>
-                </td>
-            </tr>
-        </table>
-    </form>
-
-{% endblock %}
+            <input type="text" id="amount" placeholder="Сумма" title="Сумма" class="form-control height70 formValid"
+                   onfocus="amount_onfocus()" oninput="amount_oninput()">
+        {% else %}
+            <a class="button8">Нет карт</a>
+        {% endif %}
+    </table>
+    <div id="response" class="narrow-center"></div>
+</form>

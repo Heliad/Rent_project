@@ -18,6 +18,8 @@ urlpatterns = [
     url(r'search', include('search.urls')),
 
     url(r'aboutUser/(?P<login_id>\d*)', views.aboutUser, name='AboutUser'),
+    url(r'make_complaint/(?P<id_user_to>\d*)', views.make_complaint, name='MakeComplaint'),
+
     url(r'makeRent/(?P<number>\d*)', views.make_rent, name='MakeRent'),
     url(r'aboutHouse/(?P<number>\d*)', views.aboutHouse, name='AboutHouse'),
 
@@ -35,4 +37,5 @@ urlpatterns = [
     url(r'add_penalty', viewModer.add_penalty, name='AddPenalty'),
     url(r'delete_penalty/(?P<id_penalty>\d*)', viewModer.delete_penalty, name='DeletePenalty'),
     url(r'edit_penalty/(?P<id_penalty>\d*)', viewModer.edit_penalty, name='EditPenalty'),
+    url(r'all_complaints', viewModer.all_complaints, name='AllComplaints'),
 ]

@@ -1,4 +1,5 @@
 from django.shortcuts import render
+
 from TOFI import models
 from .forms import *
 
@@ -40,32 +41,52 @@ def delete_block(request, id_user):
 
 
 def search_by_id(request):
+    class SearchId(forms.Form):
+        field_id = forms.IntegerField(label="Введите Id пользователя:", required=True, min_value=1, max_value=1000000)
+
+    results, no_rez = None, ''
     if request.method == 'POST':
         form = SearchId(request.POST)
 
         if form.is_valid():
             user_id = form.cleaned_data['field_id']
-            results = models.MyUser.objects.get(id=user_id)
-            return render(request, 'Search/SearchById.html', {'form': form, 'results': results})
+            try:
+                results = models.MyUser.objects.get(id=user_id)
+            except:
+                pass
+
+            if results is None:
+                no_rez = 'Поиск не дал результатов...'
+            return render(request, 'Search/SearchById.html', {'form': form, 'results': results, 'no_rez': no_rez})
     else:
         form = SearchId()
         return render(request, "Search/SearchById.html", {'form': form})
 
 
 def edit_user_admin(request, id_user):
+    error = ''
     user_for_edit = models.MyUser.objects.get(id=id_user)
 
     class EditUserAdmin(forms.Form):
-        email = forms.CharField(label="Почтовый адрес", max_length=50, required=True, initial=user_for_edit.email)
-        name = forms.CharField(label="Ваше имя", max_length=50, required=True, initial=user_for_edit.name)
-        surname = forms.CharField(label="Ваша фамилия", max_length=50, required=True, initial=user_for_edit.surname)
-        last_name = forms.CharField(label="Ваше отчество", max_length=50, required=True, initial=user_for_edit.last_name)
-        age = forms.IntegerField(label="Ваш возраст", required=True, initial=user_for_edit.age)
-        passport_id = forms.CharField(label="Номер вашего паспорта", max_length=50, required=True,
+        name = forms.CharField(label="Ваше имя:", max_length=50, required=True, initial=user_for_edit.name,
+                               validators=[RegexValidator('^[а-яА-Я]*$')])
+        surname = forms.CharField(label="Ваша фамилия:", max_length=50, required=True, initial=user_for_edit.surname,
+                                  validators=[RegexValidator('^[а-яА-Я]*$')])
+        last_name = forms.CharField(label="Ваше отчество:", max_length=50, required=True,
+                                    initial=user_for_edit.last_name, validators=[RegexValidator('^[а-яА-Я]*$')])
+        age = forms.IntegerField(label="Ваш возраст:", required=True, initial=user_for_edit.age,
+                                 validators=[MaxValueValidator(100), MinValueValidator(18)])
+        email = forms.CharField(label="Почтовый адрес:", max_length=50, required=True, initial=user_for_edit.email,
+                                validators=[EmailValidator()])
+        passport_id = forms.CharField(label='Номер пасспорта:', max_length='9', min_length=9, required=True,
+                                      validators=[RegexValidator('^[А-Я]{2,2}[0-9]{7,7}$')],
                                       initial=user_for_edit.passport_id)
-        phone = forms.CharField(label="Ваш номер телефона", max_length=50, required=True, initial=user_for_edit.phone)
-        address = forms.CharField(label="Ваш адрес", max_length=50, required=True, initial=user_for_edit.address)
-        balance = forms.FloatField(label="Баланс", required=True, initial=user_for_edit.balance)
+        phone = forms.CharField(label="Ваш номер телефона:", max_length=50, required=True, initial=user_for_edit.phone,
+                                validators=[RegexValidator('^\+[0-9\-\ ]*$')])
+        address = forms.CharField(label="Ваш адрес:", max_length=50, required=True, initial=user_for_edit.address,
+                                  validators=[RegexValidator('^[0-9а-яА-Я/./,/;/ /-]*$')])
+        balance = forms.FloatField(label="Баланс:", required=True, initial=user_for_edit.balance,
+                                   validators=[RegexValidator('^[0-9]{1,6}(,|.){1,1}[0-9]{1,2}$')])
 
     if request.method == 'POST':
         form = EditUserAdmin(request.POST)
@@ -84,10 +105,30 @@ def edit_user_admin(request, id_user):
             user.save()
             mes = "Личные данные пользователя " + user.username + " успешно изменены и сохранены"
             return render(request, 'Admin/Done.html', {'message': mes})
+        else:
+            err = form.errors.as_data()
+            if 'phone' in err:
+                error = 'Недопустимый номер телефона!'
+            if 'name' in err:
+                error = 'Недопустимые символы в поле Имя!'
+            if 'surname' in err:
+                error = 'Недопустимые символы в поле Фамилия!'
+            if 'last_name' in err:
+                error = 'Недопустимые символы в поле Отчество!'
+            if 'age' in err:
+                error = 'Недопустимые значение в поле Возраст!'
+            if 'email' in err:
+                error = 'Недопустимые значение в поле Email!'
+            if 'address' in err:
+                error = 'Недопустимые значение в поле Адрес!'
+            if 'passport_id' in err:
+                error = 'Недопустимые значение в поле Номер пасспорта!'
+            if 'balance' in err:
+                error = 'Недопустимые значение в поле Баланс(Пример: XXX,XX)!'
 
     else:
         form = EditUserAdmin()
-    return render(request, "Admin/EditUser.html", {'form': form})
+    return render(request, "Admin/EditUser.html", {'form': form, 'error': error})
 
 
 def all_currency(request):
@@ -97,10 +138,14 @@ def all_currency(request):
 
 def edit_currency(request, id_cur):
     cur = models.Currency.objects.get(id=id_cur)
+    error = ''
 
     class EditCurrency(forms.Form):
-        cur_name = forms.CharField(label="Наименование валюты:", max_length=10, required=True, initial=cur.currency_name)
-        cur_value = forms.FloatField(label="Курс:", required=True, initial=cur.currency_value)
+        cur_name = forms.CharField(label="Наименование валюты:", max_length=3, min_length=3,
+                                   required=True, initial=cur.currency_name,
+                                   validators=[RegexValidator('^[A-Z]*$')])
+        cur_value = forms.FloatField(label="Курс:", required=True, initial=cur.currency_value,
+                                     validators=[RegexValidator('^[0-9]{1,6}(,|.){1,1}[0-9]{1,3}$')])
 
     if request.method == 'POST':
         form = EditCurrency(request.POST)
@@ -112,19 +157,27 @@ def edit_currency(request, id_cur):
 
             mes = "Информация о валюте с номером: " + str(cur.id) + " успешно изменена и сохранена"
             return render(request, 'Admin/Done.html', {'message': mes})
-
+        else:
+            err = form.errors.as_data()
+            if 'cur_name' in err:
+                error = 'В поле Название валюты недопустимые символы. Название должно ' \
+                        'состоять из трех заглавных букв латинского алфавита.'
+            if 'cur_value' in err:
+                error = 'Недопустимые значение в поле Курс (Пример: XX,XXX)!'
     else:
         form = EditCurrency()
-    return render(request, "Admin/EditCurrency.html", {'form': form})
+    return render(request, "Admin/EditCurrency.html", {'form': form, 'error': error})
 
 
 def monetization(request):
+    error = ''
     mon = models.Monetization.objects.get(id=1)
 
     class Monet(forms.Form):
-        describe_mon = forms.CharField(label="Описание:", required=True, max_length=150,
-                                           initial=mon.describe_mon, widget=forms.Textarea(attrs={'rows': '3'}))
-        value_mon = forms.FloatField(label="Размер:", required=True, initial=mon.value_mon)
+        describe_mon = forms.CharField(label="Описание:", required=True, max_length=150, min_length=5,
+                                       initial=mon.describe_mon, widget=forms.Textarea(attrs={'rows': '3'}))
+        value_mon = forms.FloatField(label="Размер:", required=True, initial=mon.value_mon,
+                                     validators=[RegexValidator('^[0-9]{1,6}(,|.){1,1}[0-9]{1,2}$')])
 
     if request.method == 'POST':
         form = Monet(request.POST)
@@ -136,7 +189,12 @@ def monetization(request):
 
             mes = 'Изменения приняты и сохранены'
             return render(request, 'Admin/Done.html', {'message': mes})
+
+        else:
+            err = form.errors.as_data()
+            if 'value_mon' in err:
+                error = 'Недопустимые значение в поле Размер(Пример: XX,XXX)!'
     else:
         form = Monet()
 
-    return render(request, 'Admin/Monetization.html', {'form': form})
+    return render(request, 'Admin/Monetization.html', {'form': form, 'error': error})

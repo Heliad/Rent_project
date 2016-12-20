@@ -1,5 +1,5 @@
-from django.http import HttpResponseRedirect
 from django.shortcuts import render
+
 from TOFI import models
 from .forms import *
 
@@ -14,6 +14,7 @@ def all_penalties(request):
 
 
 def add_penalty(request):
+    error = ''
     if request.method == 'POST':
         form = EditPenalty(request.POST)
 
@@ -26,10 +27,18 @@ def add_penalty(request):
             mes = "Новый штраф успешно добавлен в систему!"
             return render(request, "Moder/Done.html", {'message': mes})
 
+        else:
+            err = form.errors.as_data()
+            if 'kind_penalty' in err:
+                error = 'Недопустимые символы в поле Название!'
+            if 'describe_penalty' in err:
+                error = 'Недопустимые символы в поле Описание!'
+            if 'cost_penalty' in err:
+                error = 'Недопустимые значение в поле Размер штрафа(Пример: XX,XXX)!'
     else:
         form = EditPenalty()
 
-    return render(request, 'Moder/AddPenalty.html', {'form': form})
+    return render(request, 'Moder/AddPenalty.html', {'form': form, 'error': error})
 
 
 def delete_penalty(request, id_penalty):
@@ -41,12 +50,18 @@ def delete_penalty(request, id_penalty):
 
 
 def edit_penalty(request, id_penalty):
+    error = ''
     pen = models.Penalties.objects.get(id=id_penalty)
 
     class EditPenalty(forms.Form):
-        kind_penalty = forms.CharField(label="Название:", required=True, max_length=50, initial=pen.kind_penalty)
-        describe_penalty = forms.CharField(label="Описание:", required=True, max_length=150, initial=pen.describe_penalty, widget=forms.Textarea)
-        cost_penalty = forms.FloatField(label="Размер штрафа:", required=True, initial=pen.cost_penalty)
+        kind_penalty = forms.CharField(label="Название:", required=True, max_length=50, initial=pen.kind_penalty,
+                                       validators=[RegexValidator('^[а-яёЁА-Я\ ]*$')])
+        describe_penalty = forms.CharField(label="Описание:", required=True, max_length=150, widget=forms.Textarea,
+                                           initial=pen.describe_penalty,
+                                           validators=[RegexValidator('^[а-яЁёА-Я0-9\.\,\(\)\; ]*$')])
+        cost_penalty = forms.FloatField(label="Размер штрафа:", required=True, initial=pen.cost_penalty,
+                                        min_value=0, validators=[RegexValidator('^[0-9]{1,6}(,|.){1,1}[0-9]{1,2}$')]
+                                        )
 
     if request.method == 'POST':
         form = EditPenalty(request.POST)
@@ -63,9 +78,21 @@ def edit_penalty(request, id_penalty):
             pen.save()
             mes = "Описание и сумма штрафа сохранены!"
             return render(request, "Moder/Done.html", {'message': mes})
+        else:
+            err = form.errors.as_data()
+            if 'kind_penalty' in err:
+                error = 'Недопустимые символы в поле Название!'
+            if 'describe_penalty' in err:
+                error = 'Недопустимые символы в поле Описание!'
+            if 'cost_penalty' in err:
+                error = 'Недопустимые значение в поле Размер штрафа(Пример: XX,XXX)!'
 
     else:
         form = EditPenalty()
 
-    return render(request, "Moder/EditPenalty.html", {'form': form})
+    return render(request, "Moder/EditPenalty.html", {'form': form, 'error': error})
 
+
+def all_complaints(request):
+    complaints = models.Complaint.objects.all()
+    return render(request, 'Moder/AllComplaints.html', {'complaints': complaints})

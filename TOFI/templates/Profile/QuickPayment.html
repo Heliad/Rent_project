@@ -1,24 +1,30 @@
 {% extends "base.html" %}
 {% block title %}Оплата{% endblock %}
 {% block content %}
+    {% load filter_extra %}
     {% if payments %}
-        <div id="response">
-            <div class="center">
-                {% for i, payment, amount, to in payments %}
-                    <div>
+        <div class="card-columns">
+            {% for i in payments %}
+                <div class="card " style="max-width: 22rem;">
+                    <img class="card-img-top" src="/static/img/placeholder.svg" alt="Card image cap">
+                    <div class="card-block">
+                        <h4 class="card-title">Быстрый платеж №{{ i.id }}</h4>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Оплата: {{ i.user_payment|card_num_beautify }}</li>
+                        <li class="list-group-item">Сумма: {{ i.amount }} BYN</li>
+                    </ul>
+                    <div class="card-block">
                         {% if addautopayment %}
-                            <input type="button" onclick="func({{ i.id }})" class="button9"
-                                   value="Тип оплаты: {{ payment }}, цена: {{ amount }} BYN, Аренда: {{ to }}">
+                            <button onclick="func({{ i.id }})" class="btn btn-primary btn-block">Выбрать</button>
                         {% else %}
                             <form action="payment_info/{{ i.id }}">
-                                <input type="submit" class="button9"
-                                       value="Тип оплаты: {{ payment }}, цена: {{ amount }} BYN, Аренда: {{ to }}">
+                                <input type="submit" class="btn btn-primary btn-block" value="Подробно">
                             </form>
                         {% endif %}
-
+                    </div>
                     </div>
                 {% endfor %}
-            </div>
         </div>
     {% else %}
         <div class="center">Быстрых платежей нет</div>

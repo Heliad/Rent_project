@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import datetime
 import json
 
 from django.contrib.auth import authenticate, login
@@ -37,6 +36,7 @@ class AddRent(View):
         return render(request, self.template_name, {'form': form})
 
     def post(self, request):
+        error = ''
         form = self.form_class(request.POST)
         print(request.POST)
         if form.is_valid():
@@ -53,9 +53,28 @@ class AddRent(View):
             models.Rent.objects.create(name=name, address=address, min_rent_time=min_rent_time, area=area,
                                        date_of_construction=date_of_construction, creation_date=creation_date,
                                        other=other, cost=cost, user_login=cur_user.id)
-
             return HttpResponseRedirect('/')
-        return render(request, self.template_name, {'form': form})
+
+        else:
+            err = form.errors.as_data()
+            print(err)
+            if 'name' in err:
+                error = 'Недопустимые символы в поле Имя!'
+            if 'address' in err:
+                error = 'Недопустимые символы в поле Адрес!'
+            if 'min_rent_time' in err:
+                error = 'Время ареннды должно быть от 1 до 365 дней!'
+            if 'area' in err:
+                error = 'Размер площади должен быть от 3 до 1000 кв.м.!'
+            if 'date_of_construction' in err:
+                error = 'Год постройки должен быть от 1950 до 2020 года!'
+            if 'cost' in err:
+                error = 'Цена должна быть в диапозоне от 1 до 1млн!'
+            if 'payment_interval' in err:
+                error = 'Интервал оплаты должен быть от 1 до 30 дней!'
+            if 'other' in err:
+                error = 'Недопустимые символы в описании дома!'
+        return render(request, self.template_name, {'form': form, 'error': error})
 
 
 class Registration(View):
@@ -97,9 +116,8 @@ class Registration(View):
 
         else:
             err = form.errors.as_data()
-            print(err)
             if 'password' in err:
-                error = 'Пароль должен содержать в себе арабские цифры и латинские буквы!'
+                error = 'Пароль должен содержать в себе арабские цифры и латинские буквы, нижнего и верхнего регистра!'
             if 'phone' in err:
                 error = 'Недопустимый номер телефона!'
             if 'username' in err:
@@ -116,6 +134,8 @@ class Registration(View):
                 error = 'Недопустимые значение в поле Email!'
             if 'address' in err:
                 error = 'Недопустимые значение в поле Адрес!'
+            if 'passport_id' in err:
+                error = 'Недопустимые значение в поле Номер пасспорта!'
         return render(request, self.template_name, {'form': form, 'error': error})
 
 
@@ -127,12 +147,25 @@ class Login(FormView):
     def get(self, request, *args, **kwargs):
         if not request.user.is_anonymous:
             return HttpResponseRedirect("/")
+
         return render(request, self.template_name,  {'form': self.form_class})
 
     def form_valid(self, form):
         self.user = form.get_user()
         login(self.request, self.user)
         return super(Login, self).form_valid(form)
+
+    def form_invalid(self, form):
+        login_user = form.cleaned_data['username']
+        try:
+            user = models.MyUser.objects.get(username=login_user)
+            if not user.is_active:
+                return render(self.request, 'BlockedAcc.html', {'us': user.username, 'reason': user.reason_block})
+        except:
+            pass
+
+        error = 'Введы некорректные Логин и/или Пароль. Оба поля чувствительны к верхнему регистру!'
+        return render(self.request, 'login.html', {'form': form, 'error': error})
 
 
 def logout_view(request):
@@ -155,7 +188,7 @@ def make_rent(request, number):
     if request.user.is_anonymous:
         return HttpResponseRedirect("/login")
     rent = models.Rent.objects.all().get(id=number)
-    user = models.MyUser.objects.all().get(id=str(rent.user_login))
+    user = models.MyUser.objects.all().get(id=str(rent.user_login.id))
 
     class MakeMessage(forms.Form):
         text_message = 'Запрос на аренду вашего дома под номером ' + str(number) + " (" + str(
@@ -163,7 +196,7 @@ def make_rent(request, number):
                        str(request.user.last_name) + "."
 
         text_message = forms.CharField(widget=forms.Textarea(attrs={'readonly':'readonly', 'rows': '2'}),
-                                       label="Содержание:",max_length=100, required=True, initial=text_message)
+                                       label="Содержание:", max_length=100, required=True, initial=text_message)
         text_more = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Введите сопроводительное письмо...', 'rows': '4'}),
                                     label="Дополнительно:", max_length=100, required=True)
 
@@ -230,3 +263,60 @@ def comment(request):
         response = {'com': com, 'user': request.user.username, 'date': datetime.date.today().strftime('%b. %d, %Y')}
         response = json.dumps(response, ensure_ascii=False)
         return HttpResponse(response, content_type="text/html; charset=utf-8")
+
+
+def make_complaint(request, id_user_to):
+    if id_user_to == '0':
+        class MakeComplaint(forms.Form):
+            describe = forms.CharField(label="Опишите проблему:", max_length=150, required=True,
+                                       widget=forms.Textarea(attrs={'rows': '4'}))
+
+        if request.method == 'POST':
+            form = MakeComplaint(request.POST)
+
+            if form.is_valid():
+                if request.user.is_anonymous:
+                    login_user_from = "Guest"
+                else:
+                    login_user_from = request.user.username
+                login_user_to = "message for moder"
+                describe = form.cleaned_data['describe']
+                models.Complaint.objects.create(login_user_from=login_user_from, login_user_to=login_user_to,
+                                                describe=describe, date=datetime.date.today())
+                mes = "Ваше письмо отправлено на сервер и будет рассмотрено в ближайшее время."
+
+                return render(request, 'Profile/Thanks.html', {'mes': mes})
+
+        else:
+            form = MakeComplaint()
+        return render(request, 'MakeComplaint.html', {'form': form})
+
+    else:
+        if request.user.is_anonymous:
+            return HttpResponseRedirect("/login")
+        user_to = models.MyUser.objects.get(id=id_user_to)
+
+        class MakeComplaint(forms.Form):
+            login_user_to = forms.CharField(label="Жалоба на :", max_length=100, required=True,
+                                            widget=forms.TextInput(attrs={'readonly': 'readonly'}),
+                                            initial=user_to.username)
+            describe = forms.CharField(label="Опишите жалобу:", max_length=150, required=True,
+                                       widget=forms.Textarea(attrs={'rows': '4'}))
+
+        if request.method == 'POST':
+            form = MakeComplaint(request.POST)
+
+            if form.is_valid():
+                login_user_from = request.user.username
+                login_user_to = user_to.username
+                describe = form.cleaned_data['describe']
+                models.Complaint.objects.create(login_user_from=login_user_from, login_user_to=login_user_to,
+                                                describe=describe, date=datetime.date.today())
+                mes = "Ваша жалоба на пользователя " + user_to.username + " отправлена на сервер и " \
+                                                                          "будет рассмотрена в ближайшее время."
+
+                return render(request, 'Profile/Thanks.html', {'mes': mes})
+
+        else:
+            form = MakeComplaint()
+        return render(request, 'MakeComplaint.html', {'form': form})

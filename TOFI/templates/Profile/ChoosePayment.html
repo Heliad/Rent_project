@@ -1,28 +1,23 @@
-{% extends "base.html" %}
-{% block title %}Оплата{% endblock %}
-{% block content %}
-    {% csrf_token %}
-    <script src="/static/javascript/post_choose_payment.js"></script>
-    <div class="center">
-            <table>
-                <tr>
-                    <td class="padding">Выберите способ оплаты</td>
-                </tr>
+<div id="PayRent">
+    {% for card, user_card in cards %}
+        <input type="button" class="button8" onclick="pay_rent({{ user_card.card_num }})" value="{{ card }}">
+    {% endfor %}
+    <input type="button" class="button8" onclick="pay_rent('{{ request.user.username }}')" value="Кошелек">
+    <table>
         <tr>
-            <td class="padding">Сохранить текущий платеж</td>
+            <td>Сохранить платеж</td>
             <td>
-                <input type="checkbox" id="check_box" title="Сохранить текущий платеж">
+                <input class="narrow" type="checkbox" id="check_box" title="Сохранить текущий платеж">
+            </td>
+            <td>
+                <input class="form-control height70 formValid" onfocus="amount_onfocus()" oninput="amount_oninput()"
+                       type="text" id="amount" placeholder="Сумма" title="Сумма">
             </td>
         </tr>
     </table>
-    </div>
-{% for card, card_num in cards %}
-    <div class="narrow-center">
-    <input type="button" class="button8" onclick="func({{ card.card_num }}, '{{ balance_to }}', {{ amount }}, {{ id }})" value="{{ card_num }}">
-    </div>
-{% endfor %}
-    <div class="narrow-center">
-        <input type="button" class="button8" onclick="func('{{ request.user.username }}', '{{ balance_to }}', {{ amount }}, {{ id }})" value="Кошелек">
-    </div>
+    <div id="mon_notification" class="light_gray"></div>
+    <div id="rent" class="hidden"></div>
+    <div id="user" class="hidden"></div>
+    <div id="mon_value" class="hidden"></div>
     <div id="response" class="narrow-center"></div>
-{% endblock %}
+</div>

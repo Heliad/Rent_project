@@ -1,28 +1,34 @@
 {% extends "base.html" %}
 {% block title %}Автоматический платёж{% endblock %}
 {% block content %}
+    {% load filter_extra %}
+    {% if auto_payments %}
+        <div class="card-columns">
+            <div>
+                {% for ap in auto_payments %}
+                    <div class="card " style="max-width: 22rem;">
+                        <img class="card-img-top" src="/static/img/placeholder.svg" alt="Card image cap">
+                        <div class="card-block">
+                            <h4 class="card-title">Автоматический платёж №{{ ap.id }}</h4>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Дата оплаты: {{ ap.next_payment_date }}</li>
+                            <li class="list-group-item">Интервал: {{ ap.payment_interval }} дней</li>
+                        </ul>
+                        <div class="card-block">
+                            <a href="about_auto_payment/{{ ap.id }}" class="btn btn-primary btn-block">Выбрать</a>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="card " style="max-width: 22rem;">
+                    <div class="card-block">
+                        <a href="{% url 'AddAutoPayment' %}" class="btn btn-primary btn-block">Добавить автооплату</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="center">Автоплатежей нет</div>
+    {% endif %}
     {% csrf_token %}
-    <table class="center">
-        {% if auto_payments %}
-            {% for ap in auto_payments %}
-                <tr class="padding">
-                    <td class="padding">
-                        <a href="about_auto_payment/{{ ap.id }}">Автоматический платёж №{{ ap.id }}</a>
-                    </td>
-                </tr>
-            {% endfor %}
-        {% else %}
-            <tr class="padding">
-                <td class="padding">
-                    У вас нет автоматических платежей
-                </td>
-            </tr>
-        {% endif %}
-        <tr class="padding">
-            <td class="padding">
-                <a href="{% url 'AddAutoPayment' %}" class="button7">Добавить автооплату</a>
-            </td>
-        </tr>
-    </table>
-
 {% endblock %}

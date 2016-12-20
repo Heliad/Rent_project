@@ -1,18 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Добавить штраф{% endblock %}
+{% block title %}Подача жалобы на пользователя{% endblock %}
 {% block content %}
-    {% if error %}
-        <div class="left">
-            <table>
-                <tr>
-                    <td>
-                        <font color="red">{{ error }}</font>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    {% endif %}
-
     <form method="POST" class="center">
         {% csrf_token %}
         <table>
@@ -24,10 +12,9 @@
             {% endfor %}
             <tr>
                 <td>
-                    <button type="submit" class="button7">Добавить</button>
+                    <button type="submit" class="button7">Отправить</button>
                 </td>
             </tr>
         </table>
     </form>
-
 {% endblock %}
