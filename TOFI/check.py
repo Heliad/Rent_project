@@ -21,7 +21,7 @@ def check_rent_number_pay():
     # пользователь уже должен был выплатить
     for r in all_done_rent:
         # Вычисление
-        rent = models.Rent.objects.get(id=r.id_house)
+        rent = models.Rent.objects.get(id=r.id_house.id)
         period_rent = rent.min_rent_time
         raw = datetime.date.today() - r.date_rent
         pay_number = raw.days // period_rent

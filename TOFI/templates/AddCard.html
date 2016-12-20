@@ -1,21 +1,18 @@
-{% extends "base.html" %}
-{% block title %}Добавить карту{% endblock %}
-{% block content %}
-    <form method="POST" class="center">
-        {% csrf_token %}
-        <table>
+{% csrf_token %}
+<div>
             {% for field in form %}
-                <tr>
-                    <td class="padding">{{ field.label }}</td>
-                    <td>{{ field }}</td>
-                </tr>
+                <div class="row">
+                    <div class="col-md-6">{{ field.label }}</div>
+                    <div class="col-md-6">{{ field }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h6>
+                            <small class="text-danger" id={{ field.name }}></small>
+                        </h6>
+                    </div>
+                </div>
             {% endfor %}
-            <tr>
-                <td>
-                    <button type="submit" class="button7">Добавить карту</button>
-                </td>
-            </tr>
-        </table>
-    </form>
-
-{% endblock %}
+</div>
+<button id="butRefill" class="btn btn-outline-success btn-block" onclick="add_card()">Добавить карту</button>
+<div id="response"></div>

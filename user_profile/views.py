@@ -1,4 +1,5 @@
 import json
+
 from django.contrib.auth import logout
 from django.contrib.auth.hashers import check_password
 from django.http import HttpResponse
@@ -34,7 +35,14 @@ def profile(request):
     my_rents = models.DoneRent.objects.select_related('id_house__user_login').filter(id_user_renter=id_user)
     print(my_rents)
     penalties = models.DonePenalty.objects.filter(id_user_for=request.user.id)
-    return render(request, "Profile.html", {'cards': cards, 'new': new, 'number': number, 'penalties': penalties})
+    c = [[i, j] for i, j in zip(cards, user_cards)]
+    print(c)
+    print(request.user.balance)
+    balance = round(float(request.user.balance), 2)
+    print(balance)
+    mon = models.Monetization.objects.get(id=1).value_mon
+    return render(request, "Profile.html", {'cards': c, 'new': new, 'number': number, 'penalties': penalties,
+                                            'my_rents': my_rents, 'balance': balance, 'mon': mon})
 
 
 def add_card(request):
@@ -43,10 +51,22 @@ def add_card(request):
         return HttpResponseRedirect("/login")
     activate('ru')
     class AddCard(forms.Form):
-        card_num = forms.CharField(label="Номер карты/Card number", max_length=16, required=True)
-        period_validity = forms.CharField(label="Срок действия (ММГГ)", max_length=5, required=True)
-        name_card_owner = forms.CharField(label="Имя держателя карты", max_length=50, required=True)
-        CVC2_CVV = forms.CharField(label="CVC2/CVV", max_length=3, required=True)
+        card_num = forms.CharField(label="Номер карты/Card number:",
+                                   widget=forms.TextInput(attrs={'class': 'form-control height70'}),
+                                   max_length=16, min_length=16,
+                                   required=True, validators=[RegexValidator('^[0-9]*$')])
+        period_validity = forms.CharField(label="Срок действия (ММ/ГГ):",
+                                          max_length=5, min_length=5,
+                                          required=True, validators=[RegexValidator('^[0-9]{2,2}/{1,1}[0-9]*$')],
+                                          widget=forms.TextInput(attrs={'placeholder': 'ММ/ГГ',
+                                                                        'class': 'form-control height70'}))
+        name_card_owner = forms.CharField(label="Имя держателя карты:",
+                                          widget=forms.TextInput(attrs={'class': 'form-control height70'}),
+                                          max_length=50, required=True,
+                                          validators=[RegexValidator('^[a-zA-Z\ ]*$')])
+        CVC2_CVV = forms.CharField(label="CVC2/CVV:", widget=forms.TextInput(attrs={'class': 'form-control height70'}),
+                                   max_length=3, min_length=3, required=True,
+                                   validators=[RegexValidator('^[0-9]*$')])
 
     if request.method == 'POST':
         form = AddCard(request.POST)
@@ -61,20 +81,43 @@ def add_card(request):
                     if i.card_num == card_num:
                         return render(request, 'Profile/Thanks.html', {'mes': 'карта уже добавлена'})
                 request.user.user_card_id.add(models.UserCard.objects.get(card_num=card_num))
-                return render(request, 'Profile/Thanks.html', {'mes': 'карта успешно добавлена'})
+                response = json.dumps({'mes': 'Карта успешно добавлена', 'status': True}, ensure_ascii=False)
             else:
-                return render(request, 'Profile/Thanks.html', {'mes': 'Неверные данные', 'redirect_address': 'profile'})
+                response = json.dumps({'mes': 'Введены неверные данные', 'status': False}, ensure_ascii=False)
+        else:
+            val_err = form.errors.as_data()
+            error = list()
+            for err_name, err_mes in val_err.items():
+                if err_name == 'card_num':
+                    for e in err_mes:
+                        error.append({'card_num': e.messages})
+                elif err_name == 'period_validity':
+                    for e in err_mes:
+                        error.append({'period_validity': e.messages})
+                elif err_name == 'name_card_owner':
+                    for e in err_mes:
+                        error.append({'name_card_owner': e.messages})
+                elif err_name == 'CVC2_CVV':
+                    for e in err_mes:
+                        error.append({'CVC2_CVV': e.messages})
+            response = json.dumps({'errors': error, 'status': False}, ensure_ascii=False)
+        return HttpResponse(response)
     else:
         form = AddCard()
-
-    return render(request, 'Profile/RefillBalance.html', {'form': form})
+        return render(request, 'AddCard.html', {'form': form})
 
 
 def refillBalance(request):
-    if request.user.is_anonymous:
-        return HttpResponseRedirect("/login")
-    if request.method == 'POST':
-        form = RefillBalance(request.POST)
+    if request.method == 'GET':
+        cards = list()
+        for card in [str(i.card_num) for i in request.user.user_card_id.all()]:
+            cards.append(card[:4] + ' XXXX XXXX ' + card[-4:])
+        user_cards = request.user.user_card_id.all()
+        c = [[i, j] for i, j in zip(cards, user_cards)]
+        return render(request, "Profile/RefillBalance.html", {'cards': c})
+    elif request.method == 'POST':
+        c, m = t.Transaction(request.POST['size'], request.POST['card_from'],
+                             request.user, False).make_transaction()
 
         response = {"message": m, "status": c}
         models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Пополнение',
@@ -82,23 +125,8 @@ def refillBalance(request):
                                                                       str(request.POST['size']) + " BYN. " +
                                                                       str(m), date_operation=datetime.date.today())
 
-            if t.Check(card_num, period_validity, name_card_owner, CVC2_CVV).check_card():
-                t.Transaction(size, card_num, request.user).make_transaction()
-
-                # Логирование операции пополнения баланса
-                models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Пополнение баланса',
-                                                           describe_operation="Баланс успешно пополнен на " + str(
-                                                               size) + " BYN",
-                                                           date_operation=datetime.date.today())
-
-                context = {'mes': request.user.name + ", баланс успешно пополнен на " + str(size) + " BYN"}
-                return render(request, 'Profile/Thanks.html', context)
-            else:
-                return render(request, 'Profile/Thanks.html', {'mes': 'message'})
-    else:
-        form = RefillBalance()
-
-    return render(request, 'Profile/RefillBalance.html', {'form': form})
+        response = json.dumps(response, ensure_ascii=False)
+        return HttpResponse(response, content_type="text/html; charset=utf-8")
 
 
 def unfillBalance(request):
