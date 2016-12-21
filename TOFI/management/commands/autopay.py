@@ -31,7 +31,6 @@ class Command(BaseCommand):
                     drent.save()
                     pay.next_payment_date += datetime.timedelta(days=pay.payment_interval)
                     pay.save()
-
                     # Логирование автоматического платежа платежа
                     user_id = models.QuickPayment.objects.get(id=pay.quick_payment_id).username_id
                     amount = models.QuickPayment.objects.get(id=pay.quick_payment_id).amount

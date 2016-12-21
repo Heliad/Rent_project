@@ -113,8 +113,15 @@ AUTH_USER_MODEL = 'TOFI.MyUser'
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
 SECURE_SSL_REDIRECT = False
-
 #SESSION_COOKIE_SECURE = True
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = 'NandSRenter@mail.ru'
+EMAIL_HOST_USER = 'NandSRenter@mail.ru'
+EMAIL_HOST_PASSWORD = '1234567890qwertY'
 
 LANGUAGE_CODE = 'en-us'
 

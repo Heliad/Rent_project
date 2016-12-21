@@ -10,6 +10,7 @@ from django.utils.translation import activate
 from TOFI import check as ch
 from TOFI import models
 from TOFI import transaction as t
+from TOFI import send_mail as sm
 from TOFI.forms import *
 
 
@@ -124,6 +125,8 @@ def refillBalance(request):
                                                                       str(request.POST['size']) + " BYN. " + str(m),
                                                    date_operation=datetime.date.today(), status=c,
                                                    amount=request.POST['size'])
+        sm.Sender("Пополнение баланса", "Пополнение баланса на сумму " + str(request.POST['size']) + " BYN. " + str(m),
+                  request.user.email).sender()
 
         response = json.dumps(response, ensure_ascii=False)
         return HttpResponse(response, content_type="text/html; charset=utf-8")
@@ -153,7 +156,8 @@ def unfillBalance(request):
                                                                size) + " BYN, успешно проведён.",
                                                            date_operation=datetime.date.today(), status=True,
                                                            amount=size)
-
+                sm.Sender("Вывод средств", "Вывод средств на сумму " + str(size) + " BYN, успешно проведён.",
+                          request.user.email).sender()
                 mes = request.user.name + ", средства на сумму " + str(size)+ " BYN, успешно выведены на карту"
             else:
                 mes = "Введены неверные данные!"
