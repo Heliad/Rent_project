@@ -209,8 +209,9 @@ def aboutHouse(request, number):
 
 
 def make_rent(request, number):
-    if request.user.is_anonymous:
+    if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
+
     rent = models.Rent.objects.all().get(id=number)
     user = models.MyUser.objects.all().get(id=str(rent.user_login.id))
 
@@ -247,6 +248,7 @@ def make_rent(request, number):
 
 
 def aboutUser(request, login_id):
+
     if request.method == 'GET':
         userList = list(models.MyUser.objects.all())
         for user in userList:
@@ -268,6 +270,9 @@ def aboutUser(request, login_id):
         context.update({'com': list(reversed(user_comments))})
         return render(request, "AboutUser.html", context)
     else:
+        if request.user.is_anonymous or not request.user.is_active:
+            return HttpResponseRedirect("/login")
+
         com = request.POST['comment']
         models.CommentUser.objects.create(id_user_about=login_id, id_user_from=request.user.id,
                                           text_comment=com, date_comment=datetime.date.today())
@@ -277,6 +282,9 @@ def aboutUser(request, login_id):
 
 
 def comment(request):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     if request.method == 'GET':
         context = {'com': list(reversed([i for i in list(models.Comment.objects.all())]))}
         return render(request, "Comment.html", context)
@@ -290,6 +298,8 @@ def comment(request):
 
 
 def make_complaint(request, id_user_to):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
 
     if id_user_to == '0':
         class MakeComplaint(forms.Form):

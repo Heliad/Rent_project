@@ -1,18 +1,28 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from TOFI import models
 from .forms import *
 
 
 def main_moder(request):
+    if request.user.is_anonymous or not request.user.is_moder:
+        return HttpResponseRedirect("/login")
+
     return render(request, 'Moder/MainModer.html')
 
 
 def all_penalties(request):
+    if request.user.is_anonymous or not request.user.is_moder:
+        return HttpResponseRedirect("/login")
+
     pen = models.Penalties.objects.all()
     return render(request, 'Moder/AllPenalties.html', {'pen': pen})
 
 
 def add_penalty(request):
+    if request.user.is_anonymous or not request.user.is_moder:
+        return HttpResponseRedirect("/login")
+
     error = ''
     if request.method == 'POST':
         form = EditPenalty(request.POST)
@@ -41,6 +51,9 @@ def add_penalty(request):
 
 
 def delete_penalty(request, id_penalty):
+    if request.user.is_anonymous or not request.user.is_moder:
+        return HttpResponseRedirect("/login")
+
     pen = models.Penalties.objects.get(id=id_penalty)
     pen.delete()
 
@@ -49,6 +62,9 @@ def delete_penalty(request, id_penalty):
 
 
 def edit_penalty(request, id_penalty):
+    if request.user.is_anonymous or not request.user.is_moder:
+        return HttpResponseRedirect("/login")
+
     error = ''
     pen = models.Penalties.objects.get(id=id_penalty)
 
@@ -93,20 +109,30 @@ def edit_penalty(request, id_penalty):
 
 
 def all_complaints(request):
+    if request.user.is_anonymous or not request.user.is_moder:
+        return HttpResponseRedirect("/login")
+
     complaints = models.Complaint.objects.all()
     return render(request, 'Moder/AllComplaints.html', {'complaints': complaints})
 
 
 def all_done_rents(request):
+    if request.user.is_anonymous or not request.user.is_moder:
+        return HttpResponseRedirect("/login")
+
     all_done_rents = models.DoneRent.objects.all()
     return render(request, 'Moder/AllDoneRents.html', {'all_done_rents': all_done_rents})
 
 
 def about_done_rent(request, id_done_rent):
+    if request.user.is_anonymous or not request.user.is_moder:
+        return HttpResponseRedirect("/login")
+
     done_rent = models.DoneRent.objects.get(id=id_done_rent)
     name_house = models.Rent.objects.get(id=done_rent.id_house_id).name
     login_renter = models.MyUser.objects.get(id=done_rent.id_user_renter).username
     login_owner = models.MyUser.objects.get(id=done_rent.id_user_owner_id).username
+
     return render(request, 'Moder/AboutDoneRent.html', {'done_rent': done_rent, 'name_house': name_house,
                                                         'login_renter': login_renter, 'login_owner': login_owner,
-                                                        'id_rent': done_rent.id_house_id} )
+                                                        'id_rent': done_rent.id_house_id})

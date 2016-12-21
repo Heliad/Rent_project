@@ -16,7 +16,7 @@ from TOFI.forms import *
 def profile(request):
     ch.check_rent_number_pay()
 
-    if request.user.is_anonymous:
+    if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
     cards = list()
     for card in [str(i.card_num) for i in request.user.user_card_id.all()]:
@@ -33,23 +33,19 @@ def profile(request):
     user_cards = request.user.user_card_id.all()
     id_user = request.user.id
     my_rents = models.DoneRent.objects.select_related('id_house__user_login').filter(id_user_renter=id_user)
-    print(my_rents)
     penalties = models.DonePenalty.objects.filter(id_user_for=request.user.id)
     c = [[i, j] for i, j in zip(cards, user_cards)]
-    print(c)
-    print(request.user.balance)
     balance = round(float(request.user.balance), 2)
-    print(balance)
     mon = models.Monetization.objects.get(id=1).value_mon
     return render(request, "Profile.html", {'cards': c, 'new': new, 'number': number, 'penalties': penalties,
                                             'my_rents': my_rents, 'balance': balance, 'mon': mon})
 
 
 def add_card(request):
-    error = ''
-    if request.user.is_anonymous:
+    if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
     activate('ru')
+
     class AddCard(forms.Form):
         card_num = forms.CharField(label="Номер карты/Card number:",
                                    widget=forms.TextInput(attrs={'class': 'form-control height70'}),
@@ -108,6 +104,9 @@ def add_card(request):
 
 
 def refillBalance(request):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     if request.method == 'GET':
         cards = list()
         for card in [str(i.card_num) for i in request.user.user_card_id.all()]:
@@ -130,9 +129,10 @@ def refillBalance(request):
 
 
 def unfillBalance(request):
-    error, mes = '', ''
-    if request.user.is_anonymous:
+    if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
+
+    error, mes = '', ''
     if request.method == 'POST':
         form = RefillBalance(request.POST)
 
@@ -178,8 +178,9 @@ def unfillBalance(request):
 
 
 def profileChangePassword(request):
-    if request.user.is_anonymous:
+    if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
+
     error = ''
     if request.method == 'POST':
         form = ChangePassword(request.POST)
@@ -213,8 +214,9 @@ def profileChangePassword(request):
 
 
 def deleteMySelf(request):
-    if request.user.is_anonymous:
+    if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
+
     error = ''
     if request.method == 'POST':
         form = DeleteMySelf(request.POST)
@@ -238,7 +240,7 @@ def deleteMySelf(request):
 
 
 def edit_profile(request):
-    if request.user.is_anonymous:
+    if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
 
     error = ''
@@ -316,8 +318,9 @@ def edit_profile(request):
 
 
 def mails(request):
-    if request.user.is_anonymous:
-        return HttpResponseRedirect("/")
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     mails = models.MessageStatusRent.objects.all().filter(id_user_to=request.user.id)
 
     for mail in mails:
@@ -327,6 +330,9 @@ def mails(request):
 
 
 def accept_rent(request, id_mes):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     message = models.MessageStatusRent.objects.get(id=id_mes)
     house = models.Rent.objects.get(id=message.id_rent)
 
@@ -347,6 +353,9 @@ def accept_rent(request, id_mes):
 
 
 def reject_rent(request, id_mes):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     if request.method == 'POST':
         form = RejectRent(request.POST)
 
@@ -371,18 +380,27 @@ def reject_rent(request, id_mes):
 
 
 def all_rents_renter(request):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     id_user = request.user.id
     my_rents = models.DoneRent.objects.all().filter(id_user_renter=id_user)
     return render(request, 'Profile/AllRentsRenter.html', {'my_rents': my_rents})
 
 
 def all_rents_owner(request):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     id_user = request.user.id
     my_rents = models.DoneRent.objects.all().filter(id_user_owner=id_user)
     return render(request, 'Profile/AllRentsOwner.html', {'my_rents': my_rents})
 
 
 def choose_payment(request, id_donerent):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     if request.method == "GET":
         cards = list()
         for card in [str(i.card_num) for i in request.user.user_card_id.all()]:
@@ -429,6 +447,9 @@ def choose_payment(request, id_donerent):
 
 
 def extract_balance(request):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     if request.method == 'POST':
         form = ExtractBalance(request.POST)
 
@@ -449,6 +470,9 @@ def extract_balance(request):
 
 
 def quick_payment(request):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     if request.method == 'GET':
         list_payments = list()
         payments = models.QuickPayment.objects.filter(username=request.user)
@@ -469,6 +493,9 @@ def quick_payment(request):
 
 
 def quick_payment_info(request, id):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     if request.method == 'GET':
         payment = models.QuickPayment.objects.get(id=id)
         rent = []
@@ -497,11 +524,17 @@ def quick_payment_info(request, id):
 
 
 def my_penalties(request):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     my_pen = models.DonePenalty.objects.filter(id_user_for=request.user.id)
     return render(request, 'Profile/MyPenalties.html', {'pen': my_pen})
 
 
 def make_pay_penalty(request, id_penalty):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     my_pens = models.DonePenalty.objects.filter(id=id_penalty)
 
     pen = my_pens.get(id=id_penalty)
@@ -533,12 +566,18 @@ def make_pay_penalty(request, id_penalty):
 
 
 def my_all_houses_owner(request):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     id_user = request.user.id
     houses = models.Rent.objects.filter(user_login=id_user)
     return render(request, 'Profile/MyAllHousesOwner.html', {'houses': houses})
 
 
 def edit_my_house(request, id_rent):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     rent = models.Rent.objects.get(id=id_rent)
 
     class EditRent(forms.Form):
@@ -572,6 +611,9 @@ def edit_my_house(request, id_rent):
 
 
 def delete_my_house(request, id_rent):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     rent = models.Rent.objects.get(id=id_rent)
     if rent.status_rent:
         message = 'Дом под названием ' + rent.name + ' успешно удален!'
@@ -582,6 +624,9 @@ def delete_my_house(request, id_rent):
 
 
 def auto_payment(request):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     auto_payments = list()
     try:
         pay_id = models.QuickPayment.objects.filter(username_id=request.user.id)
@@ -596,6 +641,9 @@ def auto_payment(request):
 
 
 def about_auto_payment(request, id_auto):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     id_done_rent = models.AutoPayment.objects.get(id=id_auto).id
     house = models.Rent.objects.get(id=id_done_rent)
     login_owner = models.MyUser.objects.get(id=id_done_rent.id_user_owner).username
@@ -607,6 +655,9 @@ def about_auto_payment(request, id_auto):
 
 
 def add_auto_payment(request):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     class AutoPayForm(forms.Form):
         quick_payment = forms.IntegerField(widget=forms.HiddenInput(), label='Платеж:')
         pay_date = forms.DateField(input_formats=['%d/%m/%Y'],
@@ -645,17 +696,26 @@ def add_auto_payment(request):
 
 
 def delete_card(request, id):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     request.user.user_card_id.remove(models.UserCard.objects.get(id=id))
     return HttpResponseRedirect('/profile')
 
 
 def delete_quick_payment(request, id):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     qp = models.QuickPayment.objects.get(id=id)
     qp.delete()
     return render(request, 'Profile/Thanks.html', {'mes': "Быстрый платеж успешно удалён."})
 
 
 def edit_quick_payment(request, id):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     qp = models.QuickPayment.objects.get(id=id)
     done_rent = models.DoneRent.objects.get(id=qp.rent_id)
     house_name = models.Rent.objects.get(id=done_rent.id_house_id).name
@@ -688,12 +748,18 @@ def edit_quick_payment(request, id):
 
 
 def delete_auto_payment(request, id):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     ap = models.AutoPayment.objects.get(id=id)
     ap.delete()
     return render(request, 'Profile/Thanks.html', {'mes': "Автоплатёж успешно удалён."})
 
 
 def edit_auto_payment(request, id):
+    if request.user.is_anonymous or not request.user.is_active:
+        return HttpResponseRedirect("/login")
+
     ap = models.AutoPayment.objects.get(id=id)
 
     class EditAutoPayment(forms.Form):

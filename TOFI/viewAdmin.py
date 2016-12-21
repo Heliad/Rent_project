@@ -1,3 +1,4 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from TOFI import models
 from TOFI import transaction as t
@@ -5,15 +6,24 @@ from .forms import *
 
 
 def main_admin(request):
+    if request.user.is_anonymous or not request.user.is_admin:
+        return HttpResponseRedirect("/login")
+
     return render(request, 'Admin/MainAdmin.html')
 
 
 def blocked_accounts(request):
+    if request.user.is_anonymous or not request.user.is_admin and not request.user.is_moder:
+        return HttpResponseRedirect("/login")
+
     blocked_accounts = models.MyUser.objects.all().exclude(is_admin=True)
     return render(request, 'Admin/BlockedAccounts.html', {'blocked_accounts': blocked_accounts})
 
 
 def create_block(request, id_user):
+    if request.user.is_anonymous or not request.user.is_admin and not request.user.is_moder:
+        return HttpResponseRedirect("/login")
+
     if request.method == 'POST':
         form = CreateBlock(request.POST)
 
@@ -33,6 +43,9 @@ def create_block(request, id_user):
 
 
 def delete_block(request, id_user):
+    if request.user.is_anonymous or not request.user.is_admin and not request.user.is_moder:
+        return HttpResponseRedirect("/login")
+
     user = models.MyUser.objects.get(id=id_user)
     user.reason_block = ''
     user.is_active = 1
@@ -42,6 +55,7 @@ def delete_block(request, id_user):
 
 
 def search_by_id(request):
+
     class SearchId(forms.Form):
         field_id = forms.IntegerField(label="Введите Id пользователя:", required=True, min_value=1, max_value=1000000)
 
@@ -65,6 +79,9 @@ def search_by_id(request):
 
 
 def edit_user_admin(request, id_user):
+    if request.user.is_anonymous or not request.user.is_admin and not request.user.is_moder:
+        return HttpResponseRedirect("/login")
+
     error = ''
     user_for_edit = models.MyUser.objects.get(id=id_user)
 
@@ -147,11 +164,17 @@ def edit_user_admin(request, id_user):
 
 
 def all_currency(request):
+    if request.user.is_anonymous or not request.user.is_admin:
+        return HttpResponseRedirect("/login")
+
     cur = models.Currency.objects.all()
     return render(request, "Admin/AllCurrency.html", {'cur': cur})
 
 
 def edit_currency(request, id_cur):
+    if request.user.is_anonymous or not request.user.is_admin:
+        return HttpResponseRedirect("/login")
+
     cur = models.Currency.objects.get(id=id_cur)
     error = ''
 
@@ -185,6 +208,9 @@ def edit_currency(request, id_cur):
 
 
 def monetization(request):
+    if request.user.is_anonymous or not request.user.is_admin:
+        return HttpResponseRedirect("/login")
+
     error = ''
     mon = models.Monetization.objects.get(id=1)
 
@@ -216,6 +242,9 @@ def monetization(request):
 
 
 def refill_balance_admin(request, id_user):
+    if request.user.is_anonymous or not request.user.is_admin and not request.user.is_moder:
+        return HttpResponseRedirect("/login")
+
     error = ''
     if request.method == 'POST':
         form = RefillBalance(request.POST)
