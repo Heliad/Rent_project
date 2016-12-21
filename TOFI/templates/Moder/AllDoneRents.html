@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Все операции{% endblock %}
+{% block content %}
+    {% for d in all_done_rents %}
+        <table class="center">
+            <tr class="padding">
+                <td class="padding">
+                    <a href="about_done_rent/{{ d.id }}">Договор №{{ d.id }}</a>
+                </td>
+            </tr>
+        </table>
+    {% endfor %}
+{% endblock %}

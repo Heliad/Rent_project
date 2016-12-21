@@ -39,4 +39,7 @@ urlpatterns = [
     url(r'delete_penalty/(?P<id_penalty>\d*)', viewModer.delete_penalty, name='DeletePenalty'),
     url(r'edit_penalty/(?P<id_penalty>\d*)', viewModer.edit_penalty, name='EditPenalty'),
     url(r'all_complaints', viewModer.all_complaints, name='AllComplaints'),
+    url(r'all_done_rents', viewModer.all_done_rents, name='AllDoneRents'),
+    url(r'about_done_rent/(?P<id_done_rent>\d*)', viewModer.about_done_rent, name='AboutDoneRent'),
+
 ]

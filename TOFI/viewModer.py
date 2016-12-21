@@ -96,3 +96,17 @@ def all_complaints(request):
     complaints = models.Complaint.objects.all()
     return render(request, 'Moder/AllComplaints.html', {'complaints': complaints})
 
+
+def all_done_rents(request):
+    all_done_rents = models.DoneRent.objects.all()
+    return render(request, 'Moder/AllDoneRents.html', {'all_done_rents': all_done_rents})
+
+
+def about_done_rent(request, id_done_rent):
+    done_rent = models.DoneRent.objects.get(id=id_done_rent)
+    name_house = models.Rent.objects.get(id=done_rent.id_house_id).name
+    login_renter = models.MyUser.objects.get(id=done_rent.id_user_renter).username
+    login_owner = models.MyUser.objects.get(id=done_rent.id_user_owner_id).username
+    return render(request, 'Moder/AboutDoneRent.html', {'done_rent': done_rent, 'name_house': name_house,
+                                                        'login_renter': login_renter, 'login_owner': login_owner,
+                                                        'id_rent': done_rent.id_house_id} )

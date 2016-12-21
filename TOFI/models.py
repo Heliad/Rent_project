@@ -209,6 +209,12 @@ class Complaint(models.Model):
     date = models.DateField(verbose_name="Дата подачи жалобы:", default=None)
 
 
+class SessionKeys(models.Model):
+    id_card = models.IntegerField()
+    number_key = models.IntegerField()
+    key = models.IntegerField()
+
+
 class AddImage(models.Model):
     id_rent = models.IntegerField()
     image = models.ImageField(upload_to='imagesHouses/', height_field=None, width_field=None)

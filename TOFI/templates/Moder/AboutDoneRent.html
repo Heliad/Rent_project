@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}XXXX{% endblock %}
+{% block content %}
+    <table class="center">
+        <tr class="padding">
+            <td class="padding">Название дома:</td>
+            <td><a href="aboutHouse/{{ id_rent }}">{{ name_house }}</a></td>
+        </tr>
+        <tr class="padding">
+            <td class="padding">Логин арендатора:</td>
+            <td><a href="aboutUser/{{ done_rent.id_user_renter }}">{{ login_renter }}</a></td>
+        </tr>
+        <tr class="padding">
+            <td class="padding">Логин владельца:</td>
+            <td>{{ login_owner }}</td>
+        </tr>
+        <tr class="padding">
+            <td class="padding">Стоимость:</td>
+            <td>{{ done_rent.cost }}</td>
+        </tr>
+        <tr class="padding">
+            <td class="padding">Дата начала аренды:</td>
+            <td>{{ done_rent.date_rent }}</td>
+        </tr>
+        <tr class="padding">
+            <td class="padding">Дата следующей оплаты:</td>
+            <td>{{ done_rent.next_payment_date }}</td>
+        </tr>
+    </table>
+{% endblock %}
