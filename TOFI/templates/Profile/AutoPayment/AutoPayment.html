@@ -18,6 +18,16 @@
                         <div class="card-block">
                             <a href="about_auto_payment/{{ ap.id }}" class="btn btn-primary btn-block">Выбрать</a>
                         </div>
+                        <div class="card-block">
+                            <form action="/delete_auto_payment/{{ ap.id }}">
+                                <input type="submit" class="btn btn-primary btn-block" value="Удалить">
+                            </form>
+                        </div>
+                        <div class="card-block">
+                            <form action="/edit_auto_payment/{{ ap.id }}">
+                                <input type="submit" class="btn btn-primary btn-block" value="Редактировать">
+                            </form>
+                        </div>
                     </div>
                 {% endfor %}
                 <div class="card " style="max-width: 22rem;">

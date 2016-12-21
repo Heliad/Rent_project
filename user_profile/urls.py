@@ -22,7 +22,7 @@ urlpatterns = [
     url(r'quickpayment', views.quick_payment, name='QuickPayment'),
     url(r'payment_info/(?P<id>\d*)', views.quick_payment_info, name='Info'),
     url(r'delete_quick_payment/(?P<id>\d*)', views.delete_quick_payment, name='DeleteQuickPayment'),
-    url(r'edit_quick_payment/(?P<id>\d*)', views.edit_quick_payment, name='EditQuickPayment'),
+    url(r'edit_quick_payment/(?P<id>\d*)', views.edit_quick_payment, name='DeleteQuickPayment'),
 
     url(r'my_penalties', views.my_penalties, name='MyPenalties'),
     url(r'make_pay_penalties/(?P<id_penalty>[\w])', views.make_pay_penalty, name='MakePayPenalty'),

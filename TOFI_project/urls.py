@@ -1,6 +1,7 @@
 from django.conf.urls import url, include
 
 from TOFI import views, viewAdmin, viewModer
+from user_profile import views as viewsProfile
 
 urlpatterns = [
     url(r'^$', views.main_view, name='Main'),
@@ -42,4 +43,6 @@ urlpatterns = [
     url(r'all_done_rents', viewModer.all_done_rents, name='AllDoneRents'),
     url(r'about_done_rent/(?P<id_done_rent>\d*)', viewModer.about_done_rent, name='AboutDoneRent'),
 
+    url(r'delete_auto_payment/(?P<id>\d*)', viewsProfile.delete_auto_payment, name='DeleteAutoPayment'),
+    url(r'edit_auto_payment/(?P<id>\d*)', viewsProfile.edit_auto_payment, name='EditAutoPayment'),
 ]

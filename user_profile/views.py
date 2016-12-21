@@ -612,7 +612,7 @@ def add_auto_payment(request):
         pay_date = forms.DateField(input_formats=['%d/%m/%Y'],
                                    label='Дата оплаты:',
                                    widget=forms.DateInput(attrs={'class': 'datetime'}))
-        payment_interval = forms.IntegerField(label='Интервал оплаты:')
+        payment_interval = forms.IntegerField(label='Интервал оплаты:', max_value=375, min_value=1)
 
     if request.method == 'GET':
         context = dict()
@@ -652,7 +652,7 @@ def delete_card(request, id):
 def delete_quick_payment(request, id):
     qp = models.QuickPayment.objects.get(id=id)
     qp.delete()
-    return render(request, 'Profile/Thanks.html', {'mes': "Платеж успешно удалён."})
+    return render(request, 'Profile/Thanks.html', {'mes': "Быстрый платеж успешно удалён."})
 
 
 def edit_quick_payment(request, id):
@@ -685,3 +685,33 @@ def edit_quick_payment(request, id):
         form = EditQP()
 
     return render(request, 'Profile/EditQuickPayment.html', {'form': form})
+
+
+def delete_auto_payment(request, id):
+    ap = models.AutoPayment.objects.get(id=id)
+    ap.delete()
+    return render(request, 'Profile/Thanks.html', {'mes': "Автоплатёж успешно удалён."})
+
+
+def edit_auto_payment(request, id):
+    ap = models.AutoPayment.objects.get(id=id)
+
+    class EditAutoPayment(forms.Form):
+        quick_payment = forms.IntegerField(label='Номер быстрого платежа:', initial=ap.quick_payment_id,
+                                           widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+        payment_interval = forms.IntegerField(label='Интервал оплаты(Дней):', max_value=375, min_value=1,
+                                              initial=ap.payment_interval)
+
+    if request.method == 'POST':
+        form = EditAutoPayment(request.POST)
+
+        if form.is_valid():
+            ap.payment_interval = form.cleaned_data['payment_interval']
+            ap.save()
+            return render(request, 'Profile/Thanks.html', {'mes': "Автоплатёж перезаписан."})
+        else:
+            print('error!')
+    else:
+        form = EditAutoPayment()
+
+    return render(request, 'Profile/AutoPayment/EditAutoPayment.html', {'form': form})
