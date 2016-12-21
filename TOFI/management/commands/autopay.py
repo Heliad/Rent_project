@@ -31,3 +31,13 @@ class Command(BaseCommand):
                     drent.save()
                     pay.next_payment_date += datetime.timedelta(days=pay.payment_interval)
                     pay.save()
+
+                    # Логирование автоматического платежа платежа
+                    user_id = models.QuickPayment.objects.get(id=pay.quick_payment_id).username_id
+                    amount = models.QuickPayment.objects.get(id=pay.quick_payment_id).amount
+                    models.LogOperationsBalance.objects.create(id_user=user_id,
+                                                               type_operation='Выполнение автоматического платежа № ' +
+                                                                              str(id),
+                                                               describe_operation="Оплата на сумму " + str(
+                                                                   payment.amount) + " BYN. " + str(m), status=c,
+                                                               amount=amount, date_operation=datetime.date.today())

@@ -85,6 +85,8 @@
       <column name="type_operation" sqlType="VARCHAR(50)" precision="0" scale="-1" nullable="false" jdbcType="12"/>
       <column name="describe_operation" sqlType="VARCHAR(100)" precision="0" scale="-1" nullable="false" jdbcType="12"/>
       <column name="date_operation" sqlType="DATE" precision="0" scale="-1" nullable="false" jdbcType="12"/>
+      <column name="amount" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
+      <column name="status" sqlType="BOOL" precision="0" scale="-1" nullable="false" jdbcType="4"/>
       <primary-key columns="id"/>
     </table>
     <table name="TOFI_messagestatusrent" schema="" catalog="" type="TABLE">

@@ -120,9 +120,10 @@ def refillBalance(request):
 
         response = {"message": m, "status": c}
         models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Пополнение',
-                                                   describe_operation="Оплата на сумму " +
-                                                                      str(request.POST['size']) + " BYN. " +
-                                                                      str(m), date_operation=datetime.date.today())
+                                                   describe_operation="Пополнение баланса на сумму " +
+                                                                      str(request.POST['size']) + " BYN. " + str(m),
+                                                   date_operation=datetime.date.today(), status=c,
+                                                   amount=request.POST['size'])
 
         response = json.dumps(response, ensure_ascii=False)
         return HttpResponse(response, content_type="text/html; charset=utf-8")
@@ -150,10 +151,10 @@ def unfillBalance(request):
                 models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Вывод средств',
                                                            describe_operation="Вывод средств на сумму " + str(
                                                                size) + " BYN, успешно проведён.",
-                                                           date_operation=datetime.date.today())
+                                                           date_operation=datetime.date.today(), status=True,
+                                                           amount=size)
 
-                mes = request.user.name + ", средства на сумму " + str(size) \
-                      + " BYN, успешно выведены на карту"
+                mes = request.user.name + ", средства на сумму " + str(size)+ " BYN, успешно выведены на карту"
             else:
                 mes = "Введены неверные данные!"
             return render(request, 'Profile/Thanks.html', {'mes': mes})
@@ -520,6 +521,14 @@ def quick_payment_info(request, id):
             cost = float(rent.cost)
             payed = float(rent.payed_until_time)
             t.PaymentManager(size, cost, payed, rent).run()
+
+            # Логирование быстрого платежа
+            models.LogOperationsBalance.objects.create(id_user=request.user.id,
+                                                       type_operation='Выполнение быстрого платежа № ' + str(id),
+                                                       describe_operation="Оплата на сумму " + str(payment.amount) +
+                                                                          " BYN. " + str(m), amount=payment.amount,
+                                                       date_operation=datetime.date.today(), status=True)
+
         return render(request, 'Profile/Thanks.html', {'mes': m})
 
 
