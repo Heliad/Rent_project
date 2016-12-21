@@ -112,19 +112,22 @@
                             <td class="padding">
                                 <a href="aboutHouse/{{ rent.id_house.id }}">Информация о доме</a>
                             </td>
-                            <td></td>
+                            <td>
+                                <button class="close" data-toggle="modal" data-target="#myModal"
+                                        onclick="del_rent_click({{ rent.id }})" style="color: red">&times;</button>
+                            </td>
                         </tr>
                         <tr>
                             <td class="padding">Дата начала аренды:</td>
                             <td class="padding">{{ rent.date_rent }}</td>
                         </tr>
                         <tr>
-                            <td class="padding">Стоимость(BYN):</td>
-                            <td class="padding">{{ rent.cost }}</td>
+                            <td class="padding">Стоимость:</td>
+                            <td class="padding">{{ rent.cost }} BYN</td>
                         </tr>
                         <tr>
-                            <td class="padding">Стоимость с комиссией(BYN):</td>
-                            <td class="padding">{{ rent.cost|mon_cost:mon }}</td>
+                            <td class="padding">Стоимость с комиссией:</td>
+                            <td class="padding">{{ rent.cost|mon_cost:mon }} BYN</td>
                         </tr>
                         <tr>
                             <td class="padding">Комиссия:</td>
@@ -133,6 +136,16 @@
                         <tr>
                             <td class="padding">Дата следующей оплаты:</td>
                             <td class="padding">{{ rent.next_payment_date }}</td>
+                        </tr>
+                        <tr>
+                            <td class="padding">Оплачено:</td>
+                            <td class="padding">{{ rent.payed_until_time|round_f }} BYN</td>
+                        </tr>
+                        <tr>
+                            {% if rent.fine > 0 %}
+                                <td class="padding">Пеня:</td>
+                                <td class="padding" style="color: red">{{ rent.fine|round_f }} BYN</td>
+                            {% endif %}
                         </tr>
                         <tr>
                             <td></td>
@@ -187,7 +200,7 @@
             document.getElementsByClassName('modal-title')[0].innerHTML = 'Выберите способ оплаты';
             rent_id.innerHTML = id;
             user.innerHTML = username;
-            mon.innerHTML = {{ mon }};
+            mon.innerHTML = {{ mon|stringformat:"f" }};
         }
 
         function fill_balance_click() {
@@ -198,6 +211,10 @@
         function add_card_click() {
             document.getElementsByClassName('modal-body')[0].innerHTML = get('add_card/');
             document.getElementsByClassName('modal-title')[0].innerHTML = 'Введите данные';
+        }
+        function del_rent_click(id) {
+            document.getElementsByClassName('modal-body')[0].innerHTML = get('close_rent/' + id);
+            document.getElementsByClassName('modal-title')[0].innerHTML = 'Закрытие аренды';
         }
     </script>
     <script src="/static/javascript/post_choose_payment.js"></script>

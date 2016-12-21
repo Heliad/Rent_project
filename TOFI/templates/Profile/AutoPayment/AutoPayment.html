@@ -33,12 +33,18 @@
                 <div class="card " style="max-width: 22rem;">
                     <div class="card-block">
                         <a href="{% url 'AddAutoPayment' %}" class="btn btn-primary btn-block">Добавить автооплату</a>
-                    </div>
-                </div>
+            </div>
+        </div>
             </div>
         </div>
     {% else %}
-        <div class="center">Автоплатежей нет</div>
+        <div class="card-columns">
+            <div class="card " style="max-width: 22rem;">
+                <div class="card-block">
+                    <a href="{% url 'AddAutoPayment' %}" class="btn btn-primary btn-block">Добавить автооплату</a>
+                </div>
+            </div>
+        </div>
     {% endif %}
     {% csrf_token %}
 {% endblock %}

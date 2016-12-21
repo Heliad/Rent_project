@@ -133,6 +133,7 @@ class MessageStatusRent(models.Model):
     id_rent = models.IntegerField(null=True)
     is_new = models.BooleanField(default=True)  # прочитано ли сообщение
     is_done = models.BooleanField(default=False)  # запрос на аренду True - подтвердил
+    type_mes = models.BooleanField(default=True)
 
 
 class Comment(models.Model):
@@ -152,6 +153,7 @@ class DoneRent(models.Model):
     id_house = models.ForeignKey(Rent)
     id_user_owner = models.ForeignKey(MyUser)
     id_user_renter = models.IntegerField()
+    fine = models.FloatField(default=0)
     date_rent = models.DateField(default=None)
     payed_until_time = models.FloatField(default=0)
     cost = models.CharField(max_length=50)  # Цена одной платы

@@ -10,7 +10,6 @@ from django.utils.translation import activate
 from TOFI import check as ch
 from TOFI import models
 from TOFI import transaction as t
-from TOFI import send_mail as sm
 from TOFI.forms import *
 
 
@@ -339,22 +338,35 @@ def accept_rent(request, id_mes):
         return HttpResponseRedirect("/login")
 
     message = models.MessageStatusRent.objects.get(id=id_mes)
-    house = models.Rent.objects.get(id=message.id_rent)
+    if message.type_mes:
+        house = models.Rent.objects.get(id=message.id_rent)
 
-    models.DoneRent.objects.create(id_house=models.Rent.objects.get(id=message.id_rent),
-                                   id_user_owner=models.MyUser.objects.get(id=message.id_user_to),
-                                   id_user_renter=message.id_user_from, date_rent=datetime.date.today(),
-                                   cost=house.cost, next_payment_date=datetime.datetime.today())
-
+        models.DoneRent.objects.create(id_house=models.Rent.objects.get(id=message.id_rent),
+                                       id_user_owner=models.MyUser.objects.get(id=message.id_user_to),
+                                       id_user_renter=message.id_user_from, date_rent=datetime.date.today(),
+                                       cost=house.cost, next_payment_date=datetime.datetime.today())
+        house.status_rent = False
+        house.save()
+    else:
+        done_rent = models.DoneRent.objects.get(id=message.id_rent)
+        rent = models.Rent.objects.get(id=done_rent.id_house.id)
+        rent.status_rent = True
+        q_payment = models.QuickPayment.objects.filter(rent_id=done_rent.id,
+                                                       username_id=message.id_user_from)
+        a_payment = models.AutoPayment.objects.filter(quick_payment=q_payment)
+        for p in q_payment:
+            p.delete()
+        for a in a_payment:
+            a.delete()
+        rent.save()
+        done_rent.delete()
     message.is_done = True
-    house.status_rent = False
-    house.save()
     message.save()
 
     user = models.MyUser.objects.get(id=message.id_user_from)
-    accept = "Запрос номер " + str(message.id) + ", на аренду дома " + str(house.name) \
-             + "подтверждён. Запрос от" + str(user.username)
-    return render(request, "Profile/AcceptRent.html", {'mes': accept})
+    # accept = "Запрос номер " + str(message.id) + ", на аренду дома " + str(house.name) \
+    #          + "подтверждён. Запрос от" + str(user.username)
+    return render(request, "Profile/AcceptRent.html", {'mes': 'mes'})
 
 
 def reject_rent(request, id_mes):
@@ -419,11 +431,7 @@ def choose_payment(request, id_donerent):
                              request.POST['balance_to'], True).make_transaction()
 
         if c:
-            rent = models.DoneRent.objects.get(id=id_donerent)
-            size = float(request.POST['size'])
-            cost = float(rent.cost)
-            payed = float(rent.payed_until_time)
-            t.PaymentManager(size, cost, payed, rent).run()
+            t.PaymentManager(request.POST['size'], models.DoneRent.objects.get(id=id_donerent)).run()
 
         response = {"message": m, "status": c}
 
@@ -520,19 +528,12 @@ def quick_payment_info(request, id):
         c, m = t.Transaction(payment.amount, tr_from, tr_to).make_transaction()
         if c:
             q_pay = models.QuickPayment.objects.get(id=id)
-            rent = models.DoneRent.objects.get(id=q_pay.rent_id)
-            size = float(q_pay.amount)
-            cost = float(rent.cost)
-            payed = float(rent.payed_until_time)
-            t.PaymentManager(size, cost, payed, rent).run()
-
-            # Логирование быстрого платежа
-            models.LogOperationsBalance.objects.create(id_user=request.user.id,
-                                                       type_operation='Выполнение быстрого платежа № ' + str(id),
-                                                       describe_operation="Оплата на сумму " + str(payment.amount) +
-                                                                          " BYN. " + str(m), amount=payment.amount,
-                                                       date_operation=datetime.date.today(), status=True)
-
+            t.PaymentManager(q_pay.amount, models.DoneRent.objects.get(id=q_pay.rent_id)).run()
+        models.LogOperationsBalance.objects.create(id_user=request.user.id,
+                                                   type_operation='Выполнение быстрого платежа № ' + str(id),
+                                                   describe_operation="Оплата на сумму " + str(payment.amount) +
+                                                                      " BYN. " + str(m), amount=payment.amount,
+                                                   date_operation=datetime.date.today(), status=True)
         return render(request, 'Profile/Thanks.html', {'mes': m})
 
 
@@ -794,3 +795,25 @@ def edit_auto_payment(request, id):
         form = EditAutoPayment()
 
     return render(request, 'Profile/AutoPayment/EditAutoPayment.html', {'form': form})
+
+
+def close_rent(request, rent_id):
+    if request.method == 'GET':
+        rent = models.DoneRent.objects.get(id=rent_id)
+        if rent.next_payment_date < datetime.date.today():
+            context = {'mes': 'Аренда не погашена', 'status': False}
+        else:
+            context = {'status': True, 'rent_id': rent_id}
+        return render(request, 'Profile/CloseRent.html', context)
+    else:
+        rent = models.DoneRent.objects.get(id=rent_id)
+        text_message = 'Запрос на закрытие аренды под номером ' + str(rent_id) + " (" + str(
+            models.Rent.objects.get(id=rent.id_house.id).name) + ") от " \
+                       + str(request.user.name) + " " + str(request.user.surname) + " " + \
+                       str(request.user.last_name)
+
+        models.MessageStatusRent.objects.create(id_user_from=request.user.id, id_user_to=rent.id_user_owner.id,
+                                                creation_date=datetime.date.today(),
+                                                text_message=text_message, text_more='',
+                                                login_user_from=request.user.username, id_rent=rent_id, type_mes=False)
+        return HttpResponseRedirect('/profile')

@@ -111,25 +111,32 @@ class Check(object):
 
 
 class PaymentManager(object):
-    def __init__(self, size, cost, payed, rent):
-        self.size = size
-        self.cost = cost
-        self.payed = payed
+    def __init__(self, size, rent):
         self.rent = rent
+        self.size = size
+        self.size = float(self.size)
+        self.cost = float(self.rent.cost)
+        self.payed = float(self.rent.payed_until_time)
 
     def run(self):
+        if self.rent.fine > 0:
+            if self.size <= self.rent.fine:
+                self.rent.fine -= self.size
+                self.size = 0
+            else:
+                self.size -= self.rent.fine
+                self.rent.fine = 0
+        interval = models.Rent.objects.get(id=self.rent.id_house.id).payment_interval
         if self.size == self.cost - self.payed:
-            self.rent.next_payment_date += datetime.timedelta(days=
-                                                              models.Rent.objects.get(id=
-                                                                                      self.rent.id_house.id).payment_interval)
+            self.rent.next_payment_date += datetime.timedelta(days=interval)
             self.rent.payed_until_time = 0
         elif self.size < self.cost - self.payed:
             self.rent.payed_until_time += self.size
         elif self.size > self.cost - self.payed:
-            o = self.size / (self.cost - self.payed)
-            self.rent.next_payment_date += datetime.timedelta(days=
-                                                              models.Rent.objects.get(id=
-                                                                                      self.rent.id_house.id).payment_interval * int(
-                                                                  o))
-            self.rent.payed_until_time = (self.size - (self.cost - self.payed) * int(o))
+            o = self.size / self.cost
+            self.rent.next_payment_date += datetime.timedelta(days=interval * int(o))
+            self.rent.payed_until_time = self.size - (self.cost * int(o)) + self.payed
+            if self.rent.payed_until_time >= self.cost:
+                self.rent.payed_until_time -= self.cost
+                self.rent.next_payment_date += datetime.timedelta(days=interval)
         self.rent.save()

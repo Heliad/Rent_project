@@ -27,7 +27,18 @@ def card_num_beautify(arg):
         return arg
 
 
+def round_f(arg):
+    if type(arg) == float:
+        return round(float(arg), 2)
+    else:
+        try:
+            return int(arg)
+        except:
+            return arg
+
+
 register = template.Library()
 register.filter('mon_cost', mon_cost)
 register.filter('percentage', percentage)
 register.filter('card_num_beautify', card_num_beautify)
+register.filter('round_f', round_f)

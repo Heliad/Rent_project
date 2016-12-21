@@ -128,7 +128,7 @@ function amount_oninput() {
             mon_notification.innerHTML = 'Сумма без комиссии до 10000 BYN'
         }
         else {
-            mon_notification.innerHTML = 'Игото к оплате: ' + num + ' BYN'
+            mon_notification.innerHTML = 'Игото к оплате (+ коммисия ' + Number(document.getElementById('mon_value').innerHTML) * 100 + '%): ' + num + ' BYN'
         }
     }
     else {
