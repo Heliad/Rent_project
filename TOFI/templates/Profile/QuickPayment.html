@@ -23,6 +23,16 @@
                             </form>
                         {% endif %}
                     </div>
+                    <div class="card-block">
+                        <form action="delete_quick_payment/{{ i.id }}">
+                            <input type="submit" class="btn btn-primary btn-block" value="Удалить">
+                        </form>
+                    </div>
+                    <div class="card-block">
+                        <form action="edit_quick_payment/{{ i.id }}">
+                            <input type="submit" class="btn btn-primary btn-block" value="Редактировать">
+                        </form>
+                    </div>
                     </div>
                 {% endfor %}
         </div>

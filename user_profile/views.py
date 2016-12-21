@@ -647,3 +647,41 @@ def add_auto_payment(request):
 def delete_card(request, id):
     request.user.user_card_id.remove(models.UserCard.objects.get(id=id))
     return HttpResponseRedirect('/profile')
+
+
+def delete_quick_payment(request, id):
+    qp = models.QuickPayment.objects.get(id=id)
+    qp.delete()
+    return render(request, 'Profile/Thanks.html', {'mes': "Платеж успешно удалён."})
+
+
+def edit_quick_payment(request, id):
+    qp = models.QuickPayment.objects.get(id=id)
+    done_rent = models.DoneRent.objects.get(id=qp.rent_id)
+    house_name = models.Rent.objects.get(id=done_rent.id_house_id).name
+    if not qp.user_payment == "Кошелек":
+        user_payment1 = str(qp.user_payment[:4] + ' XXXX XXXX ' + qp.user_payment[-4:])
+    else:
+        user_payment1 = qp.user_payment
+
+    class EditQP(forms.Form):
+        rent_name = forms.CharField(label="Название дома:", max_length=50, required=True,
+                                    initial=house_name, widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+        user_payment = forms.CharField(label="Способ оплаты:", max_length=50, required=True,
+                                       initial=user_payment1, widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+        amount = forms.FloatField(label="Сумма:", min_value=10, max_value=1000000, required=True, initial=qp.amount)
+
+    if request.method == 'POST':
+        form = EditQP(request.POST)
+
+        if form.is_valid():
+            qp.amount = form.cleaned_data['amount']
+            qp.save()
+            return render(request, 'Profile/Thanks.html', {'mes': "Быстрый платёж перезаписан."})
+        else:
+            print('error!')
+
+    else:
+        form = EditQP()
+
+    return render(request, 'Profile/EditQuickPayment.html', {'form': form})
