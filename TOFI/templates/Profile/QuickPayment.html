@@ -14,26 +14,28 @@
                         <li class="list-group-item">Оплата: {{ i.user_payment|card_num_beautify }}</li>
                         <li class="list-group-item">Сумма: {{ i.amount }} BYN</li>
                     </ul>
-                    <div class="card-block">
                         {% if addautopayment %}
-                            <button onclick="func({{ i.id }})" class="btn btn-primary btn-block">Выбрать</button>
+                            <div class="card-block">
+                                <button onclick="func({{ i.id }})" class="btn btn-primary btn-block">Выбрать</button>
+                            </div>
                         {% else %}
-                            <form action="payment_info/{{ i.id }}">
-                                <input type="submit" class="btn btn-primary btn-block" value="Подробно">
+                            <div class="card-block">
+                                <form action="payment_info/{{ i.id }}">
+                                    <input type="submit" class="btn btn-primary btn-block" value="Подробно">
+                                </form>
+                            </div>
+                            <div class="card-block">
+                                <form action="delete_quick_payment/{{ i.id }}">
+                                    <input type="submit" class="btn btn-primary btn-block" value="Удалить">
+                                </form>
+                            </div>
+                            <div class="card-block">
+                            <form action="edit_quick_payment/{{ i.id }}">
+                                <input type="submit" class="btn btn-primary btn-block" value="Редактировать">
                             </form>
                         {% endif %}
                     </div>
-                    <div class="card-block">
-                        <form action="delete_quick_payment/{{ i.id }}">
-                            <input type="submit" class="btn btn-primary btn-block" value="Удалить">
-                        </form>
-                    </div>
-                    <div class="card-block">
-                        <form action="edit_quick_payment/{{ i.id }}">
-                            <input type="submit" class="btn btn-primary btn-block" value="Редактировать">
-                        </form>
-                    </div>
-                    </div>
+                </div>
                 {% endfor %}
         </div>
     {% else %}

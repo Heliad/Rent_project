@@ -186,12 +186,6 @@
 
     <script src="/static/javascript/get.js"></script>
     <script>
-        $(".change")
-                .hover(function () {
-                    $(this).html("<a class='hidden'>" + $(this).html() + "</a>" + "Изменить");
-                }, function () {
-                    $(this).html($(this).html().slice(18, 37));
-                });
         function choose_rent(id, username) {
             document.getElementsByClassName('modal-body')[0].innerHTML = get('choose_payment/' + id);
             var rent_id = document.getElementById('rent');

@@ -217,14 +217,3 @@ class SessionKeys(models.Model):
     id_card = models.IntegerField()
     number_key = models.IntegerField()
     key = models.IntegerField()
-
-
-class AddImage(models.Model):
-    id_rent = models.IntegerField()
-    image = models.ImageField(upload_to='imagesHouses/', height_field=None, width_field=None)
-    name = models.CharField(verbose_name="Название:", max_length=100)
-    describe = models.CharField(verbose_name="Описание:", max_length=150)
-
-
-class AddImage2(models.Model):
-    image = models.FileField(upload_to='imagesHouses/')
