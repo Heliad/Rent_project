@@ -27,7 +27,8 @@
                             <font color="#a9a9a9">Редактировать(Арендовано)</font>
                         </td>
                         <td class="padding">
-                            <font color="#a9a9a9">Удалить(Арендовано)</font>
+                            <button class="close" data-toggle="modal" data-target="#myModal"
+                                    onclick="owner_del_rent_click({{ h.id }})" style="color: red">&times;</button>
                         </td>
                     {% endif %}
                 </tr>
@@ -41,4 +42,27 @@
             </tr>
         {% endif %}
     </table>
+
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="input_func()" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="/static/javascript/get.js"></script>
+    <script>
+        function owner_del_rent_click(id) {
+            document.getElementsByClassName('modal-body')[0].innerHTML = get('owner_close_rent/' + id);
+            document.getElementsByClassName('modal-title')[0].innerHTML = 'Закрытие аренды';
+        }
+    </script>
+    <script src="/static/javascript/post_choose_payment.js"></script>
 {% endblock %}

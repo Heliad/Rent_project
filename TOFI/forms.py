@@ -53,7 +53,7 @@ class RentForm(forms.ModelForm):
     cost = forms.IntegerField(label="Цена:", required=True,
                               validators=[MinValueValidator(1), MaxValueValidator(1000000)])
     payment_interval = forms.IntegerField(label="Интервал оплаты:", required=True,
-                                          validators=[MinValueValidator(1), MaxValueValidator(30)])
+                                          validators=[MinValueValidator(1), MaxValueValidator(365)])
 
     class Meta:
         model = Rent

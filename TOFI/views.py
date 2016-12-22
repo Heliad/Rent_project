@@ -59,7 +59,7 @@ class AddRent(View):
 
             models.Rent.objects.create(name=name, address=address, min_rent_time=min_rent_time, area=area,
                                        date_of_construction=date_of_construction, creation_date=creation_date,
-                                       other=other, cost=cost, user_login=cur_user.id)
+                                       other=other, cost=cost, user_login=cur_user)
             return HttpResponseRedirect('/')
 
         else:
@@ -78,7 +78,7 @@ class AddRent(View):
             if 'cost' in err:
                 error = 'Цена должна быть в диапозоне от 1 до 1млн!'
             if 'payment_interval' in err:
-                error = 'Интервал оплаты должен быть от 1 до 30 дней!'
+                error = 'Интервал оплаты должен быть от 1 до 365 дней!'
             if 'other' in err:
                 error = 'Недопустимые символы в описании дома!'
         return render(request, self.template_name, {'form': form, 'error': error})

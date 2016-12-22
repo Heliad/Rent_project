@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import json
 
 from django.contrib.auth import logout
@@ -375,7 +377,7 @@ def accept_rent(request, id_mes):
     user = models.MyUser.objects.get(id=message.id_user_from)
     # accept = "Запрос номер " + str(message.id) + ", на аренду дома " + str(house.name) \
     #          + "подтверждён. Запрос от" + str(user.username)
-    return render(request, "Profile/AcceptRent.html", {'mes': 'mes'})
+    return render(request, "Profile/AcceptRent.html", {'mes': 'Запрос подтверждён.'})
 
 
 def reject_rent(request, id_mes):
@@ -840,6 +842,32 @@ def edit_auto_payment(request, id):
     return render(request, 'Profile/AutoPayment/EditAutoPayment.html', {'form': form})
 
 
+def owner_close_rent(request, rent_id):
+    if request.method == 'GET':
+        rent = models.DoneRent.objects.get(id_house=rent_id)
+        if rent.next_payment_date < datetime.date.today():
+            context = {'mes': 'Арендатор еще не погасил задолженность.', 'status': True, 'rent_id': rent_id}
+        else:
+            context = {'status': True, 'rent_id': rent_id}
+        return render(request, 'Profile/CloseRentOwner.html', context)
+
+    else:
+        done_rent = models.DoneRent.objects.get(id_house=rent_id)
+
+        text_message = 'Запрос на закрытие аренды под номером ' + str(rent_id) + " (" + str(
+            models.Rent.objects.get(id=done_rent.id_house.id).name) + ") от " \
+                       + str(request.user.name) + " " + str(request.user.surname) + " " + \
+                       str(request.user.last_name)
+
+        user_renter = models.MyUser.objects.get(id=done_rent.id_user_renter)
+        models.MessageStatusRent.objects.create(id_user_from=request.user.id, id_user_to=user_renter.id,
+                                                creation_date=datetime.date.today(),
+                                                text_message=text_message, text_more='',
+                                                login_user_from=request.user.username, id_rent=done_rent.id, type_mes=False)
+
+        return HttpResponseRedirect('/profile')
+
+
 def close_rent(request, rent_id):
     if request.method == 'GET':
         rent = models.DoneRent.objects.get(id=rent_id)
@@ -860,3 +888,4 @@ def close_rent(request, rent_id):
                                                 text_message=text_message, text_more='',
                                                 login_user_from=request.user.username, id_rent=rent_id, type_mes=False)
         return HttpResponseRedirect('/profile')
+

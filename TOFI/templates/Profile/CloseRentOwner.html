@@ -1,0 +1,14 @@
+{% if status %}
+    <div class="row">
+        <div class="col-md-6">
+            <a class="text-center">Вы уверены?</a>
+        </div>
+    </div>
+    <form action="/profile/owner_close_rent/{{ rent_id }}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-danger btn-block">Закрыть аренду</button>
+    </form>
+
+{% else %}
+    <a class="text-center">{{ mes }}</a>
+{% endif %}

@@ -25,7 +25,7 @@
                         </td>
                     </tr>
                     {% if not mail.is_done %}
-                        {% if request.user.ie %}
+                        {% if request.user.ie or mail.type_mes == 0%}
                             <tr>
                                 <td class="padding">
                                     <a href="acceptrent/{{ mail.id }}">Подтвердить заявку</a>
