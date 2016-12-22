@@ -9,6 +9,7 @@ from django.utils.translation import activate
 
 from TOFI import check as ch
 from TOFI import models
+from TOFI import send_mail as sm
 from TOFI import transaction as t
 from TOFI.forms import *
 
