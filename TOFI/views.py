@@ -11,6 +11,9 @@ from django.shortcuts import render
 from django.views.generic import View
 from django.views.generic.edit import FormView
 
+from TOFI import send_mail as sm
+import random
+import string
 from TOFI import models
 from .forms import *
 
@@ -122,32 +125,33 @@ class Registration(View):
             err = form.errors.as_data()
             print(err)
             if 'password' in err:
-                error = 'Пароль должен содержать в себе арабские цифры и латинские буквы, нижнего и верхнего регистра!'
+                error = 'Пароль должен содержать арабские цифры и латинские буквы, нижнего и верхнего регистра!'
             if 'phone' in err:
-                error = 'Недопустимый номер телефона!'
+                error = 'Недопустимый номер телефона!(Пример: +375 12 345 67 89)'
             if 'username' in err:
                 error = 'Пользователь с таким логином уже существует!'
             if 'name' in err:
-                error = 'Недопустимые символы в поле Имя!'
+                error = 'Недопустимые символы в поле Имя!(Допустимы только буквы русского алфавита)'
             if 'surname' in err:
-                error = 'Недопустимые символы в поле Фамилия!'
+                error = 'Недопустимые символы в поле Фамилия!(Допустимы только буквы русского алфавита)'
             if 'last_name' in err:
-                error = 'Недопустимые символы в поле Отчество!'
+                error = 'Недопустимые символы в поле Отчество!(Допустимы только буквы русского алфавита)'
             if 'age' in err:
-                error = 'Недопустимое значение в поле Возраст!'
+                error = 'Недопустимое значение в поле Возраст!(Возраст должен быть от 18 до 110)'
             if 'email' in err:
                 if 'My user with this Электронная почта already exists.' in err['email'][0]:
                     error = 'Пользователь с таким почтовым адресом уже зарегистрирован!'
                 else:
-                    error = 'Недопустимые символы в поле Email!'
+                    error = 'Недопустимые символы в поле Email!(Пример: abcd@efg.com)'
             if 'address' in err:
-                error = 'Недопустимые символы в поле Адрес!'
+                error = 'Недопустимые символы в поле Адрес!(Допустимы только буквы русского алфавита ' \
+                        'и знаки пунктуации)'
             if 'passport_id' in err:
-                error = 'Недопустимые символы в поле Номер пасспорта!'
+                error = 'Недопустимые символы в поле Номер пасспорта!(Пример: AB1234567)'
             if 'taxpayer_account_number' in err:
                 error = 'Недопустимое значение в поле УНН!(Значение должно быть от 1 до 100000)'
             if 'license_field' in err:
-                error = 'Недопустимые символы в поле Лицензия!'
+                error = 'Недопустимые символы в поле Лицензия!(Допустимы только буквы русского и английского алфавита)'
         return render(request, self.template_name, {'form': form, 'error': error})
 
 
@@ -356,3 +360,44 @@ def make_complaint(request, id_user_to):
             form = MakeComplaint()
         return render(request, 'MakeComplaint.html', {'form': form})
 
+
+def reset_password(request):
+    class ResetPassword(forms.Form):
+        login = forms.CharField(label='Введите логин:', max_length=50, required=True)
+        email = forms.CharField(label='Введите почтовый адрес:', max_length=50, required=True)
+
+    error, no_error, result = '', '', False
+    if request.method == 'POST':
+        form = ResetPassword(request.POST)
+
+        if form.is_valid():
+            login = form.cleaned_data['login']
+            email = form.cleaned_data['email']
+            users = models.MyUser.objects.all()
+            for us in users:
+                if us.username == login:
+                    if us.email == email:
+                        new_password = "".join(
+                            random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for x in
+                            range(16))
+
+                        u = models.MyUser.objects.get(username=login)
+                        u.set_password(new_password)
+                        u.save()
+                        sm.Sender("Смена пароля", "Смена пароля для аккаунта " + login +
+                                  ". Вы подали запрос на смену пароля от вашего аккаунта. Ваш новый пароль: " +
+                                  str(new_password), email).sender()
+
+                        result = True
+                        break
+                    else:
+                        result = False
+                        break
+            if not result:
+                error = "Введены некорректные данные!"
+            else:
+                no_error = 'Новый пароль отослан на ваш почтовый ящик.'
+    else:
+        form = ResetPassword()
+    form = ResetPassword()
+    return render(request, 'ForgottenPassword.html', {'form': form, 'error': error, 'no_error': no_error})

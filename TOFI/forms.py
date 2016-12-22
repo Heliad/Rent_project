@@ -14,7 +14,7 @@ class UserForm(forms.ModelForm):
     name = forms.CharField(label='Имя:', required=True, validators=[RegexValidator('^[а-яА-Я]*$')], initial='рапрап')
     surname = forms.CharField(label='Фамилия:', required=True, validators=[RegexValidator('^[а-яА-Я]*$')], initial='рапрап')
     last_name = forms.CharField(label='Отчество:', required=True, validators=[RegexValidator('^[а-яА-Я]*$')], initial='рапрап')
-    age = forms.IntegerField(label='Возраст:', validators=[MaxValueValidator(100), MinValueValidator(18)], initial=22)
+    age = forms.IntegerField(label='Возраст:', validators=[MaxValueValidator(110), MinValueValidator(18)], initial=22)
 
     email = forms.CharField(label='Email:', max_length=50, validators=[EmailValidator()])
     phone = forms.CharField(label='Телефон:', max_length=50, validators=[RegexValidator('^\+[0-9\-\ ]*$')])

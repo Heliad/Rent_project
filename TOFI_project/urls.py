@@ -14,6 +14,7 @@ urlpatterns = [
 
     url(r'^add_rent$', views.AddRent.as_view(), name='AddRent'),
 
+    url(r'reset_password', views.reset_password, name='ResetPassword'),
     url(r'comment', views.comment, name='Comment'),
 
     url(r'search', include('search.urls')),

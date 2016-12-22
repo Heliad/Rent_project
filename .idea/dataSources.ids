@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="dataSourceStorage">
-  <data-source name="Sqlite (Xerial) - db.sqlite3" uuid="5abeedb3-ff54-4b12-950d-739f706fb32a">
+  <data-source name="Sqlite (Xerial) - db.sqlite3" uuid="cf5f45a0-2ea4-4d47-93cd-d33cd657c6e8">
     <database-info product="SQLite" version="3.8.11" jdbc-version="2.1" driver-name="SQLiteJDBC" driver-version="native"/>
     <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed"/>
     <schema name="" catalog=""/>
@@ -66,13 +66,14 @@
     </table>
     <table name="TOFI_donerent" schema="" catalog="" type="TABLE">
       <column name="id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
-      <column name="id_house_id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
       <column name="id_user_renter" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
       <column name="date_rent" sqlType="DATE" precision="0" scale="-1" nullable="false" jdbcType="12"/>
+      <column name="payed_until_time" sqlType="REAL" precision="0" scale="-1" nullable="false" jdbcType="6"/>
       <column name="cost" sqlType="VARCHAR(50)" precision="0" scale="-1" nullable="false" jdbcType="12"/>
       <column name="next_payment_date" sqlType="DATE" precision="0" scale="-1" nullable="false" jdbcType="12"/>
-      <column name="payed_until_time" sqlType="REAL" precision="0" scale="-1" nullable="false" jdbcType="6"/>
+      <column name="id_house_id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
       <column name="id_user_owner_id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
+      <column name="fine" sqlType="REAL" precision="0" scale="-1" nullable="false" jdbcType="6"/>
       <primary-key columns="id"/>
       <foreign-key name="#FAKE_TOFI_donerent_1" columns="id_user_owner_id" ref-table="TOFI_myuser" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
       <foreign-key name="#FAKE_TOFI_donerent_2" columns="id_house_id" ref-table="TOFI_rent" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
@@ -92,14 +93,15 @@
     <table name="TOFI_messagestatusrent" schema="" catalog="" type="TABLE">
       <column name="id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
       <column name="id_user_from" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
+      <column name="login_user_from" sqlType="VARCHAR(50)" precision="0" scale="-1" nullable="true" jdbcType="12"/>
       <column name="id_user_to" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
       <column name="creation_date" sqlType="DATE" precision="0" scale="-1" nullable="false" jdbcType="12"/>
       <column name="text_message" sqlType="VARCHAR(100)" precision="0" scale="-1" nullable="false" jdbcType="12"/>
       <column name="text_more" sqlType="VARCHAR(100)" precision="0" scale="-1" nullable="false" jdbcType="12"/>
-      <column name="login_user_from" sqlType="VARCHAR(50)" precision="0" scale="-1" nullable="true" jdbcType="12"/>
+      <column name="id_rent" sqlType="INTEGER" precision="0" scale="-1" nullable="true" jdbcType="4"/>
       <column name="is_new" sqlType="BOOL" precision="0" scale="-1" nullable="false" jdbcType="4"/>
       <column name="is_done" sqlType="BOOL" precision="0" scale="-1" nullable="false" jdbcType="4"/>
-      <column name="id_rent" sqlType="INTEGER" precision="0" scale="-1" nullable="true" jdbcType="4"/>
+      <column name="type_mes" sqlType="BOOL" precision="0" scale="-1" nullable="false" jdbcType="4"/>
       <primary-key columns="id"/>
     </table>
     <table name="TOFI_monetization" schema="" catalog="" type="TABLE">
@@ -153,9 +155,9 @@
     <table name="TOFI_quickpayment" schema="" catalog="" type="TABLE">
       <column name="id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
       <column name="user_payment" sqlType="VARCHAR(50)" precision="0" scale="-1" nullable="false" jdbcType="12"/>
+      <column name="amount" sqlType="REAL" precision="0" scale="-1" nullable="false" jdbcType="6"/>
       <column name="rent_id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
       <column name="username_id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
-      <column name="amount" sqlType="REAL" precision="0" scale="-1" nullable="false" jdbcType="6"/>
       <primary-key columns="id"/>
       <foreign-key name="#FAKE_TOFI_quickpayment_1" columns="username_id" ref-table="TOFI_myuser" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
       <foreign-key name="#FAKE_TOFI_quickpayment_2" columns="rent_id" ref-table="TOFI_donerent" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
