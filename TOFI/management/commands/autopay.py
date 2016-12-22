@@ -16,14 +16,14 @@ class Command(BaseCommand):
             else:
                 tr_from = models.UserCard.objects.get(card_num=payment.user_payment)
             tr_to = models.MyUser.objects.get(
-                id=models.Rent.objects.get(id=models.DoneRent.objects.get(id=payment.rent_id).id_house).user_login)
+                id=models.Rent.objects.get(id=models.DoneRent.objects.get(id=payment.rent_id).id_house.id).user_login)
             c, m = transaction.Transaction(payment.amount, tr_from, tr_to).make_transaction()
             if c:
                 transaction.PaymentManager(payment.amount, models.DoneRent.objects.get(id=payment.rent_id)).run()
                 pay.next_payment_date += datetime.timedelta(days=pay.payment_interval)
                 pay.save()
-            user_id = models.QuickPayment.objects.get(id=pay.quick_payment_id).username_id
-            amount = models.QuickPayment.objects.get(id=pay.quick_payment_id).amount
+            user_id = models.QuickPayment.objects.get(id=pay.quick_payment.id).username_id
+            amount = models.QuickPayment.objects.get(id=pay.quick_payment.id).amount
             models.LogOperationsBalance.objects.create(id_user=user_id,
                                                        type_operation='Выполнение автоматического платежа № ' +
                                                                       str(id),
