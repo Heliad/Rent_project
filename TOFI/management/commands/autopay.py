@@ -1,4 +1,5 @@
 import datetime
+from TOFI import send_mail as sm
 
 from django.core.management.base import BaseCommand
 
@@ -23,14 +24,35 @@ class Command(BaseCommand):
                 transaction.PaymentManager(payment.amount, models.DoneRent.objects.get(id=payment.rent_id)).run()
                 pay.next_payment_date += datetime.timedelta(days=pay.payment_interval)
                 pay.save()
-            user_id = models.QuickPayment.objects.get(id=pay.quick_payment.id).username_id
-            amount = models.QuickPayment.objects.get(id=pay.quick_payment.id).amount
+            qp = models.QuickPayment.objects.get(id=pay.quick_payment_id)
+            done_rent = models.DoneRent.objects.get(id=qp.rent_id)
+            user_id = models.QuickPayment.objects.get(id=pay.quick_payment_id).username_id
+            email_from = models.MyUser.objects.get(id=user_id).email
+            amount = models.QuickPayment.objects.get(id=pay.quick_payment_id).amount
             models.LogOperationsBalance.objects.create(id_user=user_id,
                                                        type_operation='Выполнение автоматического платежа № ' +
-                                                                      str(pay.id),
-                                                       describe_operation="Оплата на сумму " + str(
+                                                                      str(id),
+                                                       describe_operation="Оплата на сумму " +
+                                                                          str(payment.amount) + " BYN. " +
+                                                                          str(m), status=c,
+                                                       amount=amount, date_operation=datetime.date.today())
+            sm.Sender("Оплата аренды с помощью автоматического платежа",
+                      "Оплата аренды №" + str(done_rent.id_house_id) + " на сумму " +
+                      str(amount) + " BYN. " + str(m), email_from).sender()
+
+            qp = models.QuickPayment.objects.get(id=pay.quick_payment_id)
+            done_rent = models.DoneRent.objects.get(id=qp.rent_id)
+            email_to = models.MyUser.objects.get(id=done_rent.id_user_owner_id)
+            amount = models.QuickPayment.objects.get(id=pay.quick_payment_id).amount
+            models.LogOperationsBalance.objects.create(id_user=done_rent.id_user_owner_id,
+                                                       type_operation='Оплата автоматическим платежом № ' +
+                                                                      str(id),
+                                                       describe_operation="Оплата аренды на сумму " + str(
                                                            payment.amount) + " BYN. " + str(m), status=c,
                                                        amount=amount, date_operation=datetime.date.today())
+            sm.Sender("Оплата аренды с помощью автоматического платежа",
+                      "Оплата аренды №" + str(done_rent.id_house_id) + " на сумму " +
+                      str(amount) + " BYN. " + str(m), email_to).sender()
 
     def fine_check(self):
         rent = models.DoneRent.objects.filter(next_payment_date=(datetime.datetime.today()

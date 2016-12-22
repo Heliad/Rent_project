@@ -119,7 +119,7 @@ def refillBalance(request):
                              request.user, False).make_transaction()
 
         response = {"message": m, "status": c}
-        models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Пополнение',
+        models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Пополнение баланса',
                                                    describe_operation="Пополнение баланса на сумму " +
                                                                       str(request.POST['size']) + " BYN. " + str(m),
                                                    date_operation=datetime.date.today(), status=c,
@@ -272,6 +272,12 @@ def edit_profile(request):
         form = EditProfile(request.POST)
 
         if form.is_valid():
+            list_users = models.MyUser.objects.all()
+            for us in list_users:
+                if us.email == form.cleaned_data['email']:
+                    error = "Пользователь с таким почтовым адресом уже зарегистрирован"
+                    return render(request, "Profile/EditProfile.html", {'form': form, 'error': error})
+
             user = request.user
             user.email = form.cleaned_data['email']
             user.name = form.cleaned_data['name']
@@ -281,6 +287,7 @@ def edit_profile(request):
             user.passport_id = form.cleaned_data['passport_id']
             user.phone = form.cleaned_data['phone']
             user.address = form.cleaned_data['address']
+
             try:
                 models.MyUser.objects.get(
                     email=form.cleaned_data['email'],
@@ -435,11 +442,26 @@ def choose_payment(request, id_donerent):
 
         response = {"message": m, "status": c}
 
-        # Логирование операции оплаты аренды
+        # Логирование операции оплаты аренды и отправка уведомлений на почту
+        rent = models.DoneRent.objects.get(id=id_donerent)
+        house = models.Rent.objects.get(id=rent.id_house_id)
+        user_to_email = models.MyUser.objects.get(id=house.user_login_id).email
         models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Оплата аренды',
                                                    describe_operation="Оплата на сумму " +
                                                                       str(request.POST['size']) + " BYN. " +
-                                                                      str(m), date_operation=datetime.date.today())
+                                                                      str(m), date_operation=datetime.date.today(),
+                                                   status=c, amount=str(request.POST['size']))
+        sm.Sender("Оплата аренды с помощью быстрого платежа", "Оплата аренды № " + str(house.id) + " на сумму " +
+                  str(request.POST['size']) + " BYN. " + str(m), request.user.email).sender()
+
+        models.LogOperationsBalance.objects.create(id_user=rent.id_user_owner_id,
+                                                   type_operation='Получение оплаты за аренду',
+                                                   describe_operation="Получение оплаты на сумму " +
+                                                                      str(request.POST['size']) + " BYN. " +
+                                                                      str(m), date_operation=datetime.date.today(),
+                                                   status=c, amount=str(request.POST['size']))
+        sm.Sender("Оплата аренды с помощью быстрого платежа", "Оплата аренды № " + str(house.id) + " на сумму " +
+                  str(request.POST['size']) + " BYN. " + str(m), user_to_email).sender()
 
         response = json.dumps(response, ensure_ascii=False)
 
@@ -534,6 +556,25 @@ def quick_payment_info(request, id):
                                                    describe_operation="Оплата на сумму " + str(payment.amount) +
                                                                       " BYN. " + str(m), amount=payment.amount,
                                                    date_operation=datetime.date.today(), status=True)
+        done_rent = models.DoneRent.objects.get(id=q_pay.rent_id)
+        rent = done_rent.id_house_id
+        rrrent = models.Rent.objects.get(id=rent)
+        mail_to = models.MyUser.objects.get(id=rrrent.user_login_id).email
+        sm.Sender("Оплата аренды с помощью автоматического платежа",
+                  "Оплата аренды №" + str(rrrent.id) + " на сумму " +
+                  str(payment.amount) + " BYN. " + str(m), request.user.email).sender()
+
+        models.LogOperationsBalance.objects.create(id_user=rrrent.user_login_id,
+                                                   type_operation='Получение оплаты за аренду',
+                                                   describe_operation="Получение оплаты на аренды дома № " +
+                                                                      str(rrrent.id) + " на сумму " +
+                                                                      str(payment.amount) + " BYN. " +
+                                                                      str(m), date_operation=datetime.date.today(),
+                                                   status=True, amount=payment.amount)
+        sm.Sender("Оплата аренды с помощью автоматического платежа",
+                  "Получение оплаты аренды №" + str(rrrent.id) + " на сумму " +
+                  str(payment.amount) + " BYN. " + str(m), mail_to).sender()
+
         return render(request, 'Profile/Thanks.html', {'mes': m})
 
 
