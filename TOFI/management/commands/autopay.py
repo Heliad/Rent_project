@@ -16,7 +16,8 @@ class Command(BaseCommand):
             else:
                 tr_from = models.UserCard.objects.get(card_num=payment.user_payment)
             tr_to = models.MyUser.objects.get(
-                id=models.Rent.objects.get(id=models.DoneRent.objects.get(id=payment.rent_id).id_house.id).user_login)
+                id=models.Rent.objects.get(
+                    id=models.DoneRent.objects.get(id=payment.rent_id).id_house.id).user_login.id)
             c, m = transaction.Transaction(payment.amount, tr_from, tr_to).make_transaction()
             if c:
                 transaction.PaymentManager(payment.amount, models.DoneRent.objects.get(id=payment.rent_id)).run()
@@ -26,7 +27,7 @@ class Command(BaseCommand):
             amount = models.QuickPayment.objects.get(id=pay.quick_payment.id).amount
             models.LogOperationsBalance.objects.create(id_user=user_id,
                                                        type_operation='Выполнение автоматического платежа № ' +
-                                                                      str(id),
+                                                                      str(pay.id),
                                                        describe_operation="Оплата на сумму " + str(
                                                            payment.amount) + " BYN. " + str(m), status=c,
                                                        amount=amount, date_operation=datetime.date.today())
