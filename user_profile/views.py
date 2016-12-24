@@ -78,7 +78,8 @@ def add_card(request):
             if t.Check(card_num, period_validity, name_card_owner, CVC2_CVV).check_card():
                 for i in request.user.user_card_id.all():
                     if i.card_num == card_num:
-                        return render(request, 'Profile/Thanks.html', {'mes': 'карта уже добавлена'})
+                        return HttpResponse(json.dumps({'mes': 'Карта уже добавлена',
+                                                        'status': False}, ensure_ascii=False))
                 request.user.user_card_id.add(models.UserCard.objects.get(card_num=card_num))
                 response = json.dumps({'mes': 'Карта успешно добавлена', 'status': True}, ensure_ascii=False)
             else:
@@ -758,8 +759,19 @@ def delete_card(request, id):
     if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
 
-    request.user.user_card_id.remove(models.UserCard.objects.get(id=id))
-    return HttpResponseRedirect('/profile')
+    q_payment = models.QuickPayment.objects.filter(user_payment=models.UserCard.objects.get(id=id).card_num)
+    if request.method == 'GET':
+        return render(request, 'Profile/DeleteCard.html', {'payments': q_payment, 'id': id})
+    else:
+        request.user.user_card_id.remove(models.UserCard.objects.get(id=id))
+        for p in q_payment:
+            try:
+                q = models.AutoPayment.objects.get(quick_payment=p)
+                q.delete()
+            except:
+                pass
+            p.delete()
+        return HttpResponseRedirect('/profile')
 
 
 def delete_quick_payment(request, id):
@@ -888,4 +900,3 @@ def close_rent(request, rent_id):
                                                 text_message=text_message, text_more='',
                                                 login_user_from=request.user.username, id_rent=rent_id, type_mes=False)
         return HttpResponseRedirect('/profile')
-

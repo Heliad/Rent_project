@@ -1,0 +1,17 @@
+{% if payments %}
+    <a class="text-center">К данной карте привязаны следующие платежи: </a>
+    {% for p in payments %}
+        <div class="row padding">
+            <button class="button8">Быстрый платеж {{ p.id }}</button>
+        </div>
+    {% endfor %}
+{% endif %}
+<div class="row">
+    <div class="col-md-6">
+        <a class="text-center">Вы уверены?</a>
+    </div>
+</div>
+<form action="delete_card/{{ id }}" method="post">
+    {% csrf_token %}
+    <input type="submit" class="btn btn-outline-danger btn-block" value="Удалить">
+</form>

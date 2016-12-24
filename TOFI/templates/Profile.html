@@ -14,7 +14,9 @@
                                  aria-label="...">
                                 <button type="button" value="{{ card }}"
                                         class="change btn btn-info text-center b1">{{ card }}</button>
-                                <a href="delete_card/{{ user_card.id }}" class="btn btn-outline-danger b2">&times;</a>
+                                <button data-toggle="modal" data-target="#myModal"
+                                        onclick="del_card_click({{ user_card.id }})"
+                                        class="btn btn-outline-danger b2">&times;</button>
                             </div>
                         </td>
                     </tr>
@@ -209,6 +211,10 @@
         function del_rent_click(id) {
             document.getElementsByClassName('modal-body')[0].innerHTML = get('close_rent/' + id);
             document.getElementsByClassName('modal-title')[0].innerHTML = 'Закрытие аренды';
+        }
+        function del_card_click(id) {
+            document.getElementsByClassName('modal-body')[0].innerHTML = get('delete_card/' + id);
+            document.getElementsByClassName('modal-title')[0].innerHTML = 'Удаление карты';
         }
     </script>
     <script src="/static/javascript/post_choose_payment.js"></script>

@@ -1,9 +1,9 @@
 import datetime
-from TOFI import send_mail as sm
 
 from django.core.management.base import BaseCommand
 
 from TOFI import models, transaction
+from TOFI import send_mail as sm
 
 
 class Command(BaseCommand):
@@ -12,13 +12,12 @@ class Command(BaseCommand):
         self.stdout.write(str(datetime.datetime.today().strftime('%Y-%m-%d')))
         for pay in auto_pay:
             # Проверка на бан
-            user_id = pay.username_id
+            user_id = pay.quick_payment.username.id
             user = models.MyUser.objects.get(id=user_id)
             if user.is_active:
-                #
                 payment = models.QuickPayment.objects.get(id=pay.quick_payment.id)
                 if payment.user_payment == 'Кошелек':
-                    tr_from = models.MyUser.objects.get(id=payment.username_id)
+                    tr_from = models.MyUser.objects.get(id=payment.username.id)
                 else:
                     tr_from = models.UserCard.objects.get(card_num=payment.user_payment)
                 tr_to = models.MyUser.objects.get(
