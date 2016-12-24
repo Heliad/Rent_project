@@ -264,7 +264,7 @@ def edit_profile(request):
         email = forms.CharField(label="Почтовый адрес:", max_length=50, required=True, initial=request.user.email,
                                 validators=[EmailValidator()])
         passport_id = forms.CharField(label='Номер пасспорта:', max_length='9', min_length=9, required=True,
-                                      validators=[RegexValidator('^[А-Я]{2,2}[0-9]{7,7}$')],
+                                      validators=[RegexValidator('^(АВ|ВМ|НВ|КН|МР|МС|КВ|РР|МН)[0-9]{7,7}$')],
                                       initial=request.user.passport_id)
         phone = forms.CharField(label="Ваш номер телефона:", max_length=50, required=True, initial=request.user.phone,
                                 validators=[RegexValidator('^\+[0-9\-\ ]*$')])
