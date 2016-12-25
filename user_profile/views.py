@@ -263,7 +263,7 @@ def edit_profile(request):
                                  validators=[MaxValueValidator(100), MinValueValidator(18)])
         email = forms.CharField(label="Почтовый адрес:", max_length=50, required=True, initial=request.user.email,
                                 validators=[EmailValidator()])
-        passport_id = forms.CharField(label='Номер пасспорта:', max_length='9', min_length=9, required=True,
+        passport_id = forms.CharField(label='Номер паспорта:', max_length='9', min_length=9, required=True,
                                       validators=[RegexValidator('^(АВ|ВМ|НВ|КН|МР|МС|КВ|РР|МН)[0-9]{7,7}$')],
                                       initial=request.user.passport_id)
         phone = forms.CharField(label="Ваш номер телефона:", max_length=50, required=True, initial=request.user.phone,
@@ -278,8 +278,9 @@ def edit_profile(request):
             list_users = models.MyUser.objects.all()
             for us in list_users:
                 if us.email == form.cleaned_data['email']:
-                    error = "Пользователь с таким почтовым адресом уже зарегистрирован"
-                    return render(request, "Profile/EditProfile.html", {'form': form, 'error': error})
+                    if us.username != request.user.username:
+                        error = "Пользователь с таким почтовым адресом уже зарегистрирован"
+                        return render(request, "Profile/EditProfile.html", {'form': form, 'error': error})
 
             user = request.user
             user.email = form.cleaned_data['email']
@@ -308,6 +309,7 @@ def edit_profile(request):
                 return render(request, 'Profile/EditProfileDone.html')
         else:
             err = form.errors.as_data()
+            print(err)
             if 'phone' in err:
                 error = 'Недопустимый номер телефона!(Пример: +375 12 345 67 89)'
             if 'username' in err:

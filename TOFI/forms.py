@@ -19,7 +19,7 @@ class UserForm(forms.ModelForm):
     email = forms.CharField(label='Email:', max_length=50, validators=[EmailValidator()])
     phone = forms.CharField(label='Телефон:', max_length=50, validators=[RegexValidator('^\+[0-9\-\ ]*$')])
     address = forms.CharField(label='Адрес:', max_length=50, validators=[RegexValidator('^[0-9а-яА-Я/./,/;/ /-]*$')], initial='рапрап')
-    passport_id = forms.CharField(label='Номер пасспорта:', max_length='9', min_length=9, required=True,
+    passport_id = forms.CharField(label='Номер паспорта:', max_length='9', min_length=9, required=True,
                                   validators=[RegexValidator('^(АВ|ВМ|НВ|КН|МР|МС|КВ|РР|МН)[0-9]{7,7}$')], initial='АВ3534534')
 
     ie = forms.BooleanField(label='ИП', widget=forms.CheckboxInput(attrs={'onchange': "onChange()"}),
