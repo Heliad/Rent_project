@@ -46,4 +46,5 @@ urlpatterns = [
 
     url(r'delete_auto_payment/(?P<id>\d*)', viewsProfile.delete_auto_payment, name='DeleteAutoPayment'),
     url(r'edit_auto_payment/(?P<id>\d*)', viewsProfile.edit_auto_payment, name='EditAutoPayment'),
+    url(r'add_image', views.upload_pic, name='addImage'),
 ]

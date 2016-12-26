@@ -3,7 +3,7 @@ import datetime
 from django import forms
 from django.core.validators import *
 
-from .models import MyUser, Rent, AddImage
+from .models import MyUser, Rent
 
 
 class UserForm(forms.ModelForm):
@@ -145,8 +145,5 @@ class EditPenalty(forms.Form):
                                     validators=[RegexValidator('^[0-9]{1,6}(,|.){1,1}[0-9]{1,2}$')])
 
 
-class AddImageForm(forms.ModelForm):
-
-    class Meta:
-        model = AddImage
-        fields = ['image', 'name', 'describe']
+class ImageUploadForm(forms.Form):
+    image = forms.ImageField()
