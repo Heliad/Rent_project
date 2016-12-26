@@ -40,4 +40,32 @@
                 </td>
             </tr>
         </table>
+
+        {% if images %}
+            {% for image in images %}
+                <table class="center">
+                    <tr class="padding" align="center" >
+                        <td class="padding">
+                            <img src="{{ image.model_pic.url }}" alt="HouseView" style="width:500px;height:400px;">
+                        </td>
+                    </tr>
+                    <tr class="padding" align="center" >
+                        <td class="padding">
+                            {{ image.name }}
+                        </td>
+                    </tr>
+                    <tr class="padding" align="center" >
+                        <td class="padding">
+                            {{ image.describe }}
+                        </td>
+                    </tr>
+                </table>
+            {% endfor %}
+        {% else %}
+            <tr class="padding">
+                <td class="padding">
+                    Фотографий нет
+                </td>
+            </tr>
+        {% endif %}
 {% endblock %}

@@ -221,3 +221,6 @@ class SessionKeys(models.Model):
 
 class ImageModel(models.Model):
     model_pic = models.ImageField(upload_to='pic_folder/', default='pic_folder/None/no-img.jpg')
+    id_rent = models.ForeignKey(Rent, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+    describe = models.CharField(max_length=150)

@@ -146,15 +146,15 @@
     </table>
     <table name="TOFI_quickpayment" schema="" catalog="" type="TABLE">
       <column name="id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
-      <column name="user_payment" sqlType="VARCHAR(50)" precision="0" scale="-1" nullable="false" jdbcType="12"/>
       <column name="amount" sqlType="REAL" precision="0" scale="-1" nullable="false" jdbcType="6"/>
-      <column name="rent_id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
       <column name="username_id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
+      <column name="rent_id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>
+      <column name="user_payment" sqlType="VARCHAR(50)" precision="0" scale="-1" nullable="false" jdbcType="12"/>
       <primary-key columns="id"/>
-      <foreign-key name="#FAKE_TOFI_quickpayment_1" columns="username_id" ref-table="TOFI_myuser" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
-      <foreign-key name="#FAKE_TOFI_quickpayment_2" columns="rent_id" ref-table="TOFI_donerent" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
-      <index name="TOFI_quickpayment_bbe0c9aa" unique="true" columns="username_id"/>
+      <foreign-key name="#FAKE_TOFI_quickpayment_1" columns="rent_id" ref-table="TOFI_donerent" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
+      <foreign-key name="#FAKE_TOFI_quickpayment_2" columns="username_id" ref-table="TOFI_myuser" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
       <index name="TOFI_quickpayment_2d9987c0" unique="true" columns="rent_id"/>
+      <index name="TOFI_quickpayment_bbe0c9aa" unique="true" columns="username_id"/>
     </table>
     <table name="TOFI_rent" schema="" catalog="" type="TABLE">
       <column name="id" sqlType="INTEGER" precision="0" scale="-1" nullable="false" jdbcType="4"/>

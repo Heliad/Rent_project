@@ -707,7 +707,12 @@ def edit_my_house(request, id_rent):
 
     else:
         form = EditRent()
-        return render(request, 'Profile/EditMyRent.html', {'form': form})
+        try:
+            rent = models.Rent.objects.get(id=id_rent)
+        except models.Rent.DoesNotExist:
+            return HttpResponseRedirect('/profile/my_houses_owner')
+        images = models.ImageModel.objects.filter(id_rent_id=rent)
+        return render(request, 'Profile/EditMyRent.html', {'form': form, 'id_house': rent.id, 'images': images})
 
 
 def delete_my_house(request, id_rent):

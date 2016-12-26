@@ -1,11 +1,35 @@
 {% extends "base.html" %}
-{% block title %}Вход{% endblock %}
+{% block title %}Загрузка фотографии{% endblock %}
 {% block content %}
-    <form action="{% url 'upload_pic' %}" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-    <p>
-        <input id="id_image" type="file" class="" name="image">
-    </p>
-    <input type="submit" value="Submit" />
-</form>
+        <form action="/add_image/{{ id_house }}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <table class="center">
+                <tr class="padding">
+                    <td>
+                        <input id="id_image" type="file" name="image">
+                    </td>
+                </tr>
+                <tr class="padding">
+                    <td class="padding">
+                        Название фото:
+                    </td>
+                    <td>
+                        <input id="id_name" type="text" name="name">
+                    </td>
+                </tr>
+                <tr class="padding">
+                    <td class="padding">
+                        Описание фото:
+                    </td>
+                    <td>
+                        <input id="id_describe" type="text" name="describe">
+                    </td>
+                </tr>
+                <tr class="padding">
+                    <td>
+                        <input type="submit" value="Сохранить" />
+                    </td>
+                </tr>
+            </table>
+        </form>
 {% endblock %}

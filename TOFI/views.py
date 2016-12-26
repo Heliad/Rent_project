@@ -205,12 +205,15 @@ def logout_view(request):
 
 
 def aboutHouse(request, number):
+    house = models.Rent.objects.get(id=int(number))
+    images = models.ImageModel.objects.filter(id_rent_id=house)
+
     d = list(models.Rent.objects.all())
     for i in d:
         if i.getId() == number:
-            context = {'rent': i}
+            rent = i
 
-    return render(request, "AboutHouse.html", context)
+    return render(request, "AboutHouse.html", {'rent': rent, 'images': images})
 
 
 def make_rent(request, number):
@@ -404,12 +407,16 @@ def reset_password(request):
     return render(request, 'ForgottenPassword.html', {'form': form, 'error': error, 'no_error': no_error})
 
 
-def upload_pic(request):
+def upload_pic(request, id_house):
     if request.method == 'POST':
         form = ImageUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            #m = ImageUploadForm.objects.get(pk=course_id)
-            #m.model_pic = form.cleaned_data['image']
-            #m.save()
-            return HttpResponse('image upload success')
-    return 0 #HttpResponseForbidden('allowed only via POST')
+            house = models.Rent.objects.get(id=id_house)
+            models.ImageModel.objects.create(model_pic=form.cleaned_data['image'],
+                                             name=form.cleaned_data['name'],
+                                             describe=form.cleaned_data['describe'],
+                                             id_rent=house)
+            return render(request, 'Profile/Thanks.html', {'mes': "Фотография успешно загружена на сервер."})
+    else:
+        form = ImageUploadForm()
+    return render(request, 'add_image.html', {'form': form, 'id_house': id_house})

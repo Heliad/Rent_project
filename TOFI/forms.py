@@ -146,4 +146,6 @@ class EditPenalty(forms.Form):
 
 
 class ImageUploadForm(forms.Form):
-    image = forms.ImageField()
+    image = forms.ImageField(required=True)
+    name = forms.CharField(max_length=50, required=True)
+    describe = forms.CharField(max_length=150, required=True)

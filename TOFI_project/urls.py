@@ -3,6 +3,9 @@ from django.conf.urls import url, include
 from TOFI import views, viewAdmin, viewModer
 from user_profile import views as viewsProfile
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     url(r'^$', views.main_view, name='Main'),
 
@@ -46,5 +49,6 @@ urlpatterns = [
 
     url(r'delete_auto_payment/(?P<id>\d*)', viewsProfile.delete_auto_payment, name='DeleteAutoPayment'),
     url(r'edit_auto_payment/(?P<id>\d*)', viewsProfile.edit_auto_payment, name='EditAutoPayment'),
-    url(r'add_image', views.upload_pic, name='addImage'),
-]
+
+    url(r'add_image/(?P<id_house>\d*)', views.upload_pic, name='addImage'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
