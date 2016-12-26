@@ -125,7 +125,7 @@ EMAIL_HOST_PASSWORD = '1234567890qwertY'
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Minsk'
 
 USE_I18N = True
 

@@ -85,6 +85,7 @@
                     <a class="btn button7 text-left" href="{% url 'ExtractBalance' %}">Транзакции</a>
                 </td>
             </tr>
+            {% if not request.user.ie %}
             <tr>
                 <td class="padding-top-bottom10">
                     <a class="btn button7 text-left" href="{% url 'AutoPayment' %}">Автоплатеж</a>
@@ -95,6 +96,7 @@
                     <a class="btn button7 text-left" href="{% url 'QuickPayment' %}">Быстрый платеж</a>
                 </td>
             </tr>
+            {% endif %}
         {% endif %}
             <tr>
                 <td class="padding-top-bottom10">

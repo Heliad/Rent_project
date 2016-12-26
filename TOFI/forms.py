@@ -1,8 +1,7 @@
-import datetime
-
 from django import forms
 from django.core.validators import *
 
+from machine import *
 from .models import MyUser, Rent
 
 
@@ -124,7 +123,7 @@ class ExtractBalance(forms.Form):
                                    widget=forms.DateInput(attrs={'class': 'datetime'}), required=True)
     period_end = forms.DateField(input_formats=['%d/%m/%Y'], label="Конец периода:",
                                  widget=forms.DateInput(attrs={'class': 'datetime'}), required=True,
-                                 initial=datetime.date.today().strftime('%d/%m/%Y'))
+                                 initial=datetime.now().strftime('%d/%m/%Y'))
 
 
 class CreateBlock(forms.ModelForm):

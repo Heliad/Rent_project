@@ -15,6 +15,7 @@ from django.views.generic.edit import FormView
 
 from TOFI import models
 from TOFI import send_mail as sm
+from machine import *
 from .forms import *
 
 
@@ -28,7 +29,9 @@ def main_view(request):
             return HttpResponseRedirect("/mainadmin")
         if request.user.is_moder:
             return HttpResponseRedirect("/main_moder")
-    context = {'rent': [i for i in list(models.Rent.objects.all())], 'comments': [i for i in list(models.Comment.objects.all())]}
+    context = {'rent': [i for i in list(models.Rent.objects.all())],
+               'comments': [i for i in list(models.Comment.objects.all())],
+               'date': datetime.now()}
     return render(request, 'Main.html', context)
 
 

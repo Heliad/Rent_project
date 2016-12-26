@@ -1,5 +1,7 @@
+from django.core import management
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+
 from TOFI import models
 from TOFI import transaction as t
 from .forms import *
@@ -290,3 +292,23 @@ def refill_balance_admin(request, id_user):
     else:
         form = RefillBalance()
     return render(request, "Admin/RefillBalanceAdmin.html", {'form': form, 'error': error})
+
+
+def change_time(request):
+    class ChangeTime(forms.Form):
+        shift_time = forms.IntegerField(label='Кол-во дней:')
+
+    if request.method == 'GET':
+        form = ChangeTime()
+        return render(request, 'Admin/ChangeTime.html', {'form': form})
+    else:
+        form = ChangeTime(request.POST)
+        if form.is_valid():
+            shift = form.cleaned_data['shift_time']
+            for s in range(shift):
+                start_shift_at_datetime(datetime.now() + timedelta(days=1))
+                management.call_command('autopay')
+            print(datetime.now())
+            return HttpResponseRedirect('/mainadmin')
+        else:
+            return HttpResponseRedirect('/mainadmin')

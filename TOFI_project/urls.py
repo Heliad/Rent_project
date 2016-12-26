@@ -1,10 +1,9 @@
+from django.conf import settings
 from django.conf.urls import url, include
+from django.conf.urls.static import static
 
 from TOFI import views, viewAdmin, viewModer
 from user_profile import views as viewsProfile
-
-from django.conf import settings
-from django.conf.urls.static import static
 
 urlpatterns = [
     url(r'^$', views.main_view, name='Main'),
@@ -37,6 +36,7 @@ urlpatterns = [
     url(r'edituseradmin/(?P<id_user>\d*)', viewAdmin.edit_user_admin, name='EditUser'),
     url(r'monetization', viewAdmin.monetization, name='Monetization'),
     url(r'refill_balance_admin/(?P<id_user>\d*)', viewAdmin.refill_balance_admin, name='RefillBalanceAdmin'),
+                  url(r'change_time', viewAdmin.change_time, name='ChangeTime'),
 
     url(r'main_moder', viewModer.main_moder, name='MainModer'),
     url(r'all_penalties', viewModer.all_penalties, name='AllPenalties'),

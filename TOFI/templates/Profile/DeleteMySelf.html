@@ -16,13 +16,6 @@
                     Вы уверены?
                 </td>
             </tr>
-        {% if request.user.balance != 0 %}
-            <tr class="padding">
-                <td class="padding">
-                    Баланс: {{ balance }} BYN
-                </td>
-            </tr>
-        {% endif %}
             {% for field in form %}
                 <tr>
                     <td class="padding">{{ field.label }}</td>
