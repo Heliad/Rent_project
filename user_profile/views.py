@@ -149,7 +149,8 @@ def unfillBalance(request):
             name_card_owner = form.cleaned_data['name_card_owner']
             CVC2_CVV = form.cleaned_data['CVC2_CVV']
             size = form.cleaned_data['size']
-
+            if size > request.user.balance:
+                return render(request, 'Profile/Thanks.html', {'mes': "Недостаточно средств на балансе!"})
             if t.Check(card_num, period_validity, name_card_owner, CVC2_CVV).check_card():
                 t.Transaction(size, request.user, card_num).make_transaction()
 
@@ -161,7 +162,7 @@ def unfillBalance(request):
                                                            amount=size)
                 sm.Sender("Вывод средств", "Вывод средств на сумму " + str(size) + " BYN, успешно проведён.",
                           request.user.email).sender()
-                mes = request.user.name + ", средства на сумму " + str(size)+ " BYN, успешно выведены на карту"
+                mes = request.user.name + ", средства на сумму " + str(size) + " BYN, успешно выведены на карту"
             else:
                 mes = "Введены неверные данные!"
             return render(request, 'Profile/Thanks.html', {'mes': mes})
@@ -264,8 +265,8 @@ def edit_profile(request):
                                  validators=[MaxValueValidator(100), MinValueValidator(18)])
         email = forms.CharField(label="Почтовый адрес:", max_length=50, required=True, initial=request.user.email,
                                 validators=[EmailValidator()])
-        passport_id = forms.CharField(label='Номер пасспорта:', max_length='9', min_length=9, required=True,
-                                      validators=[RegexValidator('^[А-Я]{2,2}[0-9]{7,7}$')],
+        passport_id = forms.CharField(label='Номер паспорта:', max_length='9', min_length=9, required=True,
+                                      validators=[RegexValidator('^(АВ|ВМ|НВ|КН|МР|МС|КВ|РР|МН)[0-9]{7,7}$')],
                                       initial=request.user.passport_id)
         phone = forms.CharField(label="Ваш номер телефона:", max_length=50, required=True, initial=request.user.phone,
                                 validators=[RegexValidator('^\+[0-9\-\ ]*$')])
@@ -279,8 +280,9 @@ def edit_profile(request):
             list_users = models.MyUser.objects.all()
             for us in list_users:
                 if us.email == form.cleaned_data['email']:
-                    error = "Пользователь с таким почтовым адресом уже зарегистрирован"
-                    return render(request, "Profile/EditProfile.html", {'form': form, 'error': error})
+                    if us.username != request.user.username:
+                        error = "Пользователь с таким почтовым адресом уже зарегистрирован"
+                        return render(request, "Profile/EditProfile.html", {'form': form, 'error': error})
 
             user = request.user
             user.email = form.cleaned_data['email']
@@ -309,6 +311,7 @@ def edit_profile(request):
                 return render(request, 'Profile/EditProfileDone.html')
         else:
             err = form.errors.as_data()
+            print(err)
             if 'phone' in err:
                 error = 'Недопустимый номер телефона!(Пример: +375 12 345 67 89)'
             if 'username' in err:
@@ -337,9 +340,21 @@ def mails(request):
     if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
 
-    mails = models.MessageStatusRent.objects.all().filter(id_user_to=request.user.id)
+    mails = models.MessageStatusRent.objects.all().filter(id_user_to=request.user.id).order_by('-creation_date')
 
     for mail in mails:
+        if not mail.is_done:
+            # Проверка на релевантность
+            id_rent = mail.id_rent
+            done_rent = models.DoneRent.objects.filter(id_house_id=id_rent)
+            if done_rent:
+                mail.is_done = True
+
+            # Проверка на существование дома
+            house = models.Rent.objects.filter(id=id_rent)
+            if not house:
+                mail.is_done = True
+
         mail.is_new = False
         mail.save()
     return render(request, "Profile/Mails.html", {'mails': mails})
@@ -391,6 +406,8 @@ def reject_rent(request, id_mes):
         if form.is_valid():
             reason = form.cleaned_data['reject_reason']
             message = models.MessageStatusRent.objects.get(id=id_mes)
+            message.is_done = True
+            message.save()
             house = models.Rent.objects.get(id=message.id_rent)
             text_message = 'Отказ на запрос о аренде дома под номером: ' + str(house.id) + " (" + \
                            str(house.name) + ")"
@@ -537,9 +554,11 @@ def quick_payment_info(request, id):
         return HttpResponseRedirect("/login")
 
     if request.method == 'GET':
-        payment = models.QuickPayment.objects.get(id=id)
         rent = []
+        payment = ''
         try:
+            payment = models.QuickPayment.objects.get(id=id)
+            rent = []
             rent = models.Rent.objects.get(id=models.DoneRent.objects.get(id=payment.rent_id).id_house.id)
         except:
             pass
@@ -778,8 +797,11 @@ def delete_quick_payment(request, id):
     if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
 
-    qp = models.QuickPayment.objects.get(id=id)
-    qp.delete()
+    try:
+        qp = models.QuickPayment.objects.get(id=id)
+        qp.delete()
+    except models.QuickPayment.DoesNotExist:
+        return render(request, 'Profile/Thanks.html', {'mes': "Быстрый платеж не найден."})
     return render(request, 'Profile/Thanks.html', {'mes': "Быстрый платеж успешно удалён."})
 
 
@@ -787,7 +809,11 @@ def edit_quick_payment(request, id):
     if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
 
-    qp = models.QuickPayment.objects.get(id=id)
+    try:
+        qp = models.QuickPayment.objects.get(id=id)
+    except models.QuickPayment.DoesNotExist:
+        return render(request, 'Profile/EditQuickPayment.html', {'form': ''})
+
     done_rent = models.DoneRent.objects.get(id=qp.rent_id)
     house_name = models.Rent.objects.get(id=done_rent.id_house_id).name
     if not qp.user_payment == "Кошелек":

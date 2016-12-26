@@ -217,3 +217,7 @@ class SessionKeys(models.Model):
     id_card = models.IntegerField()
     number_key = models.IntegerField()
     key = models.IntegerField()
+
+
+class ImageModel(models.Model):
+    model_pic = models.ImageField(upload_to='pic_folder/', default='pic_folder/None/no-img.jpg')

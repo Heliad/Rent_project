@@ -401,3 +401,14 @@ def reset_password(request):
         form = ResetPassword()
     form = ResetPassword()
     return render(request, 'ForgottenPassword.html', {'form': form, 'error': error, 'no_error': no_error})
+
+
+def upload_pic(request):
+    if request.method == 'POST':
+        form = ImageUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            #m = ImageUploadForm.objects.get(pk=course_id)
+            #m.model_pic = form.cleaned_data['image']
+            #m.save()
+            return HttpResponse('image upload success')
+    return 0 #HttpResponseForbidden('allowed only via POST')
