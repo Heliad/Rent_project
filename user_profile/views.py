@@ -135,7 +135,7 @@ def refillBalance(request):
             models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Пополнение баланса',
                                                        describe_operation="Пополнение баланса на сумму " +
                                                                           str(request.POST['size']) + " BYN. " + str(m),
-                                                       date_operation=datetime.date.today(), status=c,
+                                                       date_operation=date.today(), status=c,
                                                        amount=request.POST['size'])
             sm.Sender("Пополнение баланса",
                       "Пополнение баланса на сумму " + str(request.POST['size']) + " BYN. " + str(m),
@@ -144,7 +144,7 @@ def refillBalance(request):
             models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Снятие средств',
                                                        describe_operation="Снятие средств на сумму " +
                                                                           str(request.POST['size']) + " BYN. " + str(m),
-                                                       date_operation=datetime.date.today(), status=c,
+                                                       date_operation=date.today(), status=c,
                                                        amount=request.POST['size'])
             sm.Sender("Снятие средств", "Снятие средств на сумму " + str(request.POST['size']) + " BYN. " + str(m),
                       request.user.email).sender()
@@ -953,7 +953,7 @@ def close_rent(request, rent_id):
         try:
             models.DoneRent.objects.get(id=rent_id)
             rent = models.DoneRent.objects.get(id=rent_id)
-            if rent.next_payment_date < datetime.date.today():
+            if rent.next_payment_date < date.today():
                 context = {'mes': 'Аренда не погашена', 'status': False}
             else:
                 context = {'status': True, 'rent_id': rent_id}

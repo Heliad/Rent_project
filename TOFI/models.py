@@ -63,6 +63,7 @@ class UserCard(models.Model):
     name_card_owner = models.CharField(verbose_name="Имя держателя карты", max_length=50)
     CVC2_CVV = models.CharField(verbose_name="CVC2/CVV", max_length=3)
     size = models.FloatField(verbose_name='Баланс')
+    currency_type = models.CharField(max_length=3, default='BYN')
 
 
 class MyUser(AbstractBaseUser):

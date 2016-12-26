@@ -127,6 +127,9 @@ function amount_oninput() {
         if (num == "Infinity" || Number(amount.value) > 10000) {
             mon_notification.innerHTML = 'Сумма без комиссии до 10000 BYN'
         }
+        else if (num < 1) {
+            mon_notification.innerHTML = 'Сумма без комиссии от 1 BYN'
+        }
         else {
             mon_notification.innerHTML = 'Игото к оплате (+ коммисия ' + Number(document.getElementById('mon_value').innerHTML) * 100 + '%): ' + num + ' BYN'
         }
@@ -206,6 +209,13 @@ function check_data(a) {
         amount.value = "";
         amount.className = "form-control height70 formInvalid";
         amount.placeholder = "Сумма до 10000 BYN";
+        amount.style.borderColor = "red";
+        return 0;
+    }
+    else if (Number(amount.value) < 1) {
+        amount.value = "";
+        amount.className = "form-control height70 formInvalid";
+        amount.placeholder = "Сумма от 1 BYN";
         amount.style.borderColor = "red";
         return 0;
     }

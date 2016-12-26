@@ -1,8 +1,11 @@
+{% load filter_extra %}
 <div id="PayRent">
     {% for card, user_card in cards %}
-        <input type="button" class="button8" onclick="pay_rent({{ user_card.card_num }})" value="{{ card }}">
+        <input type="button" class="button8" onclick="pay_rent({{ user_card.card_num }})"
+               value="{{ card }} ({{ user_card.size|round_f }} {{ user_card.currency_type }})">
     {% endfor %}
-    <input type="button" class="button8" onclick="pay_rent('{{ request.user.username }}')" value="Кошелек">
+    <input type="button" class="button8" onclick="pay_rent('{{ request.user.username }}')"
+           value="Кошелек ({{ request.user.balance|round_f }} BYN)">
     <table>
         <tr>
             <td>Сохранить платеж</td>
