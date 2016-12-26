@@ -25,7 +25,7 @@ urlpatterns = [
     url(r'edit_quick_payment/(?P<id>\d*)', views.edit_quick_payment, name='DeleteQuickPayment'),
 
     url(r'my_penalties', views.my_penalties, name='MyPenalties'),
-    url(r'make_pay_penalties/(?P<id_penalty>[\w])', views.make_pay_penalty, name='MakePayPenalty'),
+    url(r'make_pay_penalties/(?P<id_penalty>\d*)', views.make_pay_penalty, name='MakePayPenalty'),
 
     url(r'my_houses_owner', views.my_all_houses_owner, name='MyAllHousesOwner'),
     url(r'edit_my_rent/(?P<id_rent>\d*)', views.edit_my_house, name='EditMyRent'),

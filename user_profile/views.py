@@ -633,34 +633,28 @@ def make_pay_penalty(request, id_penalty):
     if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
 
-    my_pens = models.DonePenalty.objects.filter(id=id_penalty)
+    my_pens = models.DonePenalty.objects.filter(id_user_for=request.user.id)
+    pen = models.DonePenalty.objects.get(id=id_penalty)
 
-    pen = my_pens.get(id=id_penalty)
-    id_done_rent = pen.id_done_rent
+    user_from = models.MyUser.objects.get(id=pen.id_user_for)
+    user_to = models.MyUser.objects.get(is_admin=True)
+    c, m = t.Transaction(pen.size_penalty, user_from,
+                         user_to, False).make_transaction()
 
-    done_rent = models.DoneRent.objects.get(id=id_done_rent)
+    mes = "Штраф не оплачен."
+    if c:
+        models.LogOperationsBalance.objects.create(id_user=request.user.id,
+                                                   type_operation=pen.describe_penalty,
+                                                   describe_operation="Оплата штрафа на сумму " +
+                                                                      str(pen.size_penalty) + " BYN. " + str(m),
+                                                   date_operation=datetime.date.today(),
+                                                   amount=pen.size_penalty, status=True)
+        pen.is_payd = True
+        pen.save()
+        mes = "Штраф оплачен."
 
-    if done_rent.paid_user < done_rent.pay_number:
-        return render(request, 'Profile/MyPenalties.html',
-                      {'pen': my_pens, 'message': "Сначала оплатите задолженность за аренду."})
-
-    else:
-        user_from = models.MyUser.objects.get(id=done_rent.id_user_renter)
-        user_to = models.MyUser.objects.get(id=done_rent.id_user_owner)
-        c, m = t.Transaction(pen.size_penalty, user_from,
-                             user_to, True).make_transaction()
-
-        if c:
-            models.LogOperationsBalance.objects.create(id_user=request.user.id,
-                                                       type_operation='Оплата штрафа за просрочку аренды',
-                                                       describe_operation="Оплата на сумму " +
-                                                                          str(pen.size_penalty) + " BYN. " +
-                                                                          str(m), date_operation=datetime.date.today())
-            pen.is_payd = True
-            pen.save()
-
-        return render(request, 'Profile/MyPenalties.html',
-                      {'pen': my_pens, 'message': "Штраф оплачен.", 'stat': m})
+    return render(request, 'Profile/Thanks.html',
+                  {'pen': my_pens, 'mes': mes + " " + m, 'stat': m})
 
 
 def my_all_houses_owner(request):

@@ -136,3 +136,39 @@ def about_done_rent(request, id_done_rent):
     return render(request, 'Moder/AboutDoneRent.html', {'done_rent': done_rent, 'name_house': name_house,
                                                         'login_renter': login_renter, 'login_owner': login_owner,
                                                         'id_rent': done_rent.id_house_id})
+
+
+def make_user_penalty(request, id_user):
+    login4ik = models.MyUser.objects.get(id=id_user).username
+    all_pen = models.Penalties.objects.all()
+
+    name_all_pen, id_all_pen = [], []
+    for pen in all_pen:
+        name_all_pen.append(str(pen.kind_penalty) + "(" + str(pen.cost_penalty) + " BYN)")
+        id_all_pen.append(pen.id)
+
+    listik = []
+    for i in range(len(name_all_pen)):
+        listik.append((id_all_pen[i], name_all_pen[i]))
+
+    class MakeUserPenalty(forms.Form):
+        login = forms.CharField(label="Кому:", initial=login4ik, required=True, max_length=50, min_length=3,
+                                widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+        penalties = forms.ChoiceField(label="Выберите штраф:", choices=listik, required=True)
+
+    if request.method == 'POST':
+        form = MakeUserPenalty(request.POST)
+
+        if form.is_valid():
+            id_pen = form.cleaned_data['penalties']
+            print(id_pen)
+            penalty = models.Penalties.objects.get(id=id_pen)
+            models.DonePenalty.objects.create(describe_penalty=penalty.describe_penalty, id_user_for=id_user,
+                                              id_done_rent=0, is_payd=False, size_penalty=penalty.cost_penalty)
+        return render(request, "Moder/Done.html", {'message': "Штраф назначен."})
+
+    else:
+        form = MakeUserPenalty()
+
+    return render(request, "Moder/MakeUserPenalty.html", {'form': form})
+

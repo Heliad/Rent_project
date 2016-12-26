@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Укажите штраф{% endblock %}
+{% block content %}
+    <form method="POST" class="center">
+        {% csrf_token %}
+        <table>
+            {% for field in form %}
+                <tr>
+                    <td class="padding">{{ field.label }}</td>
+                    <td>{{ field }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td>
+                    <button type="submit" class="button7">Отправить</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+{% endblock %}
