@@ -730,6 +730,12 @@ def delete_my_house(request, id_rent):
     return render(request, 'Profile/Thanks.html', {'mes': message})
 
 
+def delete_image(request, id_image):
+    im = models.ImageModel.objects.get(id=id_image)
+    im.delete()
+    return render(request, 'Profile/Thanks.html', {'mes': "Фотография успешно удалена."})
+
+
 def auto_payment(request):
     if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")

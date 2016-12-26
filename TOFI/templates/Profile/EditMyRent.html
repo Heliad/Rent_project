@@ -36,6 +36,11 @@
                         {{ image.describe }}
                     </td>
                 </tr>
+                <tr class="padding" align="center" >
+                    <td class="padding">
+                        <a href="/delete_image/{{ image.id }}">Удалить</a>
+                    </td>
+                </tr>
             </table>
         {% endfor %}
     {% else %}

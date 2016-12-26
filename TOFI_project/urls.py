@@ -51,4 +51,5 @@ urlpatterns = [
     url(r'edit_auto_payment/(?P<id>\d*)', viewsProfile.edit_auto_payment, name='EditAutoPayment'),
 
     url(r'add_image/(?P<id_house>\d*)', views.upload_pic, name='addImage'),
+    url(r'delete_image/(?P<id_image>\d*)', viewsProfile.delete_image, name='DeleteImage'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
