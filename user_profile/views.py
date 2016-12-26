@@ -491,7 +491,7 @@ def choose_payment(request, id_donerent):
         models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Оплата аренды',
                                                    describe_operation="Оплата на сумму " +
                                                                       str(request.POST['size']) + " BYN. " +
-                                                                      str(m), date_operation=datetime.date.today(),
+                                                                      str(m), date_operation=date.today(),
                                                    status=c, amount=str(request.POST['size']))
         sm.Sender("Оплата аренды с помощью быстрого платежа", "Оплата аренды № " + str(house.id) + " на сумму " +
                   str(request.POST['size']) + " BYN. " + str(m), request.user.email).sender()
@@ -500,7 +500,7 @@ def choose_payment(request, id_donerent):
                                                    type_operation='Получение оплаты за аренду',
                                                    describe_operation="Получение оплаты на сумму " +
                                                                       str(request.POST['size']) + " BYN. " +
-                                                                      str(m), date_operation=datetime.date.today(),
+                                                                      str(m), date_operation=date.today(),
                                                    status=c, amount=str(request.POST['size']))
         sm.Sender("Оплата аренды с помощью быстрого платежа", "Оплата аренды № " + str(house.id) + " на сумму " +
                   str(request.POST['size']) + " BYN. " + str(m), user_to_email).sender()
@@ -816,7 +816,8 @@ def delete_card(request, id):
         render(request, 'Profile/DoesNotExists.html')
     if models.UserCard.objects.get(id=id) not in request.user.user_card_id.all():
         return render(request, 'Profile/DoesNotExists.html')
-    q_payment = models.QuickPayment.objects.filter(user_payment=models.UserCard.objects.get(id=id).card_num)
+    q_payment = models.QuickPayment.objects.filter(user_payment=models.UserCard.objects.get(id=id).card_num,
+                                                   username=request.user)
 
     if request.method == 'GET':
         return render(request, 'Profile/DeleteCard.html', {'payments': q_payment, 'id': id})

@@ -76,6 +76,11 @@
                       <a class="dropdown-item" href="{% url 'Logout' %}">Выход</a>
                   </div>
               </li>
+              <li>
+                  <ul class="float-xs-right">
+                      <a></a>
+                  </ul>
+              </li>
           {% endif %}
 
       </ul>
@@ -91,7 +96,7 @@
       $("input").addClass("form-control height70");
       $(function () {
           $(".datetime").datetimepicker({
-              format: 'DD/MM/YYYY',
+              format: 'D/M/YYYY',
               locale: 'ru'
           });
       });

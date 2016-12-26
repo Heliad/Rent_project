@@ -1,15 +1,15 @@
-import datetime
-
+# import datetime
 from django.core.management.base import BaseCommand
 
 from TOFI import models, transaction
 from TOFI import send_mail as sm
+from machine import *
 
 
 class Command(BaseCommand):
     def auto_pay(self):
-        auto_pay = models.AutoPayment.objects.filter(next_payment_date=datetime.datetime.today().strftime('%Y-%m-%d'))
-        self.stdout.write(str(datetime.datetime.today().strftime('%Y-%m-%d')))
+        auto_pay = models.AutoPayment.objects.filter(next_payment_date=date.today().strftime('%Y-%m-%d'))
+        self.stdout.write(str(date.today().strftime('%Y-%m-%d')))
         for pay in auto_pay:
             # Проверка на бан
             user_id = pay.quick_payment.username.id
@@ -26,7 +26,7 @@ class Command(BaseCommand):
                 c, m = transaction.Transaction(payment.amount, tr_from, tr_to).make_transaction()
                 if c:
                     transaction.PaymentManager(payment.amount, models.DoneRent.objects.get(id=payment.rent_id)).run()
-                    pay.next_payment_date += datetime.timedelta(days=pay.payment_interval)
+                    pay.next_payment_date += timedelta(days=pay.payment_interval)
                     pay.save()
                 qp = models.QuickPayment.objects.get(id=pay.quick_payment_id)
                 done_rent = models.DoneRent.objects.get(id=qp.rent_id)
@@ -35,11 +35,11 @@ class Command(BaseCommand):
                 amount = models.QuickPayment.objects.get(id=pay.quick_payment_id).amount
                 models.LogOperationsBalance.objects.create(id_user=user_id,
                                                            type_operation='Выполнение автоматического платежа № ' +
-                                                                          str(id),
+                                                                          str(payment.id),
                                                            describe_operation="Оплата на сумму " +
                                                                               str(payment.amount) + " BYN. " +
                                                                               str(m), status=c,
-                                                           amount=amount, date_operation=datetime.date.today())
+                                                           amount=amount, date_operation=date.today())
                 sm.Sender("Оплата аренды с помощью автоматического платежа",
                           "Оплата аренды №" + str(done_rent.id_house_id) + " на сумму " +
                           str(amount) + " BYN. " + str(m), email_from).sender()
@@ -50,22 +50,22 @@ class Command(BaseCommand):
                 amount = models.QuickPayment.objects.get(id=pay.quick_payment_id).amount
                 models.LogOperationsBalance.objects.create(id_user=done_rent.id_user_owner_id,
                                                            type_operation='Оплата автоматическим платежом № ' +
-                                                                          str(id),
+                                                                          str(payment.id),
                                                            describe_operation="Оплата аренды на сумму " + str(
                                                                payment.amount) + " BYN. " + str(m), status=c,
-                                                           amount=amount, date_operation=datetime.date.today())
+                                                           amount=amount, date_operation=date.today())
                 sm.Sender("Оплата аренды с помощью автоматического платежа",
                           "Оплата аренды №" + str(done_rent.id_house_id) + " на сумму " +
                           str(amount) + " BYN. " + str(m), email_to).sender()
 
     def fine_check(self):
-        rent = models.DoneRent.objects.filter(next_payment_date=(datetime.datetime.today()
-                                                                 - datetime.timedelta(days=1)))
+        rent = models.DoneRent.objects.filter()
         for r in rent:
-            r.fine += (float(r.cost) - float(r.payed_until_time)) * 0.05
-            self.stdout.write(str(r.next_payment_date))
-            self.stdout.write(str(r.fine))
-            r.save()
+            if r.next_payment_date < date.today():
+                r.fine += (float(r.cost) - float(r.payed_until_time)) * 0.05
+                self.stdout.write(str(r.next_payment_date))
+                self.stdout.write(str(r.fine))
+                r.save()
 
     def add_arguments(self, parser):
         pass
