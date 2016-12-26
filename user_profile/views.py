@@ -339,9 +339,21 @@ def mails(request):
     if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
 
-    mails = models.MessageStatusRent.objects.all().filter(id_user_to=request.user.id)
+    mails = models.MessageStatusRent.objects.all().filter(id_user_to=request.user.id).order_by('-creation_date')
 
     for mail in mails:
+        if not mail.is_done:
+            # Проверка на релевантность
+            id_rent = mail.id_rent
+            done_rent = models.DoneRent.objects.filter(id_house_id=id_rent)
+            if done_rent:
+                mail.is_done = True
+
+            # Проверка на существование дома
+            house = models.Rent.objects.filter(id=id_rent)
+            if not house:
+                mail.is_done = True
+
         mail.is_new = False
         mail.save()
     return render(request, "Profile/Mails.html", {'mails': mails})
@@ -393,6 +405,8 @@ def reject_rent(request, id_mes):
         if form.is_valid():
             reason = form.cleaned_data['reject_reason']
             message = models.MessageStatusRent.objects.get(id=id_mes)
+            message.is_done = True
+            message.save()
             house = models.Rent.objects.get(id=message.id_rent)
             text_message = 'Отказ на запрос о аренде дома под номером: ' + str(house.id) + " (" + \
                            str(house.name) + ")"
