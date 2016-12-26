@@ -7,7 +7,6 @@
             <div>
                 {% for ap in auto_payments %}
                     <div class="card " style="max-width: 22rem;">
-                        <img class="card-img-top" src="/static/img/placeholder.svg" alt="Card image cap">
                         <div class="card-block">
                             <h4 class="card-title">Автоматический платёж №{{ ap.id }}</h4>
                         </div>
@@ -32,7 +31,7 @@
                 {% endfor %}
                 <div class="card " style="max-width: 22rem;">
                     <div class="card-block">
-                        <a href="{% url 'AddAutoPayment' %}" class="btn btn-primary btn-block">Добавить автооплату</a>
+                        <a href="{% url 'AddAutoPayment' %}" class="btn btn-primary btn-block">Добавить</a>
             </div>
         </div>
             </div>
@@ -41,7 +40,7 @@
         <div class="card-columns">
             <div class="card " style="max-width: 22rem;">
                 <div class="card-block">
-                    <a href="{% url 'AddAutoPayment' %}" class="btn btn-primary btn-block">Добавить автооплату</a>
+                    <a href="{% url 'AddAutoPayment' %}" class="btn btn-primary btn-block">Добавить</a>
                 </div>
             </div>
         </div>

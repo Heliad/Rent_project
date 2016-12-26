@@ -48,7 +48,7 @@ function pay_rent(card_id) {
         }
     }
 
-function fill_balance(card_id) {
+function fill_balance(card_id, type) {
     var amount = document.getElementById('amount');
     if (check_data(amount) == 0) {
         return 0
@@ -56,7 +56,7 @@ function fill_balance(card_id) {
     amount = Number(amount.value);
     var xmlhttp = getXmlHttp();
     var params = 'card_from=' + encodeURIComponent(card_id) +
-        '&size=' + encodeURIComponent(amount);
+        '&size=' + encodeURIComponent(amount) + '&type=' + encodeURIComponent(type);
     params += '&csrfmiddlewaretoken=' + document.getElementsByName('csrfmiddlewaretoken')[0].value;
     xmlhttp.open("POST", 'refillbalance/', true);
     xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');

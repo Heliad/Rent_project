@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import json
+import random
+import string
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
@@ -11,10 +13,8 @@ from django.shortcuts import render
 from django.views.generic import View
 from django.views.generic.edit import FormView
 
-from TOFI import send_mail as sm
-import random
-import string
 from TOFI import models
+from TOFI import send_mail as sm
 from .forms import *
 
 
@@ -56,10 +56,11 @@ class AddRent(View):
             other = form.cleaned_data['other']
             cost = form.cleaned_data['cost']
             cur_user = request.user
+            payment_interval = form.cleaned_data['payment_interval']
 
             models.Rent.objects.create(name=name, address=address, min_rent_time=min_rent_time, area=area,
                                        date_of_construction=date_of_construction, creation_date=creation_date,
-                                       other=other, cost=cost, user_login=cur_user)
+                                       other=other, cost=cost, user_login=cur_user, payment_interval=payment_interval)
             return HttpResponseRedirect('/')
 
         else:

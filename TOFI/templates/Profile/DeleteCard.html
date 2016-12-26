@@ -1,7 +1,7 @@
 {% if payments %}
     <a class="text-center">К данной карте привязаны следующие платежи: </a>
     {% for p in payments %}
-        <div class="row padding">
+        <div>
             <button class="button8">Быстрый платеж {{ p.id }}</button>
         </div>
     {% endfor %}

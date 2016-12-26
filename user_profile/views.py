@@ -117,19 +117,37 @@ def refillBalance(request):
             cards.append(card[:4] + ' XXXX XXXX ' + card[-4:])
         user_cards = request.user.user_card_id.all()
         c = [[i, j] for i, j in zip(cards, user_cards)]
-        return render(request, "Profile/RefillBalance.html", {'cards': c})
+        return render(request, "Profile/RefillBalance.html", {'cards': c, 'type': request.GET['type']})
     elif request.method == 'POST':
-        c, m = t.Transaction(request.POST['size'], request.POST['card_from'],
-                             request.user, False).make_transaction()
-
+        try:
+            request.user.user_card_id.get(card_num=request.POST['card_from'])
+        except:
+            return HttpResponse(json.dumps({'message': 'Карта не найдена', 'status': False}, ensure_ascii=False),
+                                content_type="text/html; charset=utf-8")
+        if int(request.POST['type']):
+            c, m = t.Transaction(request.POST['size'], request.POST['card_from'],
+                                 request.user, False).make_transaction()
+        else:
+            c, m = t.Transaction(request.POST['size'], request.user,
+                                 request.POST['card_from'], False).make_transaction()
         response = {"message": m, "status": c}
-        models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Пополнение баланса',
-                                                   describe_operation="Пополнение баланса на сумму " +
-                                                                      str(request.POST['size']) + " BYN. " + str(m),
-                                                   date_operation=datetime.date.today(), status=c,
-                                                   amount=request.POST['size'])
-        sm.Sender("Пополнение баланса", "Пополнение баланса на сумму " + str(request.POST['size']) + " BYN. " + str(m),
-                  request.user.email).sender()
+        if int(request.POST['type']):
+            models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Пополнение баланса',
+                                                       describe_operation="Пополнение баланса на сумму " +
+                                                                          str(request.POST['size']) + " BYN. " + str(m),
+                                                       date_operation=datetime.date.today(), status=c,
+                                                       amount=request.POST['size'])
+            sm.Sender("Пополнение баланса",
+                      "Пополнение баланса на сумму " + str(request.POST['size']) + " BYN. " + str(m),
+                      request.user.email).sender()
+        else:
+            models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Снятие средств',
+                                                       describe_operation="Снятие средств на сумму " +
+                                                                          str(request.POST['size']) + " BYN. " + str(m),
+                                                       date_operation=datetime.date.today(), status=c,
+                                                       amount=request.POST['size'])
+            sm.Sender("Снятие средств", "Снятие средств на сумму " + str(request.POST['size']) + " BYN. " + str(m),
+                      request.user.email).sender()
 
         response = json.dumps(response, ensure_ascii=False)
         return HttpResponse(response, content_type="text/html; charset=utf-8")
@@ -378,21 +396,14 @@ def accept_rent(request, id_mes):
         done_rent = models.DoneRent.objects.get(id=message.id_rent)
         rent = models.Rent.objects.get(id=done_rent.id_house.id)
         rent.status_rent = True
-        q_payment = models.QuickPayment.objects.filter(rent_id=done_rent.id,
-                                                       username_id=message.id_user_from)
-        a_payment = models.AutoPayment.objects.filter(quick_payment=q_payment)
-        for p in q_payment:
-            p.delete()
-        for a in a_payment:
-            a.delete()
-        rent.save()
         done_rent.delete()
+        rent.save()
     message.is_done = True
     message.save()
 
     user = models.MyUser.objects.get(id=message.id_user_from)
     # accept = "Запрос номер " + str(message.id) + ", на аренду дома " + str(house.name) \
-    #          + "подтверждён. Запрос от" + str(user.username)
+    #          + " подтверждён. Запрос от " + str(user.username)
     return render(request, "Profile/AcceptRent.html", {'mes': 'Запрос подтверждён.'})
 
 
@@ -448,14 +459,23 @@ def choose_payment(request, id_donerent):
         return HttpResponseRedirect("/login")
 
     if request.method == "GET":
-        cards = list()
-        for card in [str(i.card_num) for i in request.user.user_card_id.all()]:
-            cards.append(card[:4] + ' XXXX XXXX ' + card[-4:])
-        user_cards = request.user.user_card_id.all()
-        c = [[i, j] for i, j in zip(cards, user_cards)]
-        return render(request, "Profile/ChoosePayment.html", {'cards': c})
+        try:
+            models.DoneRent.objects.get(id=id_donerent)
+            cards = list()
+            for card in [str(i.card_num) for i in request.user.user_card_id.all()]:
+                cards.append(card[:4] + ' XXXX XXXX ' + card[-4:])
+            user_cards = request.user.user_card_id.all()
+            c = [[i, j] for i, j in zip(cards, user_cards)]
+            return render(request, "Profile/ChoosePayment.html", {'cards': c})
+        except models.DoneRent.DoesNotExist:
+            return render(request, "Profile/DoesNotExists.html")
     else:
-
+        if not request.user.username == request.POST['card_from']:
+            try:
+                request.user.user_card_id.get(card_num=request.POST['card_from'])
+            except:
+                return HttpResponse(json.dumps({'message': 'Карта не найдена', 'status': False}, ensure_ascii=False),
+                                    content_type="text/html; charset=utf-8")
         c, m = t.Transaction(request.POST['size'], request.POST['card_from'],
                              request.POST['balance_to'], True).make_transaction()
 
@@ -554,15 +574,14 @@ def quick_payment_info(request, id):
         return HttpResponseRedirect("/login")
 
     if request.method == 'GET':
-        rent = []
-        payment = ''
         try:
             payment = models.QuickPayment.objects.get(id=id)
-            rent = []
             rent = models.Rent.objects.get(id=models.DoneRent.objects.get(id=payment.rent_id).id_house.id)
-        except:
-            pass
-        return render(request, 'Profile/QuickPaymentInfo.html', {'payment': payment, 'rent': rent})
+            return render(request, 'Profile/QuickPaymentInfo.html', {'payment': payment, 'rent': rent})
+        except models.QuickPayment.DoesNotExist:
+            return HttpResponseRedirect('/profile/quickpayment')
+        except models.Rent.DoesNotExist:
+            return HttpResponseRedirect('/profile/quickpayment')
     else:
         payment = models.QuickPayment.objects.get(id=id)
         if payment.user_payment == 'Кошелек':
@@ -656,8 +675,10 @@ def my_all_houses_owner(request):
 def edit_my_house(request, id_rent):
     if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
-
-    rent = models.Rent.objects.get(id=id_rent)
+    try:
+        rent = models.Rent.objects.get(id=id_rent)
+    except models.Rent.DoesNotExist:
+        return HttpResponseRedirect('/profile/my_houses_owner')
 
     class EditRent(forms.Form):
         name = forms.CharField(label="Название:", max_length=50, required=True, initial=rent.name)
@@ -692,8 +713,10 @@ def edit_my_house(request, id_rent):
 def delete_my_house(request, id_rent):
     if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
-
-    rent = models.Rent.objects.get(id=id_rent)
+    try:
+        rent = models.Rent.objects.get(id=id_rent)
+    except models.Rent.DoesNotExist:
+        return HttpResponseRedirect('/profile/my_houses_owner')
     if rent.status_rent:
         message = 'Дом под названием ' + rent.name + ' успешно удален!'
         rent.delete()
@@ -723,14 +746,17 @@ def about_auto_payment(request, id_auto):
     if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
 
-    id_done_rent = models.AutoPayment.objects.get(id=id_auto).id
-    house = models.Rent.objects.get(id=id_done_rent)
-    login_owner = models.MyUser.objects.get(id=id_done_rent.id_user_owner).username
-    size = house.cost
-    return render(request, 'Profile/AutoPayment/AboutAutoPayment.html', {'name_house': house.name,
-                                                                         'min_time_rent': house.min_rent_time,
-                                                                         'login_owner': login_owner,
-                                                                         'size': size})
+    try:
+        id_done_rent = models.AutoPayment.objects.get(id=id_auto).quick_payment.rent.id
+        house = models.DoneRent.objects.get(id=id_done_rent).id_house
+        login_owner = house.user_login
+        size = house.cost
+        return render(request, 'Profile/AutoPayment/AboutAutoPayment.html', {'name_house': house.name,
+                                                                             'min_time_rent': house.min_rent_time,
+                                                                             'login_owner': login_owner,
+                                                                             'size': size})
+    except:
+        return HttpResponseRedirect('/profile/auto_payment')
 
 
 def add_auto_payment(request):
@@ -749,9 +775,10 @@ def add_auto_payment(request):
         try:
             if int(request.GET['id']):
                 pay = models.QuickPayment.objects.get(id=request.GET['id'])
-                context = {'pay': pay,
-                           'rent': models.Rent.objects.get(
-                               id=models.DoneRent.objects.get(id=pay.rent_id).id_house.id).name}
+                if request.user == pay.username:
+                    context = {'pay': pay,
+                               'rent': models.Rent.objects.get(
+                                   id=models.DoneRent.objects.get(id=pay.rent_id).id_house.id).name}
         except:
             pass
 
@@ -765,30 +792,32 @@ def add_auto_payment(request):
             quick_payment = form.cleaned_data['quick_payment']
             try:
                 models.AutoPayment.objects.get(quick_payment_id=quick_payment)
-                return HttpResponseRedirect('/')
+                return HttpResponseRedirect('/profile/add_auto_payment')
             except:
                 payment_interval = form.cleaned_data['payment_interval']
                 models.AutoPayment.objects.create(next_payment_date=payment_date,
                                                   quick_payment=models.QuickPayment.objects.get(id=quick_payment),
                                                   payment_interval=payment_interval)
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect('/profile/auto_payment')
 
 
 def delete_card(request, id):
     if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
 
+    try:
+        models.UserCard.objects.get(id=id)
+    except models.UserCard.DoesNotExist:
+        render(request, 'Profile/DoesNotExists.html')
+    if models.UserCard.objects.get(id=id) not in request.user.user_card_id.all():
+        return render(request, 'Profile/DoesNotExists.html')
     q_payment = models.QuickPayment.objects.filter(user_payment=models.UserCard.objects.get(id=id).card_num)
+
     if request.method == 'GET':
         return render(request, 'Profile/DeleteCard.html', {'payments': q_payment, 'id': id})
     else:
         request.user.user_card_id.remove(models.UserCard.objects.get(id=id))
         for p in q_payment:
-            try:
-                q = models.AutoPayment.objects.get(quick_payment=p)
-                q.delete()
-            except:
-                pass
             p.delete()
         return HttpResponseRedirect('/profile')
 
@@ -796,13 +825,12 @@ def delete_card(request, id):
 def delete_quick_payment(request, id):
     if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
-
     try:
         qp = models.QuickPayment.objects.get(id=id)
         qp.delete()
+        return HttpResponseRedirect('/profile/quickpayment')
     except models.QuickPayment.DoesNotExist:
-        return render(request, 'Profile/Thanks.html', {'mes': "Быстрый платеж не найден."})
-    return render(request, 'Profile/Thanks.html', {'mes': "Быстрый платеж успешно удалён."})
+        return HttpResponseRedirect('/profile/quickpayment')
 
 
 def edit_quick_payment(request, id):
@@ -810,54 +838,58 @@ def edit_quick_payment(request, id):
         return HttpResponseRedirect("/login")
 
     try:
+        models.QuickPayment.objects.get(id=id)
         qp = models.QuickPayment.objects.get(id=id)
-    except models.QuickPayment.DoesNotExist:
-        return render(request, 'Profile/EditQuickPayment.html', {'form': ''})
-
-    done_rent = models.DoneRent.objects.get(id=qp.rent_id)
-    house_name = models.Rent.objects.get(id=done_rent.id_house_id).name
-    if not qp.user_payment == "Кошелек":
-        user_payment1 = str(qp.user_payment[:4] + ' XXXX XXXX ' + qp.user_payment[-4:])
-    else:
-        user_payment1 = qp.user_payment
-
-    class EditQP(forms.Form):
-        rent_name = forms.CharField(label="Название дома:", max_length=50, required=True,
-                                    initial=house_name, widget=forms.TextInput(attrs={'readonly': 'readonly'}))
-        user_payment = forms.CharField(label="Способ оплаты:", max_length=50, required=True,
-                                       initial=user_payment1, widget=forms.TextInput(attrs={'readonly': 'readonly'}))
-        amount = forms.FloatField(label="Сумма:", min_value=10, max_value=1000000, required=True, initial=qp.amount)
-
-    if request.method == 'POST':
-        form = EditQP(request.POST)
-
-        if form.is_valid():
-            qp.amount = form.cleaned_data['amount']
-            qp.save()
-            return render(request, 'Profile/Thanks.html', {'mes': "Быстрый платёж перезаписан."})
+        done_rent = models.DoneRent.objects.get(id=qp.rent_id)
+        house_name = models.Rent.objects.get(id=done_rent.id_house_id).name
+        if not qp.user_payment == "Кошелек":
+            user_payment1 = str(qp.user_payment[:4] + ' XXXX XXXX ' + qp.user_payment[-4:])
         else:
-            print('error!')
+            user_payment1 = qp.user_payment
 
-    else:
-        form = EditQP()
+        class EditQP(forms.Form):
+            rent_name = forms.CharField(label="Название дома:", max_length=50, required=True,
+                                        initial=house_name, widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+            user_payment = forms.CharField(label="Способ оплаты:", max_length=50, required=True,
+                                           initial=user_payment1,
+                                           widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+            amount = forms.FloatField(label="Сумма:", min_value=10, max_value=1000000, required=True, initial=qp.amount)
 
-    return render(request, 'Profile/EditQuickPayment.html', {'form': form})
+        if request.method == 'POST':
+            form = EditQP(request.POST)
+
+            if form.is_valid():
+                qp.amount = form.cleaned_data['amount']
+                qp.save()
+                return render(request, 'Profile/Thanks.html', {'mes': "Быстрый платёж перезаписан."})
+            else:
+                print('error!')
+
+        else:
+            form = EditQP()
+            return render(request, 'Profile/EditQuickPayment.html', {'form': form})
+    except:
+        return HttpResponseRedirect('profile/quickpayment')
 
 
 def delete_auto_payment(request, id):
     if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
-
-    ap = models.AutoPayment.objects.get(id=id)
-    ap.delete()
-    return render(request, 'Profile/Thanks.html', {'mes': "Автоплатёж успешно удалён."})
+    try:
+        ap = models.AutoPayment.objects.get(id=id)
+        ap.delete()
+        return render(request, 'Profile/Thanks.html', {'mes': "Автоплатёж успешно удалён."})
+    except models.AutoPayment.DoesNotExist:
+        return HttpResponseRedirect('/profile/auto_payment')
 
 
 def edit_auto_payment(request, id):
     if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
-
-    ap = models.AutoPayment.objects.get(id=id)
+    try:
+        ap = models.AutoPayment.objects.get(id=id)
+    except models.AutoPayment.DoesNotExist:
+        return HttpResponseRedirect('/profile/auto_payment')
 
     class EditAutoPayment(forms.Form):
         quick_payment = forms.IntegerField(label='Номер быстрого платежа:', initial=ap.quick_payment_id,
@@ -882,7 +914,10 @@ def edit_auto_payment(request, id):
 
 def owner_close_rent(request, rent_id):
     if request.method == 'GET':
-        rent = models.DoneRent.objects.get(id_house=rent_id)
+        try:
+            rent = models.DoneRent.objects.get(id_house=rent_id)
+        except models.DoneRent.DoesNotExist:
+            return render(request, 'Profile/DoesNotExists.html')
         if rent.next_payment_date < datetime.date.today():
             context = {'mes': 'Арендатор еще не погасил задолженность.', 'status': True, 'rent_id': rent_id}
         else:
@@ -901,19 +936,24 @@ def owner_close_rent(request, rent_id):
         models.MessageStatusRent.objects.create(id_user_from=request.user.id, id_user_to=user_renter.id,
                                                 creation_date=datetime.date.today(),
                                                 text_message=text_message, text_more='',
-                                                login_user_from=request.user.username, id_rent=done_rent.id, type_mes=False)
+                                                login_user_from=request.user.username,
+                                                id_rent=done_rent.id, type_mes=False)
 
         return HttpResponseRedirect('/profile')
 
 
 def close_rent(request, rent_id):
     if request.method == 'GET':
-        rent = models.DoneRent.objects.get(id=rent_id)
-        if rent.next_payment_date < datetime.date.today():
-            context = {'mes': 'Аренда не погашена', 'status': False}
-        else:
-            context = {'status': True, 'rent_id': rent_id}
-        return render(request, 'Profile/CloseRent.html', context)
+        try:
+            models.DoneRent.objects.get(id=rent_id)
+            rent = models.DoneRent.objects.get(id=rent_id)
+            if rent.next_payment_date < datetime.date.today():
+                context = {'mes': 'Аренда не погашена', 'status': False}
+            else:
+                context = {'status': True, 'rent_id': rent_id}
+            return render(request, 'Profile/CloseRent.html', context)
+        except models.DoneRent.DoesNotExist:
+            return render(request, "Profile/DoesNotExists.html")
     else:
         rent = models.DoneRent.objects.get(id=rent_id)
         text_message = 'Запрос на закрытие аренды под номером ' + str(rent_id) + " (" + str(

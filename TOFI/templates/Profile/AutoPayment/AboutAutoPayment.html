@@ -2,7 +2,7 @@
 {% block title %}Автоматический платёж {% endblock %}
 {% block content %}
     {% csrf_token %}
-    <table class="center">
+    <table class="center table">
         <tr class="padding">
             <td>Название дома: </td>
             <td>{{ name_house }}</td>
@@ -21,12 +21,6 @@
         <tr class="padding">
             <td>Стоимость(BYN): </td>
             <td>{{ size }}</td>
-        </tr>
-
-        <tr class="padding">
-            <td>
-                <a href="">Удалить автоматический платёж</a>
-            </td>
         </tr>
     </table>
 
