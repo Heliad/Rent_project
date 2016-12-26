@@ -1,16 +1,24 @@
 {% extends "base.html" %}
 {% block title %}Редактирование быстрого платежа{% endblock %}
 {% block content %}
-    <form method="POST" class="center">
-        {% csrf_token %}
-        <table>
-            {% for field in form %}
-                <tr>
-                    <td class="padding">{{ field.label }}</td>
-                    <td>{{ field }}</td>
-                </tr>
-            {% endfor %}
-            <tr><td><button type="submit" class="button7">Сохранить</button></td></tr>
+    {% if form %}
+        <form method="POST" class="center">
+            {% csrf_token %}
+            <table>
+                {% for field in form %}
+                    <tr>
+                        <td class="padding">{{ field.label }}</td>
+                        <td>{{ field }}</td>
+                    </tr>
+                {% endfor %}
+                <tr><td><button type="submit" class="button7">Сохранить</button></td></tr>
+            </table>
+        </form>
+    {% else %}
+        <table class="center">
+            <tr class="padding">
+                <td>Быстрый платёж удалён.</td>
+            </tr>
         </table>
-    </form>
+    {% endif %}
 {% endblock %}

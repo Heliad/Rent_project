@@ -148,7 +148,8 @@ def unfillBalance(request):
             name_card_owner = form.cleaned_data['name_card_owner']
             CVC2_CVV = form.cleaned_data['CVC2_CVV']
             size = form.cleaned_data['size']
-
+            if size > request.user.balance:
+                return render(request, 'Profile/Thanks.html', {'mes': "Недостаточно средств на балансе!"})
             if t.Check(card_num, period_validity, name_card_owner, CVC2_CVV).check_card():
                 t.Transaction(size, request.user, card_num).make_transaction()
 
@@ -160,7 +161,7 @@ def unfillBalance(request):
                                                            amount=size)
                 sm.Sender("Вывод средств", "Вывод средств на сумму " + str(size) + " BYN, успешно проведён.",
                           request.user.email).sender()
-                mes = request.user.name + ", средства на сумму " + str(size)+ " BYN, успешно выведены на карту"
+                mes = request.user.name + ", средства на сумму " + str(size) + " BYN, успешно выведены на карту"
             else:
                 mes = "Введены неверные данные!"
             return render(request, 'Profile/Thanks.html', {'mes': mes})
@@ -538,9 +539,11 @@ def quick_payment_info(request, id):
         return HttpResponseRedirect("/login")
 
     if request.method == 'GET':
-        payment = models.QuickPayment.objects.get(id=id)
         rent = []
+        payment = ''
         try:
+            payment = models.QuickPayment.objects.get(id=id)
+            rent = []
             rent = models.Rent.objects.get(id=models.DoneRent.objects.get(id=payment.rent_id).id_house.id)
         except:
             pass
@@ -768,8 +771,11 @@ def delete_quick_payment(request, id):
     if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
 
-    qp = models.QuickPayment.objects.get(id=id)
-    qp.delete()
+    try:
+        qp = models.QuickPayment.objects.get(id=id)
+        qp.delete()
+    except models.QuickPayment.DoesNotExist:
+        return render(request, 'Profile/Thanks.html', {'mes': "Быстрый платеж не найден."})
     return render(request, 'Profile/Thanks.html', {'mes': "Быстрый платеж успешно удалён."})
 
 
@@ -777,7 +783,11 @@ def edit_quick_payment(request, id):
     if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
 
-    qp = models.QuickPayment.objects.get(id=id)
+    try:
+        qp = models.QuickPayment.objects.get(id=id)
+    except models.QuickPayment.DoesNotExist:
+        return render(request, 'Profile/EditQuickPayment.html', {'form': ''})
+
     done_rent = models.DoneRent.objects.get(id=qp.rent_id)
     house_name = models.Rent.objects.get(id=done_rent.id_house_id).name
     if not qp.user_payment == "Кошелек":

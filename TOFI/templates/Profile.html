@@ -53,14 +53,11 @@
                 </td>
             </tr>
         {% if not request.user.is_admin and not request.user.is_moder %}
-            {% if request.user.ie %}
-                <tr>
-                    <td class="padding-top-bottom10">
-                        <a class="btn button7 text-left" href="{% url 'UnfillBalance' %}">Вывод средств</a>
-                    </td>
-                </tr>
-            {% else %}
-            {% endif %}
+            <tr>
+                <td class="padding-top-bottom10">
+                    <a class="btn button7 text-left" href="{% url 'UnfillBalance' %}">Вывод средств</a>
+                </td>
+            </tr>
             <tr>
                 <td class="padding-top-bottom10">
                     {% if new %}
