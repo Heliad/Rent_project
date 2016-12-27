@@ -46,6 +46,8 @@ class AddRent(View):
     def get(self, request):
         if request.user.is_anonymous:
             return HttpResponseRedirect("/login")
+        if not request.user.ie:
+            return HttpResponseRedirect('/')
         form = self.form_class(None)
         return render(request, self.template_name, {'form': form})
 
@@ -212,7 +214,10 @@ def logout_view(request):
 
 
 def aboutHouse(request, number):
-    house = models.Rent.objects.get(id=int(number))
+    try:
+        house = models.Rent.objects.get(id=int(number))
+    except:
+        return HttpResponseRedirect('/')
     images = house.images.all()
 
     d = list(models.Rent.objects.all())
@@ -226,8 +231,10 @@ def aboutHouse(request, number):
 def make_rent(request, number):
     if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
-
-    rent = models.Rent.objects.all().get(id=number)
+    try:
+        rent = models.Rent.objects.all().get(id=number)
+    except:
+        return HttpResponseRedirect('/')
     user = models.MyUser.objects.all().get(id=str(rent.user_login.id))
 
     class MakeMessage(forms.Form):
@@ -266,6 +273,11 @@ def make_rent(request, number):
 
 
 def aboutUser(request, login_id):
+    try:
+        int(login_id)
+        models.MyUser.objects.get(id=login_id)
+    except:
+        return HttpResponseRedirect('/')
 
     if request.method == 'GET':
         userList = list(models.MyUser.objects.all())
