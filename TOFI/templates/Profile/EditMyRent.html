@@ -18,6 +18,16 @@
         </table>
     </form>
 
+    {% if error %}
+        <table class="center">
+            <tr class="padding">
+                <td>
+                    <span style="color: red; ">{{ error }}</span>
+                </td>
+            </tr>
+        </table>
+    {% endif %}
+
     {% if images %}
         {% for image in images %}
             <table class="center">

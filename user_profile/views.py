@@ -235,7 +235,7 @@ def profileChangePassword(request):
         else:
             err = form.errors.as_data()
             print(err)
-            if 'newPassword' in err:
+            if 'new_password' in err:
                 error = 'Пароль должен содержать в себе арабские цифры и латинские буквы, нижнего и верхнего регистра!'
     else:
         form = ChangePassword()
@@ -247,7 +247,7 @@ def deleteMySelf(request):
     if request.user.is_anonymous or not request.user.is_active:
         return HttpResponseRedirect("/login")
 
-    error = ''
+    error, balance = '', 0
     if request.method == 'POST':
         form = DeleteMySelf(request.POST)
 
@@ -677,16 +677,23 @@ def edit_my_house(request, id_rent):
     except models.Rent.DoesNotExist:
         return HttpResponseRedirect('/profile/my_houses_owner')
 
+    error = ''
+
     class EditRent(forms.Form):
         name = forms.CharField(label="Название:", max_length=50, required=True, initial=rent.name)
         address = forms.CharField(label="Адрес:", max_length=50, required=True, initial=rent.address)
-        min_rent_time = forms.IntegerField(label="Срок аренды:", required=True, initial=rent.min_rent_time)
-        area = forms.IntegerField(label='Площадь:', required=True, initial=rent.area)
+        min_rent_time = forms.IntegerField(label="Срок аренды:", required=True, initial=rent.min_rent_time,
+                                           validators=[MaxValueValidator(365), MinValueValidator(1)])
+        area = forms.IntegerField(label='Площадь:', required=True, initial=rent.area,
+                                  validators=[MaxValueValidator(10000), MinValueValidator(3)])
         date_of_construction = forms.IntegerField(label='Год строительства:', required=True,
-                                                  initial=rent.date_of_construction)
+                                                  initial=rent.date_of_construction,
+                                                  validators=[MinValueValidator(1950), MaxValueValidator(2020)])
         other = forms.CharField(label="Другое:", max_length=100, required=True, initial=rent.other,
-                                widget=forms.Textarea(attrs={'placeholder': 'Введите описание дома...', 'rows': '4'}))
-        cost = forms.CharField(label='Цена аренды:', max_length=50, required=True, initial=rent.cost)
+                                widget=forms.Textarea(attrs={'placeholder': 'Введите описание дома...', 'rows': '4'}),
+                                validators=[RegexValidator('^[0-9а-яА-Я/./,/;/ /-]*$')])
+        cost = forms.IntegerField(label='Цена аренды:', required=True, initial=rent.cost,
+                                  validators=[MinValueValidator(1), MaxValueValidator(1000000)])
 
     if request.method == 'POST':
         form = EditRent(request.POST)
@@ -701,7 +708,33 @@ def edit_my_house(request, id_rent):
             rent.save()
             message = 'Данные о доме под названием: ' + rent.name + ' успешно обновлены и сохранены!'
             return render(request, 'Profile/Thanks.html', {'mes': message})
+        else:
+            try:
+                rent = models.Rent.objects.get(id=id_rent)
+            except models.Rent.DoesNotExist:
+                return HttpResponseRedirect('/profile/my_houses_owner')
+            images = rent.images.all()
 
+            err = form.errors.as_data()
+            print(err)
+            if 'name' in err:
+                error = 'Недопустимые символы в поле Имя!'
+            if 'address' in err:
+                error = 'Недопустимые символы в поле Адрес!'
+            if 'min_rent_time' in err:
+                error = 'Время ареннды должно быть от 1 до 365 дней!'
+            if 'area' in err:
+                error = 'Размер площади должен быть от 3 до 1000 кв.м.!'
+            if 'date_of_construction' in err:
+                error = 'Год постройки должен быть от 1950 до 2020 года!'
+            if 'cost' in err:
+                error = 'Цена должна быть в диапозоне от 1 до 1млн!'
+            if 'payment_interval' in err:
+                error = 'Интервал оплаты должен быть от 1 до 365 дней!'
+            if 'other' in err:
+                error = 'Недопустимые символы в описании дома!'
+            return render(request, 'Profile/EditMyRent.html', {'form': form, 'id_house': rent.id,
+                                                               'images': images, 'error': error})
     else:
         form = EditRent()
         try:
@@ -709,7 +742,8 @@ def edit_my_house(request, id_rent):
         except models.Rent.DoesNotExist:
             return HttpResponseRedirect('/profile/my_houses_owner')
         images = rent.images.all()
-        return render(request, 'Profile/EditMyRent.html', {'form': form, 'id_house': rent.id, 'images': images})
+        return render(request, 'Profile/EditMyRent.html', {'form': form, 'id_house': rent.id,
+                                                           'images': images, 'error': error})
 
 
 def delete_my_house(request, id_rent):

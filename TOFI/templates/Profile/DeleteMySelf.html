@@ -1,13 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Удаление аккаунта{% endblock %}
 {% block content %}
-    <table class="left">
-        <tr>
-            <td class="padding">
-                <a class="btn button7 text-left form-control" href="{% url 'EditProfile' %}">Назад</a>
-            </td>
-        </tr>
-    </table>
     <form method="POST" class="center">
         {% csrf_token %}
         <table>
@@ -22,13 +15,20 @@
                     <td>{{ field }}</td>
                 </tr>
             {% endfor %}
-            <tr>
-                {% if error != '' %}
-                    <td class="padding">{{ error }}</td>
-                {% endif %}
-
         </table>
         <button type="submit" class="btn btn-outline-danger btn-block">Удалить аккаунт</button>
     </form>
+
+    {% if error %}
+        <table class="center">
+            <tr class="padding">
+                <td>
+                    <span style="color: red; ">{{ error }}</span>
+                </td>
+            </tr>
+        </table>
+    {% endif %}
+
+
 
 {% endblock %}

@@ -1,17 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Редактирование личных данных{% endblock %}
 {% block content %}
-    {% if error %}
-        <div class="left">
-            <table>
-                <tr>
-                    <td>
-                        <span style="color: red; ">{{ error }}</span>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    {% endif %}
     <table class="left">
         <tr>
             <td class="padding">
@@ -41,5 +30,15 @@
         </table>
         <button type="submit" class="btn btn-outline-warning btn-block">Изменить данные</button>
     </form>
+
+    {% if error %}
+        <table class="center">
+            <tr class="padding">
+                <td>
+                    <span style="color: red; ">{{ error }}</span>
+                </td>
+            </tr>
+        </table>
+    {% endif %}
 
 {% endblock %}
