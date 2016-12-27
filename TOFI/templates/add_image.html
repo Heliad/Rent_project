@@ -1,12 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Загрузка фотографии{% endblock %}
 {% block content %}
-        <form action="/add_image/{{ id_house }}" method="post" enctype="multipart/form-data">
+    <form class="center" action="/add_image/{{ id_house }}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <table class="center">
+        <table>
                 <tr class="padding">
                     <td>
-                        <input id="id_image" type="file" name="image">
+                        <label class="btn btn-outline-secondary btn-file">
+                            Выбрать <input id="id_image" name="image" type="file" style="display: none;">
+                        </label>
                     </td>
                 </tr>
                 <tr class="padding">
@@ -25,11 +27,7 @@
                         <input id="id_describe" type="text" name="describe">
                     </td>
                 </tr>
-                <tr class="padding">
-                    <td>
-                        <input type="submit" value="Сохранить" />
-                    </td>
-                </tr>
             </table>
+        <input type="submit" class="btn btn-outline-success btn-block" value="Сохранить"/>
         </form>
 {% endblock %}

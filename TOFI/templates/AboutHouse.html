@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Информация об арендуемом оъектке{% endblock %}
 {% block content %}
-        <table class="center">
+    <div class="center">
+        <table class="table">
             <tr class="padding">
                 <td class="padding">Название:</td>
                 <td>{{ rent.name }}</td>
@@ -38,8 +39,15 @@
                 <td class="padding">
                     <a href="aboutUser/{{ rent.user_login.id }}">Отобразить информацию об арендаторе</a>
                 </td>
+                <td></td>
             </tr>
         </table>
+        {% if rent.status_rent %}
+            <button onclick="rent({{ rent.id }})" class="btn btn-outline-success btn-block" data-toggle="modal"
+                    data-target="#myModal">Арендовать
+            </button>
+        {% endif %}
+    </div>
 
         {% if images %}
             {% for image in images %}
@@ -62,10 +70,32 @@
                 </table>
             {% endfor %}
         {% else %}
+            <table class="center">
             <tr class="padding">
-                <td class="padding">
+                <td class="padding" style="text-align: center">
                     Фотографий нет
                 </td>
             </tr>
+            </table>
         {% endif %}
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="input_func()" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script src="/static/javascript/get.js"></script>
+    <script>
+        function rent(id) {
+            document.getElementsByClassName('modal-body')[0].innerHTML = get('/makeRent/' + id);
+            document.getElementsByClassName('modal-title')[0].innerHTML = 'Аренда';
+        }
+    </script>
 {% endblock %}

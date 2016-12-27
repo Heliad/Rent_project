@@ -35,7 +35,10 @@ def profile(request):
 
     user_cards = request.user.user_card_id.all()
     id_user = request.user.id
-    my_rents = models.DoneRent.objects.select_related('id_house__user_login').filter(id_user_renter=id_user)
+    if request.user.ie:
+        my_rents = models.DoneRent.objects.select_related('id_house__user_login').filter(id_user_owner=id_user)
+    else:
+        my_rents = models.DoneRent.objects.select_related('id_house__user_login').filter(id_user_renter=id_user)
     penalties = models.DonePenalty.objects.filter(id_user_for=request.user.id)
     c = [[i, j] for i, j in zip(cards, user_cards)]
     balance = round(float(request.user.balance), 2)
@@ -176,7 +179,7 @@ def unfillBalance(request):
                 models.LogOperationsBalance.objects.create(id_user=request.user.id, type_operation='Вывод средств',
                                                            describe_operation="Вывод средств на сумму " + str(
                                                                size) + " BYN, успешно проведён.",
-                                                           date_operation=datetime.date.today(), status=True,
+                                                           date_operation=date.today(), status=True,
                                                            amount=size)
                 sm.Sender("Вывод средств", "Вывод средств на сумму " + str(size) + " BYN, успешно проведён.",
                           request.user.email).sender()
@@ -388,8 +391,8 @@ def accept_rent(request, id_mes):
 
         models.DoneRent.objects.create(id_house=models.Rent.objects.get(id=message.id_rent),
                                        id_user_owner=models.MyUser.objects.get(id=message.id_user_to),
-                                       id_user_renter=message.id_user_from, date_rent=datetime.date.today(),
-                                       cost=house.cost, next_payment_date=datetime.datetime.today())
+                                       id_user_renter=message.id_user_from, date_rent=date.today(),
+                                       cost=house.cost, next_payment_date=date.today())
         house.status_rent = False
         house.save()
     else:
@@ -424,7 +427,7 @@ def reject_rent(request, id_mes):
                            str(house.name) + ")"
 
             models.MessageStatusRent.objects.create(id_user_from=request.user.id, id_user_to=message.id_user_from,
-                                                    creation_date=datetime.date.today(),
+                                                    creation_date=date.today(),
                                                     text_message=text_message, text_more=reason,
                                                     login_user_from=request.user.username, id_rent=message.id_rent)
 
@@ -598,7 +601,7 @@ def quick_payment_info(request, id):
                                                    type_operation='Выполнение быстрого платежа № ' + str(id),
                                                    describe_operation="Оплата на сумму " + str(payment.amount) +
                                                                       " BYN. " + str(m), amount=payment.amount,
-                                                   date_operation=datetime.date.today(), status=True)
+                                                   date_operation=date.today(), status=True)
         done_rent = models.DoneRent.objects.get(id=q_pay.rent_id)
         rent = done_rent.id_house_id
         rrrent = models.Rent.objects.get(id=rent)
@@ -612,7 +615,7 @@ def quick_payment_info(request, id):
                                                    describe_operation="Получение оплаты на аренды дома № " +
                                                                       str(rrrent.id) + " на сумму " +
                                                                       str(payment.amount) + " BYN. " +
-                                                                      str(m), date_operation=datetime.date.today(),
+                                                                      str(m), date_operation=date.today(),
                                                    status=True, amount=payment.amount)
         sm.Sender("Оплата аренды с помощью автоматического платежа",
                   "Получение оплаты аренды №" + str(rrrent.id) + " на сумму " +
@@ -647,7 +650,7 @@ def make_pay_penalty(request, id_penalty):
                                                    type_operation=pen.describe_penalty,
                                                    describe_operation="Оплата штрафа на сумму " +
                                                                       str(pen.size_penalty) + " BYN. " + str(m),
-                                                   date_operation=datetime.date.today(),
+                                                   date_operation=date.today(),
                                                    amount=pen.size_penalty, status=True)
         pen.is_payd = True
         pen.save()
@@ -705,7 +708,7 @@ def edit_my_house(request, id_rent):
             rent = models.Rent.objects.get(id=id_rent)
         except models.Rent.DoesNotExist:
             return HttpResponseRedirect('/profile/my_houses_owner')
-        images = models.ImageModel.objects.filter(id_rent_id=rent)
+        images = rent.images.all()
         return render(request, 'Profile/EditMyRent.html', {'form': form, 'id_house': rent.id, 'images': images})
 
 
@@ -924,7 +927,7 @@ def owner_close_rent(request, rent_id):
             rent = models.DoneRent.objects.get(id_house=rent_id)
         except models.DoneRent.DoesNotExist:
             return render(request, 'Profile/DoesNotExists.html')
-        if rent.next_payment_date < datetime.date.today():
+        if rent.next_payment_date < date.today():
             context = {'mes': 'Арендатор еще не погасил задолженность.', 'status': True, 'rent_id': rent_id}
         else:
             context = {'status': True, 'rent_id': rent_id}
@@ -940,7 +943,7 @@ def owner_close_rent(request, rent_id):
 
         user_renter = models.MyUser.objects.get(id=done_rent.id_user_renter)
         models.MessageStatusRent.objects.create(id_user_from=request.user.id, id_user_to=user_renter.id,
-                                                creation_date=datetime.date.today(),
+                                                creation_date=date.today(),
                                                 text_message=text_message, text_more='',
                                                 login_user_from=request.user.username,
                                                 id_rent=done_rent.id, type_mes=False)
@@ -953,7 +956,7 @@ def close_rent(request, rent_id):
         try:
             models.DoneRent.objects.get(id=rent_id)
             rent = models.DoneRent.objects.get(id=rent_id)
-            if rent.next_payment_date < date.today():
+            if rent.next_payment_date < date.today() and not request.user.ie:
                 context = {'mes': 'Аренда не погашена', 'status': False}
             else:
                 context = {'status': True, 'rent_id': rent_id}
@@ -968,7 +971,7 @@ def close_rent(request, rent_id):
                        str(request.user.last_name)
 
         models.MessageStatusRent.objects.create(id_user_from=request.user.id, id_user_to=rent.id_user_owner.id,
-                                                creation_date=datetime.date.today(),
+                                                creation_date=date.today(),
                                                 text_message=text_message, text_more='',
                                                 login_user_from=request.user.username, id_rent=rent_id, type_mes=False)
         return HttpResponseRedirect('/profile')

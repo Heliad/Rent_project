@@ -11,32 +11,42 @@
             </td>
         </tr>
     </table>
-
-    <table class="center table table-striped">
-        <thead class="padding">
-        <tr>
-            <td class="padding">Название</td>
-            <td>Адрес</td>
-            <td>Срок аренды(Дней)</td>
-            <td>Цена(BYN)</td>
-            <td>Площадь(кв.м.)</td>
-        </tr>
-        </thead>
+    <div class="card-columns">
         {% for r in rent %}
-            <tr>
-                <td class="padding"><a href="aboutHouse/{{ r.id }}">{{ r.name }}</a></td>
-                <td>{{ r.address }}</td>
-                <td>{{ r.min_rent_time }}</td>
-                <td>{{ r.cost }}</td>
-                <td>{{ r.area }}</td>
-                {% if not request.user.ie %}
-                    {% if r.status_rent %}
-                        <td class="padding"><a href="makeRent/{{ r.id }}">Аренда</a></td>
-                    {% else %}
-                        <td class="padding"><font color="#a9a9a9">Арендовано</font></td>
-                    {% endif %}
-                {% endif %}
-            </tr>
+            <div class="card">
+                <div class="row justify" style="height: 100%">
+                    <div class="col-xs-5 justify text-xs-center"
+                         style="background-color: lightgray; height: 100%; padding: 0">
+                        {% if r.image_pic.model_pic %}
+                            <img class="img-fluid" style="max-height: 100%; max-width: 100%"
+                                 src="imagesHouses/{{ r.image_pic.model_pic }}">
+                        {% else %}
+                            <img class="img-fluid" style="max-height: 100%; max-width: 100%"
+                                 src="static/img/placeholder.svg">
+                        {% endif %}
+                    </div>
+                    <div class="col-xs-6 padding-top5" style="height: 100%">
+                        <h4><a href="aboutHouse/{{ r.id }}">{{ r.name }}</a></h4>
+                        <div>
+                            <div>
+                                Адрес: {{ r.address }}
+                            </div>
+                            <div>
+                                Срок аренды: {{ r.min_rent_time }} д.
+                            </div>
+                            <div>
+                                Цена: {{ r.cost }} BYN
+                            </div>
+                            <div>
+                                Площадь: {{ r.area }} м.кв.
+                            </div>
+                            <div>
+                                Дата постройки: {{ r.date_of_construction }} г.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         {% endfor %}
-    </table>
+    </div>
 {% endblock %}

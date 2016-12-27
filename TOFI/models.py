@@ -104,6 +104,12 @@ class MyUser(AbstractBaseUser):
         return str(self.id)
 
 
+class ImageModel(models.Model):
+    model_pic = models.ImageField(upload_to='pic_folder/', default='pic_folder/None/no-img.jpg')
+    name = models.CharField(max_length=50)
+    describe = models.CharField(max_length=150)
+
+
 class Rent(models.Model):
     name = models.CharField(verbose_name='Название:', max_length=50)
     address = models.CharField(verbose_name='Адрес:', max_length=50)
@@ -116,6 +122,7 @@ class Rent(models.Model):
     cost = models.CharField(verbose_name='Цена аренды:', max_length=50)
     user_login = models.ForeignKey(MyUser, on_delete=models.CASCADE)
     status_rent = models.BooleanField(default=True)  # True - свободно, False - уже арендовано арендой
+    images = models.ManyToManyField(ImageModel, default=0)
 
     def getId(self):
         return str(self.id)
@@ -219,9 +226,3 @@ class SessionKeys(models.Model):
     number_key = models.IntegerField()
     key = models.IntegerField()
 
-
-class ImageModel(models.Model):
-    model_pic = models.ImageField(upload_to='pic_folder/', default='pic_folder/None/no-img.jpg')
-    id_rent = models.ForeignKey(Rent, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
-    describe = models.CharField(max_length=150)

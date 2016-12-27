@@ -1,13 +1,13 @@
-<svg width="350" height="180" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 180" preserveAspectRatio="none">
+<svg width="270" height="220" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" preserveAspectRatio="none">
     <defs>
         <style type="text/css">#holder_1591b346c4b text {
             fill:rgba(255,255,255,.75);font-weight:normal;font-family:Helvetica, monospace;font-size:16pt }
         </style>
     </defs>
     <g id="holder_1591b346c4b">
-        <rect width="350" height="180" fill="#777"></rect>
+        <rect width="180" height="180" fill="#777"></rect>
         <g>
-            <text x="130.0859375" y="97.35">350x180</text>
+            <text x="50.0859375" y="97.35">Нет фото</text>
         </g>
     </g>
 </svg>

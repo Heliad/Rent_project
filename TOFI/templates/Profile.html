@@ -106,7 +106,7 @@
         </table>
     </div>
 
-    {% if my_rents %}
+    {% if my_rents and not request.user.ie %}
         <div class="hidden-center">
             {% for rent in my_rents %}
                 <div class="while-color-fill padding">
@@ -158,6 +158,46 @@
                     <button class="btn btn-outline-success btn-block" data-toggle="modal" data-target="#myModal"
                             onclick="choose_rent({{ rent.id }}, '{{ rent.id_house.user_login }}')">Оплатить
                     </button>
+                </div>
+            {% endfor %}
+        </div>
+    {% elif request.user.ie and my_rents %}
+        <div class="hidden-center">
+            {% for rent in my_rents %}
+                <div class="while-color-fill padding">
+                    <table class="table">
+                        <tr class="padding">
+                            <td class="padding">
+                                <a href="aboutHouse/{{ rent.id_house.id }}">Информация о доме</a>
+                            </td>
+                            <td>
+                                <button class="close" data-toggle="modal" data-target="#myModal"
+                                        onclick="del_rent_click({{ rent.id }})" style="color: red">&times;</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="padding">Дата начала аренды:</td>
+                            <td class="padding">{{ rent.date_rent }}</td>
+                        </tr>
+                        <tr>
+                            <td class="padding">Стоимость:</td>
+                            <td class="padding">{{ rent.cost }} BYN</td>
+                        </tr>
+                        <tr>
+                            <td class="padding">Дата следующей оплаты:</td>
+                            <td class="padding">{{ rent.next_payment_date }}</td>
+                        </tr>
+                        <tr>
+                            <td class="padding">Оплачено:</td>
+                            <td class="padding">{{ rent.payed_until_time|round_f }} BYN</td>
+                        </tr>
+                        <tr>
+                            {% if rent.fine > 0 %}
+                                <td class="padding">Пеня:</td>
+                                <td class="padding" style="color: red">{{ rent.fine|round_f }} BYN</td>
+                            {% endif %}
+                        </tr>
+                    </table>
                 </div>
             {% endfor %}
         </div>

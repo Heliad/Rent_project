@@ -1,16 +1,11 @@
-{% extends "base.html" %}
-{% block title %}Отправка запроса на аренду{% endblock %}
-{% block content %}
-    <form method="POST" class="center">
+<form method="POST" class="center" action="makeRent/{{ id }}">
         {% csrf_token %}
         <table>
             {% for field in form %}
-                <tr>
-                    <td class="padding">{{ field.label }}</td>
-                    <td>{{ field }}</td>
+                <tr class="padding">
+                    <td class="padding-top-bottom10">{{ field }}</td>
                 </tr>
             {% endfor %}
-            <tr><td><button type="submit" class="button7">Отправить</button></td></tr>
         </table>
-    </form>
-{% endblock %}
+    <button type="submit" class="btn btn-outline-success btn-block">Отправить</button>
+</form>

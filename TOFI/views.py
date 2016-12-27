@@ -15,7 +15,6 @@ from django.views.generic.edit import FormView
 
 from TOFI import models
 from TOFI import send_mail as sm
-from machine import *
 from .forms import *
 
 
@@ -29,8 +28,13 @@ def main_view(request):
             return HttpResponseRedirect("/mainadmin")
         if request.user.is_moder:
             return HttpResponseRedirect("/main_moder")
-    context = {'rent': [i for i in list(models.Rent.objects.all())],
-               'comments': [i for i in list(models.Comment.objects.all())],
+    rent = models.Rent.objects.all()
+    l_rent = [{'address': i.address,
+               'cost': i.cost, 'date_of_construction': i.date_of_construction,
+               'name': i.name, 'area': i.area, 'min_rent_time': i.min_rent_time,
+               'image_pic': i.images.first(), 'id': i.id} for i in list(rent)]
+    context = {'rent': l_rent,
+               'comments': models.Comment.objects.all(),
                'date': datetime.now()}
     return render(request, 'Main.html', context)
 
@@ -55,7 +59,7 @@ class AddRent(View):
             min_rent_time = form.cleaned_data['min_rent_time']
             area = form.cleaned_data['area']
             date_of_construction = form.cleaned_data['date_of_construction']
-            creation_date = datetime.date.today()
+            creation_date = date.today()
             other = form.cleaned_data['other']
             cost = form.cleaned_data['cost']
             cur_user = request.user
@@ -209,7 +213,7 @@ def logout_view(request):
 
 def aboutHouse(request, number):
     house = models.Rent.objects.get(id=int(number))
-    images = models.ImageModel.objects.filter(id_rent_id=house)
+    images = house.images.all()
 
     d = list(models.Rent.objects.all())
     for i in d:
@@ -231,9 +235,12 @@ def make_rent(request, number):
             rent.name) + ") от " + str(request.user.name) + " " + str(request.user.surname) + " " + \
                        str(request.user.last_name) + "."
 
-        text_message = forms.CharField(widget=forms.Textarea(attrs={'readonly':'readonly', 'rows': '2'}),
-                                       label="Содержание:", max_length=100, required=True, initial=text_message)
-        text_more = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Введите сопроводительное письмо...', 'rows': '4'}),
+        text_message = forms.CharField(widget=forms.Textarea(attrs={'readonly': 'readonly', 'rows': '2',
+                                                                    'class': 'form-control padding'}),
+                                       label="Содержание:", max_length=100, required=True, initial=text_message, )
+        text_more = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control padding',
+                                                                 'placeholder': 'Введите сопроводительное письмо...',
+                                                                 'rows': '4'}),
                                     label="Дополнительно:", max_length=100, required=True)
 
     if request.method == 'POST':
@@ -247,7 +254,7 @@ def make_rent(request, number):
                            str(request.user.last_name)
 
             models.MessageStatusRent.objects.create(id_user_from=request.user.id, id_user_to=user.id,
-                                                    creation_date=datetime.date.today(),
+                                                    creation_date=date.today(),
                                                     text_message=text_message, text_more=text_more, login_user_from=request.user.username, id_rent=number)
             mes = "Сообщение отправлено пользователю " + user.username
 
@@ -255,7 +262,7 @@ def make_rent(request, number):
 
     else:
         form = MakeMessage()
-    return render(request, "MakeRent.html", {'form': form})
+    return render(request, "MakeRent.html", {'form': form, 'id': number})
 
 
 def aboutUser(request, login_id):
@@ -286,8 +293,8 @@ def aboutUser(request, login_id):
 
         com = request.POST['comment']
         models.CommentUser.objects.create(id_user_about=login_id, id_user_from=request.user.id,
-                                          text_comment=com, date_comment=datetime.date.today())
-        response = {'com': com, 'user': request.user.username, 'date': datetime.date.today().strftime('%b. %d, %Y')}
+                                          text_comment=com, date_comment=date.today())
+        response = {'com': com, 'user': request.user.username, 'date': date.today().strftime('%b. %d, %Y')}
         response = json.dumps(response, ensure_ascii=False)
         return HttpResponse(response, content_type="text/html; charset=utf-8")
 
@@ -302,8 +309,8 @@ def comment(request):
     else:
         com = request.POST['comment']
         models.Comment.objects.create(text_comment=com, user_login=request.user.username,
-                                      date_comment=datetime.date.today())
-        response = {'com': com, 'user': request.user.username, 'date': datetime.date.today().strftime('%b. %d, %Y')}
+                                      date_comment=date.today())
+        response = {'com': com, 'user': request.user.username, 'date': date.today().strftime('%b. %d, %Y')}
         response = json.dumps(response, ensure_ascii=False)
         return HttpResponse(response, content_type="text/html; charset=utf-8")
 
@@ -328,7 +335,7 @@ def make_complaint(request, id_user_to):
                 login_user_to = "message for moder"
                 describe = form.cleaned_data['describe']
                 models.Complaint.objects.create(login_user_from=login_user_from, login_user_to=login_user_to,
-                                                describe=describe, date=datetime.date.today())
+                                                describe=describe, date=date.today())
                 mes = "Ваше письмо отправлено на сервер и будет рассмотрено в ближайшее время."
 
                 return render(request, 'Profile/Thanks.html', {'mes': mes})
@@ -357,7 +364,7 @@ def make_complaint(request, id_user_to):
                 login_user_to = user_to.username
                 describe = form.cleaned_data['describe']
                 models.Complaint.objects.create(login_user_from=login_user_from, login_user_to=login_user_to,
-                                                describe=describe, date=datetime.date.today())
+                                                describe=describe, date=date.today())
                 mes = "Ваша жалоба на пользователя " + user_to.username + " отправлена на сервер и " \
                                                                           "будет рассмотрена в ближайшее время."
 
@@ -414,11 +421,10 @@ def upload_pic(request, id_house):
     if request.method == 'POST':
         form = ImageUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            house = models.Rent.objects.get(id=id_house)
+            models.Rent.objects.get(id=id_house).images.add(
             models.ImageModel.objects.create(model_pic=form.cleaned_data['image'],
                                              name=form.cleaned_data['name'],
-                                             describe=form.cleaned_data['describe'],
-                                             id_rent=house)
+                                             describe=form.cleaned_data['describe']))
             return render(request, 'Profile/Thanks.html', {'mes': "Фотография успешно загружена на сервер."})
     else:
         form = ImageUploadForm()

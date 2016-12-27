@@ -265,3 +265,7 @@ input.formValid::-webkit-input-placeholder {
 .card-deck-wrapper {
     column-count: 3;
 }
+
+.card-columns {
+    column-count: 2;
+}

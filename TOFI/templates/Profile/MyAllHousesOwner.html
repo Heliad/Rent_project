@@ -20,11 +20,11 @@
                             <a href="edit_my_rent/{{ h.id }}">Редактировать</a>
                         </td>
                         <td class="padding">
-                            <a href="delete_my_rent/{{ h.id }}">Удалить</a>
+                            <a href="delete_my_rent/{{ h.id }}" class="close" style="color: red">&times;</a>
                         </td>
                     {% else %}
                         <td class="padding">
-                            <font color="#a9a9a9">Редактировать(Арендовано)</font>
+                            <span style="color: #a9a9a9; ">Редактировать(Арендовано)</span>
                         </td>
                         <td class="padding">
                             <button class="close" data-toggle="modal" data-target="#myModal"
