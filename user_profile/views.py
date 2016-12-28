@@ -304,6 +304,10 @@ def edit_profile(request):
                     if us.username != request.user.username:
                         error = "Пользователь с таким почтовым адресом уже зарегистрирован"
                         return render(request, "Profile/EditProfile.html", {'form': form, 'error': error})
+                if us.passport_id == form.cleaned_data['passport_id']:
+                    if us.username != request.user.username:
+                        error = "Пользователь с таким номером пасспорта уже зарегистрирован"
+                        return render(request, "Profile/EditProfile.html", {'form': form, 'error': error})
 
             user = request.user
             user.email = form.cleaned_data['email']
@@ -688,7 +692,7 @@ def edit_my_house(request, id_rent):
                                   validators=[MaxValueValidator(10000), MinValueValidator(3)])
         date_of_construction = forms.IntegerField(label='Год строительства:', required=True,
                                                   initial=rent.date_of_construction,
-                                                  validators=[MinValueValidator(1950), MaxValueValidator(2020)])
+                                                  validators=[MinValueValidator(1950), MaxValueValidator(2016)])
         other = forms.CharField(label="Другое:", max_length=100, required=True, initial=rent.other,
                                 widget=forms.Textarea(attrs={'placeholder': 'Введите описание дома...', 'rows': '4'}),
                                 validators=[RegexValidator('^[0-9а-яА-Я/./,/;/ /-]*$')])
@@ -726,7 +730,7 @@ def edit_my_house(request, id_rent):
             if 'area' in err:
                 error = 'Размер площади должен быть от 3 до 1000 кв.м.!'
             if 'date_of_construction' in err:
-                error = 'Год постройки должен быть от 1950 до 2020 года!'
+                error = 'Год постройки должен быть от 1950 до 2016 года!'
             if 'cost' in err:
                 error = 'Цена должна быть в диапозоне от 1 до 1млн!'
             if 'payment_interval' in err:

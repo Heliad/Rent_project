@@ -2,15 +2,13 @@
 {% block title %}Редактирование личных данных{% endblock %}
 {% block content %}
     {% if error %}
-        <div class="left">
-            <table>
-                <tr>
-                    <td>
-                        <font color="red">{{ error }}</font>
-                    </td>
-                </tr>
-            </table>
-        </div>
+        <table class="center">
+            <tr class="padding">
+                <td class="padding">
+                    <font color="red">{{ error }}</font>
+                </td>
+            </tr>
+        </table>
     {% endif %}
 
     <form method="POST" class="center">

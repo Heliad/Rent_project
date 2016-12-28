@@ -98,8 +98,8 @@ def edit_user_admin(request, id_user):
                                  validators=[MaxValueValidator(100), MinValueValidator(18)])
         email = forms.CharField(label="Почтовый адрес:", max_length=50, required=True, initial=user_for_edit.email,
                                 validators=[EmailValidator()])
-        passport_id = forms.CharField(label='Номер пасспорта:', max_length='9', min_length=9, required=True,
-                                      validators=[RegexValidator('^[А-Я]{2,2}[0-9]{7,7}$')],
+        passport_id = forms.CharField(label='Номер паспорта:', max_length='9', min_length=9, required=True,
+                                      validators=[RegexValidator('^(АВ|ВМ|НВ|КН|МР|МС|КВ|РР|МН)[0-9]{7,7}$')],
                                       initial=user_for_edit.passport_id)
         phone = forms.CharField(label="Ваш номер телефона:", max_length=50, required=True, initial=user_for_edit.phone,
                                 validators=[RegexValidator('^\+[0-9\-\ ]*$')])
@@ -114,6 +114,17 @@ def edit_user_admin(request, id_user):
 
         if form.is_valid():
             user = models.MyUser.objects.get(id=id_user)
+            list_users = models.MyUser.objects.all()
+            for us in list_users:
+                if us.email == form.cleaned_data['email']:
+                    if us.username != user.username:
+                        error = "Пользователь с таким почтовым адресом уже зарегистрирован"
+                        return render(request, "Admin/EditUser.html", {'form': form, 'error': error})
+                if us.passport_id == form.cleaned_data['passport_id']:
+                    if us.username != user.username:
+                        error = "Пользователь с таким номером пасспорта уже зарегистрирован"
+                        return render(request, "Admin/EditUser.html", {'form': form, 'error': error})
+
             user.email = form.cleaned_data['email']
             user.name = form.cleaned_data['name']
             user.surname = form.cleaned_data['surname']

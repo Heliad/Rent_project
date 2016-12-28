@@ -73,7 +73,7 @@ class MyUser(AbstractBaseUser):
     surname = models.CharField(verbose_name='Фамилия', max_length=50)
     last_name = models.CharField(verbose_name='Отчество', max_length=50)
     age = models.IntegerField(verbose_name='Возраст')
-    passport_id = models.CharField(verbose_name='Номер паспорта', max_length=50)
+    passport_id = models.CharField(verbose_name='Номер паспорта', max_length=50, unique=True)
     phone = models.CharField(verbose_name='Телефон', max_length=50)
     address = models.CharField(verbose_name='Адрес', max_length=50)
     email = models.CharField(verbose_name='Электронная почта', max_length=50, unique=True)
