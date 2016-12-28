@@ -62,7 +62,8 @@ class Command(BaseCommand):
         rent = models.DoneRent.objects.filter()
         for r in rent:
             if r.next_payment_date < date.today():
-                r.fine += (float(r.cost) - float(r.payed_until_time)) * 0.05
+                delta = int(int((date.today() - r.next_payment_date).days) / int((r.id_house.payment_interval + 1))) + 1
+                r.fine += (float(r.cost) * delta - float(r.payed_until_time)) * 0.005
                 self.stdout.write(str(r.next_payment_date))
                 self.stdout.write(str(r.fine))
                 r.save()

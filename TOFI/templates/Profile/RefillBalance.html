@@ -1,5 +1,4 @@
 {% load filter_extra %}
-<form method="POST" class="center">
     <table>
         {% if cards %}
             {% for card, user_card in cards %}
@@ -13,4 +12,3 @@
         {% endif %}
     </table>
     <div id="response" class="narrow-center"></div>
-</form>

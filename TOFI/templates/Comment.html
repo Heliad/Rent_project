@@ -12,15 +12,16 @@
         {% else %}
             <tr>
                 <td>
-                    <textarea placeholder="Введите отзыв о сервисе..." cols="70" rows="3px" id="comment" maxlength="150"></textarea>
+                    <textarea class="form-control" placeholder="Введите отзыв о сервисе..." cols="70" rows="3px"
+                              id="comment" maxlength="150"></textarea>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-default" onclick="func()">Отправить</button>
+                    <button type="button" class="btn btn-secondary" onclick="func()">Отправить</button>
                 </td>
             </tr>
         {% endif %}
     </table>
-    <table class="center table table-striped table-bordered" id="response">
+    <table class="center table table-bordered" id="response">
         {% for c in com %}
             <tr class="padding">
                 <td class="padding">{{ c.user_login}}</td>

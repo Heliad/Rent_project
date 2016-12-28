@@ -153,6 +153,8 @@ function add_card() {
     xmlhttp.open("POST", 'add_card/', true);
     xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xmlhttp.send(params);
+    var b = document.getElementById('butRefill');
+    b.disabled = true;
     xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == 4) {
             document.getElementById('card_num').innerHTML = '';
@@ -171,6 +173,7 @@ function add_card() {
                 }, 2000);
             }
             else {
+                document.getElementById('butRefill').disabled = false;
                 div.style.color = "red";
                 if (JSON.parse(xmlhttp.responseText)["errors"] != null) {
                     var error = JSON.parse(xmlhttp.responseText)["errors"];
@@ -185,6 +188,44 @@ function add_card() {
                     div.innerHTML = JSON.parse(xmlhttp.responseText)["mes"];
                 }
             }
+        }
+    }
+}
+
+function submit_once() {
+    var desc = document.getElementById('id_describe');
+    if (!desc.value && is_spaces(desc.value) == 1) {
+        return 1;
+    }
+    var user_to = '';
+    try {
+        user_to = document.getElementById('id_login_user_to')
+    } catch (e) {
+        user_to = ''
+    }
+    var xmlhttp = getXmlHttp();
+    var params = 'describe=' + encodeURIComponent(desc.value);
+    if (user_to != null) {
+        params += '&login_user_to=' + encodeURIComponent(user_to.value);
+    }
+    params += '&csrfmiddlewaretoken=' + document.getElementsByName('csrfmiddlewaretoken')[0].value;
+    xmlhttp.open("POST", '', true);
+    xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xmlhttp.send(params);
+    var b = document.getElementById('submit');
+    b.disabled = true;
+    xmlhttp.onreadystatechange = function () {
+        if (xmlhttp.readyState == 4) {
+            var div = document.getElementById('response');
+            div.style.color = "green";
+            div.innerHTML = JSON.parse(xmlhttp.responseText)["mes"];
+            window.setTimeout(function () {
+                var new_url = "/";
+                window.location.replace(new_url)
+            }, 2000);
+        }
+        else {
+            b.disabled = false;
         }
     }
 }

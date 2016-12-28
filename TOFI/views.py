@@ -309,14 +309,14 @@ def aboutUser(request, login_id):
         com = request.POST['comment']
         models.CommentUser.objects.create(id_user_about=login_id, id_user_from=request.user.id,
                                           text_comment=com, date_comment=date.today())
-        response = {'com': com, 'user': request.user.username, 'date': date.today().strftime('%b. %d, %Y')}
+        response = {'com': com, 'user': request.user.username, 'date': date.today().strftime('%d-%m-%Y')}
         response = json.dumps(response, ensure_ascii=False)
         return HttpResponse(response, content_type="text/html; charset=utf-8")
 
 
 def comment(request):
-    if request.user.is_anonymous or not request.user.is_active:
-        return HttpResponseRedirect("/login")
+    if not request.user.is_active and not request.user.is_anonymous:
+        return HttpResponseRedirect("/")
 
     if request.method == 'GET':
         context = {'com': list(reversed([i for i in list(models.Comment.objects.all())]))}
@@ -325,8 +325,7 @@ def comment(request):
         com = request.POST['comment']
         models.Comment.objects.create(text_comment=com, user_login=request.user.username,
                                       date_comment=date.today())
-
-        response = {'com': com, 'user': request.user.username, 'date': date.today().strftime('%b. %d, %Y')}
+        response = {'com': com, 'user': request.user.username, 'date': date.today().strftime('%d-%m-%Y')}
         response = json.dumps(response, ensure_ascii=False)
         return HttpResponse(response, content_type="text/html; charset=utf-8")
 
@@ -338,7 +337,7 @@ def make_complaint(request, id_user_to):
     if id_user_to == '0':
         class MakeComplaint(forms.Form):
             describe = forms.CharField(label="Опишите проблему:", max_length=150, required=True,
-                                       widget=forms.Textarea(attrs={'rows': '4'}))
+                                       widget=forms.Textarea(attrs={'rows': '4', 'class': 'form-control'}))
 
         if request.method == 'POST':
             form = MakeComplaint(request.POST)
@@ -354,7 +353,7 @@ def make_complaint(request, id_user_to):
                                                 describe=describe, date=date.today())
                 mes = "Ваше письмо отправлено на сервер и будет рассмотрено в ближайшее время."
 
-                return render(request, 'Profile/Thanks.html', {'mes': mes})
+                return HttpResponse(json.dumps({'mes': mes}, ensure_ascii=False))
 
         else:
             form = MakeComplaint()
@@ -363,14 +362,17 @@ def make_complaint(request, id_user_to):
     else:
         if request.user.is_anonymous:
             return HttpResponseRedirect("/login")
-        user_to = models.MyUser.objects.get(id=id_user_to)
+        try:
+            user_to = models.MyUser.objects.get(id=id_user_to)
+        except:
+            return HttpResponseRedirect('/')
 
         class MakeComplaint(forms.Form):
             login_user_to = forms.CharField(label="Жалоба на :", max_length=100, required=True,
                                             widget=forms.TextInput(attrs={'readonly': 'readonly'}),
                                             initial=user_to.username)
             describe = forms.CharField(label="Опишите жалобу:", max_length=150, required=True,
-                                       widget=forms.Textarea(attrs={'rows': '4'}))
+                                       widget=forms.Textarea(attrs={'rows': '4', 'class': 'form-control'}))
 
         if request.method == 'POST':
             form = MakeComplaint(request.POST)
@@ -384,7 +386,7 @@ def make_complaint(request, id_user_to):
                 mes = "Ваша жалоба на пользователя " + user_to.username + " отправлена на сервер и " \
                                                                           "будет рассмотрена в ближайшее время."
 
-                return render(request, 'Profile/Thanks.html', {'mes': mes})
+                return HttpResponse(json.dumps({'mes': mes}, ensure_ascii=False))
 
         else:
             form = MakeComplaint()

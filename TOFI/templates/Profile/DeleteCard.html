@@ -11,7 +11,5 @@
         <a class="text-center">Вы уверены?</a>
     </div>
 </div>
-<form action="delete_card/{{ id }}" method="post">
     {% csrf_token %}
-    <input type="submit" class="btn btn-outline-danger btn-block" value="Удалить">
-</form>
+<input id="submit" onclick="redirect('delete_card/{{ id }}')" class="btn btn-outline-danger btn-block" value="Удалить">

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Информация о пользователе{% endblock %}
 {% block content %}
-        <table class="center">
+    <table class="center table">
             <tr class="padding">
                 <td class="padding">Логин:</td>
                 <td>{{ user.username }}</td>
@@ -59,19 +59,20 @@
         {% else %}
             <tr>
                 <td>
-                    <textarea placeholder="Введите отзыв о пользователе..." cols="70" rows="3px" id="comment" maxlength="100"></textarea>
+                    <textarea class="form-control" placeholder="Введите отзыв о пользователе..." cols="70" rows="3px"
+                              id="comment" maxlength="100"></textarea>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-default" onclick="func()">Отправить</button>
+                    <button type="button" class="btn btn-secondary" onclick="func()">Отправить</button>
                 </td>
             </tr>
         {% endif %}
     </table>
-    <table class="center" id="response">
+    <table class="center table table-bordered" id="response">
         {% for c in com %}
             <tr class="padding">
                 <td class="padding">{{ c.login_user_from }}</td>
-                <td>{{ c.date }}</td>
+                <td class="text-center text-muted">{{ c.date|date:"d-m-Y" }}</td>
                 <td>{{ c.text_com }}</td>
             </tr>
         {% endfor %}

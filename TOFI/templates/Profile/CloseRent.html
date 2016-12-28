@@ -1,13 +1,13 @@
 {% if status %}
     <div class="row">
-        <div class="col-md-6">
-            <a class="text-center">Вы уверены?</a>
+        <div style="text-align: center" class="padding">
+            <a class="text-center">Отправить запрос на закрытие аренды?</a>
         </div>
     </div>
-    <form action="/profile/close_rent/{{ rent_id }}" method="post">
         {% csrf_token %}
-        <button type="submit" class="btn btn-outline-danger btn-block">Закрыть аренду</button>
-    </form>
+    <button id="submit" onclick="redirect('/profile/close_rent/{{ rent_id }}')"
+            class="btn btn-outline-danger btn-block">Отправить
+    </button>
 
 {% else %}
     <a class="text-center">{{ mes }}</a>

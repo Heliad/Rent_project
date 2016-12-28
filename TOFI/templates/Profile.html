@@ -171,8 +171,6 @@
                                 <a href="aboutHouse/{{ rent.id_house.id }}">Информация о доме</a>
                             </td>
                             <td>
-                                <button class="close" data-toggle="modal" data-target="#myModal"
-                                        onclick="del_rent_click({{ rent.id }})" style="color: red">&times;</button>
                             </td>
                         </tr>
                         <tr>
@@ -256,6 +254,21 @@
         function del_card_click(id) {
             document.getElementsByClassName('modal-body')[0].innerHTML = get('delete_card/' + id);
             document.getElementsByClassName('modal-title')[0].innerHTML = 'Удаление карты';
+        }
+
+        function redirect(rent_id) {
+            var xmlhttp = getXmlHttp();
+            var params = '&csrfmiddlewaretoken=' + document.getElementsByName('csrfmiddlewaretoken')[0].value;
+            xmlhttp.open("POST", rent_id, true);
+            xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xmlhttp.send(params);
+            var b = document.getElementById('submit');
+            b.disabled = true;
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState == 4) {
+                    window.location.replace('/profile')
+                }
+            }
         }
     </script>
     <script src="/static/javascript/post_choose_payment.js"></script>

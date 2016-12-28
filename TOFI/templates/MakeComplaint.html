@@ -1,20 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Подача жалобы{% endblock %}
+{% block title %}Подача жалобы на пользователя{% endblock %}
 {% block content %}
-    <form method="POST" class="center">
+    <div class="center">
         {% csrf_token %}
         <table>
             {% for field in form %}
                 <tr>
-                    <td class="padding">{{ field.label }}</td>
-                    <td>{{ field }}</td>
+                    <td>{{ field.label }}</td>
+                    <td class="padding-bottom10">{{ field }}</td>
                 </tr>
             {% endfor %}
-            <tr class="padding">
-                <td class="padding" align="center" colspan="2">
-                    <button type="submit" class="btn btn-outline-primary btn-block btn-sm">Отправить</button>
-                </td>
-            </tr>
         </table>
-    </form>
+        <button id="submit" onclick="submit_once()" class="btn btn-outline-success btn-block">Отправить</button>
+        <div id="response"></div>
+    </div>
+    <script src="/static/javascript/post_choose_payment.js"></script>
 {% endblock %}

@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Получить выписку о балансе{% endblock %}
 {% block content %}
+    <table class="left">
+        <tr>
+            <td class="padding">
+                <a class="btn button7 text-left form-control" href="{% url 'Profile' %}">Назад</a>
+            </td>
+        </tr>
+    </table>
     <form method="POST">
         {% csrf_token %}
         <div class="center">

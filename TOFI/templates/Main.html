@@ -32,7 +32,11 @@
                                 Адрес: {{ r.address }}
                             </div>
                             <div>
-                                Срок аренды: {{ r.min_rent_time }} д.
+                                Статус: {% if r.status.rent %}
+                                Доступно
+                            {% else %}
+                                Арендовано
+                            {% endif %}
                             </div>
                             <div>
                                 Цена: {{ r.cost }} BYN
