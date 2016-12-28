@@ -29,7 +29,7 @@ SECRET_KEY = 'nkb9vx5qn9gjmv+972p+nj63!5b5651#(b@87+62rp92)8at!r'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'heliad.pythonanywhere.com']
 
 
 # Application definition
@@ -113,7 +113,7 @@ AUTH_USER_MODEL = 'TOFI.MyUser'
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
 SECURE_SSL_REDIRECT = False
-#SESSION_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True

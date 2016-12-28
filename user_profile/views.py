@@ -368,18 +368,6 @@ def mails(request):
     mails = models.MessageStatusRent.objects.all().filter(id_user_to=request.user.id).order_by('-creation_date')
 
     for mail in mails:
-        if not mail.is_done:
-            # Проверка на релевантность
-            id_rent = mail.id_rent
-            done_rent = models.DoneRent.objects.filter(id_house_id=id_rent)
-            if done_rent:
-                mail.is_done = True
-
-            # Проверка на существование дома
-            house = models.Rent.objects.filter(id=id_rent)
-            if not house:
-                mail.is_done = True
-
         mail.is_new = False
         mail.save()
     return render(request, "Profile/Mails.html", {'mails': mails})
@@ -391,22 +379,30 @@ def accept_rent(request, id_mes):
 
     message = models.MessageStatusRent.objects.get(id=id_mes)
     if message.type_mes:
-        house = models.Rent.objects.get(id=message.id_rent)
+        try:
+            house = models.Rent.objects.get(id=message.id_rent)
 
-        models.DoneRent.objects.create(id_house=models.Rent.objects.get(id=message.id_rent),
-                                       id_user_owner=models.MyUser.objects.get(id=message.id_user_to),
-                                       id_user_renter=message.id_user_from, date_rent=date.today(),
-                                       cost=house.cost, next_payment_date=date.today())
-        house.status_rent = False
-        house.save()
+            models.DoneRent.objects.create(id_house=models.Rent.objects.get(id=message.id_rent),
+                                           id_user_owner=models.MyUser.objects.get(id=message.id_user_to),
+                                           id_user_renter=message.id_user_from, date_rent=date.today(),
+                                           cost=house.cost, next_payment_date=date.today())
+            house.status_rent = False
+            house.save()
+        except:
+            return HttpResponseRedirect('/profile')
     else:
-        done_rent = models.DoneRent.objects.get(id=message.id_rent)
-        rent = models.Rent.objects.get(id=done_rent.id_house.id)
-        rent.status_rent = True
-        done_rent.delete()
-        rent.save()
-    message.is_done = True
-    message.save()
+        try:
+
+            done_rent = models.DoneRent.objects.get(id=message.id_rent)
+            rent = models.Rent.objects.get(id=done_rent.id_house.id)
+            rent.status_rent = True
+            done_rent.delete()
+            rent.save()
+
+        except:
+            return HttpResponseRedirect('/profile')
+        message.is_done = True
+        message.save()
 
     user = models.MyUser.objects.get(id=message.id_user_from)
     # accept = "Запрос номер " + str(message.id) + ", на аренду дома " + str(house.name) \
