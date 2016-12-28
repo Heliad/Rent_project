@@ -48,7 +48,7 @@ class RentForm(forms.ModelForm):
     area = forms.IntegerField(label="Жилая площадь(кв.м.):", required=True,
                               validators=[MinValueValidator(3), MaxValueValidator(1000)])
     date_of_construction = forms.IntegerField(label="Год постройки:", required=True,
-                                              validators=[MinValueValidator(1950), MaxValueValidator(2020)])
+                                              validators=[MinValueValidator(1950), MaxValueValidator(2016)])
     cost = forms.IntegerField(label="Цена:", required=True,
                               validators=[MinValueValidator(1), MaxValueValidator(1000000)])
     payment_interval = forms.IntegerField(label="Интервал оплаты:", required=True,
@@ -93,7 +93,7 @@ class DeleteMySelf(forms.Form):
 
 
 class AddComment(forms.Form):
-    text_comment = forms.CharField(label="Введите отзыв", max_length=50, required=True)
+    text_comment = forms.CharField(label="Введите отзыв", max_length=50, required=True, initial='')
 
 
 class SearchRent(forms.Form):

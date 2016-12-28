@@ -84,7 +84,7 @@ class AddRent(View):
             if 'area' in err:
                 error = 'Размер площади должен быть от 3 до 1000 кв.м.!'
             if 'date_of_construction' in err:
-                error = 'Год постройки должен быть от 1950 до 2020 года!'
+                error = 'Год постройки должен быть от 1950 до 2016 года!'
             if 'cost' in err:
                 error = 'Цена должна быть в диапозоне от 1 до 1млн!'
             if 'payment_interval' in err:
@@ -157,7 +157,10 @@ class Registration(View):
                 error = 'Недопустимые символы в поле Адрес!(Допустимы только буквы русского алфавита ' \
                         'и знаки пунктуации)'
             if 'passport_id' in err:
-                error = 'Недопустимые символы в поле Номер пасспорта!(Пример: AB1234567)'
+                if 'My user with this Номер паспорта already exists.' in err['passport_id'][0]:
+                    error = 'Пользователь с таким номером паспорта уже зарегистрирован!'
+                else:
+                    error = 'Недопустимые символы в поле Номер пасспорта!(Пример: AB1234567)'
             if 'taxpayer_account_number' in err:
                 error = 'Недопустимое значение в поле УНН!(Значение должно быть от 1 до 100000)'
             if 'license_field' in err:
@@ -322,6 +325,7 @@ def comment(request):
         com = request.POST['comment']
         models.Comment.objects.create(text_comment=com, user_login=request.user.username,
                                       date_comment=date.today())
+
         response = {'com': com, 'user': request.user.username, 'date': date.today().strftime('%b. %d, %Y')}
         response = json.dumps(response, ensure_ascii=False)
         return HttpResponse(response, content_type="text/html; charset=utf-8")
